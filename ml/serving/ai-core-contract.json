@@ -1,0 +1,41 @@
+{
+  "request": {
+    "requestId": "REQ-20260519-0001",
+    "predictionType": "ANOMALY_AND_SHELF_LIFE",
+    "modelVersionPolicy": "PINNED",
+    "storeId": "ST001",
+    "zoneId": "ZN_DAIRY_01",
+    "windowStart": "2026-05-19T07:30:00Z",
+    "windowEnd": "2026-05-19T08:00:00Z",
+    "features": {
+      "temperatureAvgC": 5.7,
+      "temperatureMaxC": 9.1,
+      "tempExcursionMinutesOver8C": 18,
+      "humidityAvgPct": 66.1,
+      "co2SlopePpmPerMin": 2.5,
+      "oxygenDropPct": 0.2,
+      "doorOpenSeconds": 220
+    },
+    "context": {
+      "zoneType": "DAIRY_FRIDGE",
+      "productCategory": "DAIRY",
+      "batchId": "BATCH-OPTIONAL"
+    }
+  },
+  "response": {
+    "predictionId": "PRED-20260519-0001",
+    "modelName": "freshchain-risk",
+    "modelVersion": "1.0.0",
+    "riskLevel": "HIGH",
+    "anomalyScore": 0.87,
+    "anomalyType": "TEMPERATURE_EXCURSION",
+    "remainingShelfLifeDays": 1.8,
+    "confidence": 0.74,
+    "featureContributions": [
+      { "feature": "tempExcursionMinutesOver8C", "weight": 0.46 },
+      { "feature": "doorOpenSeconds", "weight": 0.31 }
+    ],
+    "recommendedAction": "Prioritise affected dairy batches for review or markdown",
+    "aiCoreUnavailable": false
+  }
+}

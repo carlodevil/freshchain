@@ -1,0 +1,62 @@
+{
+  "name": "freshchain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Smart FreshChain CAP demo slice.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "cds serve",
+    "watch": "cds watch",
+    "deploy:local": "cds deploy --to sqlite:db.sqlite",
+    "deploy:sqlite": "npm run deploy:local",
+    "test": "node --test test/*.test.js",
+    "check": "node --check srv/server.js && node --check srv/handlers/ingestion.js && node --check srv/handlers/rules.js && node --check srv/handlers/ai-core-client.js && node --check srv/handlers/ml-engine.js && node --check srv/handlers/mock-data.js && node --check srv/handlers/dataset-upload.js && node --check srv/ingestion-service.js && node --check srv/catalog-service.js && node --check srv/analytics-service.js && node --check srv/admin-service.js && node --check srv/intelligence-service.js && node --check simulator/src/index.js && node test/validate-ui-artifacts.js",
+    "simulator": "node simulator/src/index.js",
+    "build": "cds build --production",
+    "build:mta": "mbt build",
+    "deploy:mta": "cf deploy mta_archives/freshchain_0.1.0.mtar",
+    "deploy:cf": "npm run deploy:mta"
+  },
+  "dependencies": {
+    "@sap/cds": "^8.9.0",
+    "@sap/hana-client": "^2.24.24",
+    "@sap/xssec": "^4.8.0",
+    "express": "^4.19.2",
+    "uuid": "^10.0.0",
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1.7.8",
+    "@sap/cds-dk": "^8.9.0",
+    "axios": "^1.7.9",
+    "bestzip": "^2.2.5",
+    "mbt": "^1.2.34"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "url": "db.sqlite"
+        }
+      },
+      "auth": {
+        "kind": "mocked"
+      },
+      "[production]": {
+        "db": {
+          "kind": "hana"
+        },
+        "auth": {
+          "kind": "xsuaa"
+        }
+      }
+    },
+    "odata": {
+      "version": "v4"
+    },
+    "features": {
+      "assert_integrity": false
+    }
+  }
+}

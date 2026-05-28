@@ -1,0 +1,26 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: Executable
+metadata:
+  name: freshchain-serve
+  labels:
+    scenarios.ai.sap.com/id: freshchain-intelligence
+    executables.ai.sap.com/id: freshchain-serve
+spec:
+  scenario: freshchain-intelligence
+  description: Serve FreshChain real-time intelligence predictions.
+  image: ${FRESHCHAIN_AI_IMAGE}
+  command:
+    - uvicorn
+    - serve:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - "9000"
+  inputs:
+    artifacts:
+      - name: freshchain-model
+        kind: model
+        path: /app/model
+  ports:
+    - name: http
+      port: 9000

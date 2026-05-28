@@ -1,0 +1,16 @@
+node_modules/
+gen/
+resources/
+mta_archives/
+db.sqlite*
+*.db
+.cdsrc-private.json
+default-env.json
+.env
+.codex/
+.auth/
+core.*
+playwright-report/
+test-results/
+app/router/resources/
+deploy-logs/

@@ -1,0 +1,5 @@
+ID;sku;name;category;subcategory;packagingType;uom;recommendedTempMinC;recommendedTempMaxC;standardShelfLifeDays
+cccccccc-cccc-cccc-cccc-ccccccccccc1;MILK-1L;Whole Milk 1L;DAIRY;MILK;CARTON;EA;0;5;10
+cccccccc-cccc-cccc-cccc-ccccccccccc2;YOG-500;Greek Yogurt 500g;DAIRY;YOGURT;CUP;EA;0;5;14
+cccccccc-cccc-cccc-cccc-ccccccccccc3;BEEF-STEAK;Beef Steak Pack;MEAT;BEEF;TRAY;EA;-1;4;5
+cccccccc-cccc-cccc-cccc-ccccccccccc4;BERRIES;Mixed Berries;PRODUCE;BERRIES;PUNNET;EA;2;8;6

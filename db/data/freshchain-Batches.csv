@@ -1,0 +1,4 @@
+ID;product_ID;batchNumber;productionDate;packingDate;bestBeforeDate;receivedAt
+dddddddd-dddd-dddd-dddd-ddddddddddd1;cccccccc-cccc-cccc-cccc-ccccccccccc1;MILK-20260520-A;2026-05-20;2026-05-20;2026-05-30;2026-05-21T08:00:00Z
+dddddddd-dddd-dddd-dddd-ddddddddddd2;cccccccc-cccc-cccc-cccc-ccccccccccc2;YOG-20260518-A;2026-05-18;2026-05-18;2026-06-01;2026-05-19T08:00:00Z
+dddddddd-dddd-dddd-dddd-ddddddddddd3;cccccccc-cccc-cccc-cccc-ccccccccccc3;BEEF-20260524-A;2026-05-24;2026-05-24;2026-05-29;2026-05-24T12:00:00Z

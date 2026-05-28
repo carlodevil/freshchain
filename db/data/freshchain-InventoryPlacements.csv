@@ -1,0 +1,4 @@
+ID;batch_ID;zone_ID;placedAt;removedAt;quantity;unit;active
+eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee1;dddddddd-dddd-dddd-dddd-ddddddddddd1;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1;2026-05-21T09:00:00Z;;40;EA;true
+eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee2;dddddddd-dddd-dddd-dddd-ddddddddddd2;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1;2026-05-19T09:00:00Z;;30;EA;true
+eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee3;dddddddd-dddd-dddd-dddd-ddddddddddd3;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2;2026-05-24T13:00:00Z;;20;EA;true

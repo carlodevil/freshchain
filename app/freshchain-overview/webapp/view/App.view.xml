@@ -1,0 +1,279 @@
+<mvc:View
+  controllerName="freshchain.overview.controller.App"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:core="sap.ui.core"
+  xmlns:layout="sap.ui.layout"
+  displayBlock="true">
+  <App id="overviewRootApp" height="100vh">
+    <pages>
+  <f:DynamicPage id="overviewPage" busy="{overview>/loading}" fitContent="false">
+    <f:title>
+      <f:DynamicPageTitle id="overviewTitle">
+        <f:heading>
+          <Title id="overviewHeading" text="FreshChain Overview" level="H2"/>
+        </f:heading>
+        <f:actions>
+          <ObjectStatus id="overviewHealthStatus" text="{overview>/health/status}" state="{path:'overview>/health/status', formatter:'.statusState'}"/>
+          <Button id="scoreLatestButton" text="Score Latest" type="Emphasized" press=".onScoreLatest"/>
+          <Button id="refreshOverviewButton" icon="sap-icon://refresh" tooltip="Refresh" press=".loadOverview"/>
+        </f:actions>
+      </f:DynamicPageTitle>
+    </f:title>
+    <f:content>
+      <VBox class="sapUiMediumMargin" renderType="Bare">
+        <FlexBox wrap="Wrap" alignItems="Stretch">
+          <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label text="Active Alerts"/>
+            <ObjectNumber number="{overview>/health/activeAlerts}" unit="alerts" state="{path:'overview>/health/status', formatter:'.statusState'}"/>
+            <Text text="Open operational work"/>
+          </VBox>
+          <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label text="Highest Risk"/>
+            <ObjectStatus text="{overview>/health/highestRisk}" state="{path:'overview>/health/highestRisk', formatter:'.riskState'}" icon="sap-icon://temperature"/>
+            <Text text="Latest ML assessment"/>
+          </VBox>
+          <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label text="AI Core Error Rate"/>
+            <ObjectNumber number="{path:'overview>/ml/aiFailureRate', formatter:'.percent'}" unit="%" state="{path:'overview>/ml/aiFailureRate', formatter:'.aiFailureState'}"/>
+            <Text text="Recent inference requests"/>
+          </VBox>
+          <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label text="Stores / Zones"/>
+            <ObjectNumber number="{overview>/health/zones}" unit="zones" state="Success"/>
+            <Text text="Active monitored estate"/>
+          </VBox>
+        </FlexBox>
+
+        <OverflowToolbar id="overviewSectionNav" class="sapUiMediumMarginTop">
+          <Button id="overviewOperationsAnchor" text="Operations" icon="sap-icon://activity-individual" press=".onScrollToSection"><customData><core:CustomData key="target" value="overviewOperationsSection"/></customData></Button>
+          <Button id="overviewPipelineAnchor" text="ML Pipeline" icon="sap-icon://process" press=".onScrollToSection"><customData><core:CustomData key="target" value="overviewPipelineSection"/></customData></Button>
+          <Button id="overviewQualityAnchor" text="Model Quality" icon="sap-icon://inspection" press=".onScrollToSection"><customData><core:CustomData key="target" value="overviewQualitySection"/></customData></Button>
+          <Button id="overviewForecastsAnchor" text="Forecasts" icon="sap-icon://line-chart" press=".onScrollToSection"><customData><core:CustomData key="target" value="overviewForecastsSection"/></customData></Button>
+          <Button id="overviewRecommendationsAnchor" text="Recommendations" icon="sap-icon://cart-approval" press=".onScrollToSection"><customData><core:CustomData key="target" value="overviewRecommendationsSection"/></customData></Button>
+          <Button id="overviewTransfersAnchor" text="Transfers" icon="sap-icon://shipping-status" press=".onScrollToSection"><customData><core:CustomData key="target" value="overviewTransfersSection"/></customData></Button>
+        </OverflowToolbar>
+
+        <VBox id="overviewSections" class="sapUiMediumMarginTop" renderType="Bare">
+            <Panel id="overviewOperationsSection" headerText="Operations">
+              <layout:Grid defaultSpan="XL6 L6 M12 S12" hSpacing="1" vSpacing="1">
+                <Panel headerText="ML Risk Stream">
+                  <List items="{overview>/riskTrend}">
+                    <CustomListItem>
+                      <HBox justifyContent="SpaceBetween" alignItems="Center">
+                        <VBox>
+                          <ObjectStatus text="{overview>riskLevel}" state="{path:'overview>riskLevel', formatter:'.riskState'}"/>
+                          <Text text="{overview>anomalyType}"/>
+                          <Text text="{overview>recommendedAction}"/>
+                        </VBox>
+                        <ObjectNumber number="{path:'overview>score', formatter:'.score'}" unit="risk"/>
+                      </HBox>
+                    </CustomListItem>
+                  </List>
+                </Panel>
+                <Panel headerText="Inference Telemetry">
+                  <Table items="{overview>/telemetry}">
+                    <columns>
+                      <Column><Text text="Status"/></Column>
+                      <Column><Text text="Latency"/></Column>
+                      <Column><Text text="AI Core"/></Column>
+                    </columns>
+                    <items>
+                      <ColumnListItem>
+                        <cells>
+                          <ObjectStatus text="{overview>status}" state="Information"/>
+                          <Text text="{overview>latencyMs} ms"/>
+                          <ObjectStatus text="{= ${overview>aiCoreUnavailable} ? 'Unavailable' : 'Reached' }" state="{path:'overview>aiCoreUnavailable', formatter:'.boolState'}"/>
+                        </cells>
+                      </ColumnListItem>
+                    </items>
+                  </Table>
+                </Panel>
+              </layout:Grid>
+            </Panel>
+
+            <Panel id="overviewPipelineSection" headerText="ML Pipeline" class="sapUiMediumMarginTop">
+              <layout:Grid defaultSpan="XL4 L4 M12 S12" hSpacing="1" vSpacing="1">
+                <Panel headerText="Data Freshness">
+                  <VBox class="sapUiSmallMargin">
+                    <ObjectStatus text="{overview>/dataFreshness/health}" state="{path:'overview>/dataFreshness/health', formatter:'.qualityState'}"/>
+                    <Text text="{overview>/dataFreshness/message}" class="sapUiTinyMarginTop"/>
+                    <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
+                      <ObjectNumber number="{path:'overview>/dataFreshness/minutesSinceReading', formatter:'.freshnessValue'}" unit="min since reading"/>
+                      <ObjectNumber number="{path:'overview>/dataFreshness/minutesSinceInference', formatter:'.freshnessValue'}" unit="min since inference"/>
+                    </HBox>
+                    <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginTop">
+                      <ObjectNumber number="{overview>/dataFreshness/sensorCount}" unit="sensors"/>
+                      <ObjectNumber number="{overview>/dataFreshness/staleSensors}" unit="stale"/>
+                    </HBox>
+                  </VBox>
+                </Panel>
+                <Panel headerText="Datasets">
+                  <List items="{overview>/datasets}">
+                    <StandardListItem title="{overview>datasetCode}" description="Readings {overview>readingCount}, sales {overview>salesCount}, incidents {overview>incidentCount}" info="{overview>historyDays}d"/>
+                  </List>
+                </Panel>
+                <Panel headerText="Training Runs">
+                  <List items="{overview>/trainingRuns}">
+                    <ObjectListItem title="{overview>runId}" number="{overview>status}">
+                      <attributes>
+                        <ObjectAttribute text="{overview>modelName} {overview>modelVersion}"/>
+                        <ObjectAttribute text="{overview>errorMessage}"/>
+                      </attributes>
+                    </ObjectListItem>
+                  </List>
+                </Panel>
+                <Panel headerText="Deployments">
+                  <List items="{overview>/deployments}">
+                    <ObjectListItem title="{overview>deploymentId}" number="{overview>healthStatus}">
+                      <attributes>
+                        <ObjectAttribute text="{overview>modelName} {overview>modelVersion}"/>
+                        <ObjectAttribute text="Endpoint: {overview>endpointUrl}"/>
+                      </attributes>
+                    </ObjectListItem>
+                  </List>
+                </Panel>
+              </layout:Grid>
+            </Panel>
+
+            <Panel id="overviewQualitySection" headerText="Model Quality" class="sapUiMediumMarginTop">
+              <layout:Grid defaultSpan="XL6 L6 M12 S12" hSpacing="1" vSpacing="1">
+                <Panel headerText="Quality Gates">
+                  <Table items="{overview>/modelQuality}">
+                    <columns>
+                      <Column><Text text="Metric"/></Column>
+                      <Column><Text text="Value"/></Column>
+                      <Column><Text text="Target"/></Column>
+                      <Column><Text text="Status"/></Column>
+                    </columns>
+                    <items>
+                      <ColumnListItem>
+                        <cells>
+                          <Text text="{overview>metricName}"/>
+                          <ObjectNumber number="{overview>metricValue}"/>
+                          <ObjectNumber number="{overview>targetValue}"/>
+                          <ObjectStatus text="{overview>status}" state="{path:'overview>status', formatter:'.qualityState'}"/>
+                        </cells>
+                      </ColumnListItem>
+                    </items>
+                  </Table>
+                </Panel>
+                <Panel headerText="Scenario Mix">
+                  <Table items="{overview>/scenarioMix}">
+                    <columns>
+                      <Column><Text text="Scenario"/></Column>
+                      <Column><Text text="Readings"/></Column>
+                      <Column><Text text="Incidents"/></Column>
+                      <Column><Text text="Share"/></Column>
+                      <Column><Text text="Severity"/></Column>
+                    </columns>
+                    <items>
+                      <ColumnListItem>
+                        <cells>
+                          <Text text="{overview>scenarioCode}"/>
+                          <ObjectNumber number="{overview>readingCount}"/>
+                          <ObjectNumber number="{overview>incidentCount}"/>
+                          <ObjectNumber number="{path:'overview>incidentShare', formatter:'.percent'}" unit="%"/>
+                          <ObjectStatus text="{overview>severityHint}" state="{path:'overview>severityHint', formatter:'.riskState'}"/>
+                        </cells>
+                      </ColumnListItem>
+                    </items>
+                  </Table>
+                </Panel>
+              </layout:Grid>
+            </Panel>
+
+            <Panel id="overviewForecastsSection" headerText="Forecasts" class="sapUiMediumMarginTop">
+              <Panel headerText="Demand Forecasts">
+                <Table items="{overview>/forecasts}">
+                  <columns>
+                    <Column><Text text="Store"/></Column>
+                    <Column><Text text="Product"/></Column>
+                    <Column><Text text="Date"/></Column>
+                    <Column><Text text="Forecast"/></Column>
+                    <Column><Text text="Range"/></Column>
+                    <Column><Text text="Confidence"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem>
+                      <cells>
+                        <Text text="{overview>storeName}"/>
+                        <Text text="{overview>productName}"/>
+                        <Text text="{overview>forecastDate}"/>
+                        <ObjectNumber number="{overview>forecastUnits}" unit="units"/>
+                        <Text text="{overview>lowerBoundUnits} - {overview>upperBoundUnits}"/>
+                        <ObjectNumber number="{overview>confidence}"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+              </Panel>
+            </Panel>
+
+            <Panel id="overviewRecommendationsSection" headerText="Recommendations" class="sapUiMediumMarginTop">
+              <Toolbar class="sapUiTinyMarginBottom">
+                <Title text="Replenishment" level="H4"/>
+                <ToolbarSpacer/>
+                <Button text="Apply Top Replenishment" type="Emphasized" press=".onApplyTopReplenishment"/>
+              </Toolbar>
+              <Table items="{overview>/replenishments}">
+                <columns>
+                  <Column><Text text="Priority"/></Column>
+                  <Column><Text text="Store"/></Column>
+                  <Column><Text text="Product"/></Column>
+                  <Column><Text text="Units"/></Column>
+                  <Column><Text text="Reason"/></Column>
+                  <Column><Text text="Status"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <ObjectStatus text="{overview>priority}" state="{path:'overview>priority', formatter:'.priorityState'}"/>
+                      <Text text="{overview>storeName}"/>
+                      <Text text="{overview>productName}"/>
+                      <ObjectNumber number="{overview>recommendedUnits}" unit="units"/>
+                      <Text text="{overview>reasonCode}"/>
+                      <ObjectStatus text="{overview>status}" state="Information"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+
+            <Panel id="overviewTransfersSection" headerText="Transfers" class="sapUiMediumMarginTop">
+              <Toolbar class="sapUiTinyMarginBottom">
+                <Title text="Route and Transfer Recommendations" level="H4"/>
+                <ToolbarSpacer/>
+                <Button text="Apply Top Transfer" type="Emphasized" press=".onApplyTopRoute"/>
+              </Toolbar>
+              <Table items="{overview>/routes}">
+                <columns>
+                  <Column><Text text="Priority"/></Column>
+                  <Column><Text text="From"/></Column>
+                  <Column><Text text="To"/></Column>
+                  <Column><Text text="Product"/></Column>
+                  <Column><Text text="Units"/></Column>
+                  <Column><Text text="Status"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <ObjectStatus text="{overview>priority}" state="{path:'overview>priority', formatter:'.priorityState'}"/>
+                      <Text text="{overview>fromStoreName}"/>
+                      <Text text="{overview>toStoreName}"/>
+                      <Text text="{overview>productName}"/>
+                      <ObjectNumber number="{overview>recommendedUnits}" unit="units"/>
+                      <ObjectStatus text="{overview>status}" state="Information"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+        </VBox>
+      </VBox>
+    </f:content>
+  </f:DynamicPage>
+    </pages>
+  </App>
+</mvc:View>

@@ -1,0 +1,233 @@
+_schema-version: "3.3"
+ID: freshchain
+version: 0.1.0
+description: Smart FreshChain CAP demo slice
+
+parameters:
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+
+modules:
+  - name: freshchain-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: freshchain-db
+      - name: freshchain-auth
+      - name: freshchain-ai-core
+
+  - name: freshchain-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+    requires:
+      - name: freshchain-db
+
+  - name: freshchain-html5-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: freshchain-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - name: freshchain-operations
+          artifacts:
+            - freshchainoperations.zip
+          target-path: resources/
+        - name: freshchain-overview
+          artifacts:
+            - freshchainoverview.zip
+          target-path: resources/
+        - name: freshchain-intelligence
+          artifacts:
+            - freshchainintelligence.zip
+          target-path: resources/
+        - name: freshchain-masterdata
+          artifacts:
+            - freshchainmasterdata.zip
+          target-path: resources/
+        - name: freshchain-admin
+          artifacts:
+            - freshchainadmin.zip
+          target-path: resources/
+        - name: freshchain-monitoring
+          artifacts:
+            - freshchainmonitoring.zip
+          target-path: resources/
+
+  - name: freshchain-destination-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: freshchain-destination
+        parameters:
+          content-target: true
+      - name: freshchain-html5-repo-host
+        parameters:
+          service-key:
+            name: freshchain-html5-repo-host-key
+      - name: freshchain-auth
+        parameters:
+          service-key:
+            name: freshchain-auth-key
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: freshchain-html5-repo-host
+              ServiceInstanceName: freshchain-html5-repo-host
+              ServiceKeyName: freshchain-html5-repo-host-key
+              sap.cloud.service: freshchain
+            - Name: freshchain-auth
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: freshchain-auth
+              ServiceKeyName: freshchain-auth-key
+              sap.cloud.service: freshchain
+    build-parameters:
+      no-source: true
+
+  - name: freshchain-operations
+    type: html5
+    path: app/freshchain-operations
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainoperations.zip
+      supported-platforms: []
+
+  - name: freshchain-overview
+    type: html5
+    path: app/freshchain-overview
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainoverview.zip
+      supported-platforms: []
+
+  - name: freshchain-intelligence
+    type: html5
+    path: app/freshchain-intelligence
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainintelligence.zip
+      supported-platforms: []
+
+  - name: freshchain-masterdata
+    type: html5
+    path: app/freshchain-masterdata
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainmasterdata.zip
+      supported-platforms: []
+
+  - name: freshchain-admin
+    type: html5
+    path: app/freshchain-admin
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainadmin.zip
+      supported-platforms: []
+
+  - name: freshchain-monitoring
+    type: html5
+    path: app/freshchain-monitoring
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainmonitoring.zip
+      supported-platforms: []
+
+resources:
+  - name: freshchain-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+
+  - name: freshchain-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+
+  - name: freshchain-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  - name: freshchain-destination
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: srv-api
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            existing_destinations_policy: update
+            destinations:
+              - Name: srv-api
+                Type: HTTP
+                ProxyType: Internet
+                Authentication: NoAuthentication
+                URL: ~{srv-api/srv-url}
+                HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
+
+  - name: freshchain-ai-core
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: aicore
+      service-plan: standard

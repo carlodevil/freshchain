@@ -1,0 +1,12 @@
+target: http://localhost:4004/ingest/sensor-readings
+intervalMs: 60000
+storeId: ST001
+zones:
+  - zoneId: ZN_DAIRY_01
+    sensorId: SIM_TEMP_HUM_GAS_001
+    baseTemperatureC: 4.2
+    baseHumidityPct: 63
+  - zoneId: ZN_MEAT_01
+    sensorId: SIM_TEMP_HUM_GAS_002
+    baseTemperatureC: 2.0
+    baseHumidityPct: 58

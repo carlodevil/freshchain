@@ -1,0 +1,10 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: Scenario
+metadata:
+  name: freshchain-intelligence
+  labels:
+    scenarios.ai.sap.com/id: freshchain-intelligence
+    ai.sap.com/resourcePlan: starter
+spec:
+  name: FreshChain Intelligence
+  description: Cold-chain risk, shelf-life, replenishment, and transfer intelligence for FreshChain.

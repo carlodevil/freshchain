@@ -1,0 +1,5 @@
+ID;sensorId;zone_ID;sensorType;firmwareVersion;lastSeenAt;healthStatus
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1;SIM_TEMP_HUM_GAS_001;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1;SIM_TEMP_HUM_GAS;sim-1.0;;OK
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2;SIM_TEMP_HUM_GAS_002;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2;SIM_TEMP_HUM_GAS;sim-1.0;;OK
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3;SIM_TEMP_HUM_GAS_003;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3;SIM_TEMP_HUM_GAS;sim-1.0;;OK
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb4;SIM_TEMP_HUM_GAS_004;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4;SIM_TEMP_HUM_GAS;sim-1.0;;OK

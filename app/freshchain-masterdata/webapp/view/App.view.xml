@@ -1,0 +1,186 @@
+<mvc:View
+  controllerName="freshchain.masterdata.controller.App"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:core="sap.ui.core"
+  xmlns:layout="sap.ui.layout"
+  displayBlock="true">
+  <App id="masterDataRootApp" height="100vh">
+    <pages>
+  <f:DynamicPage id="masterDataPage" busy="{master>/loading}" fitContent="false">
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title id="masterDataTitle" text="FreshChain Master Data" level="H2"/>
+        </f:heading>
+        <f:actions>
+          <Button id="refreshMasterDataButton" icon="sap-icon://refresh" tooltip="Refresh" press=".loadMasterData"/>
+        </f:actions>
+      </f:DynamicPageTitle>
+    </f:title>
+    <f:header>
+      <f:DynamicPageHeader>
+        <MessageStrip id="masterDataContext" text="Review the stores, zones, products, batches, inventory placements, and sensors that drive FreshChain decisions." type="Information" showIcon="true"/>
+      </f:DynamicPageHeader>
+    </f:header>
+    <f:content>
+      <VBox id="masterDataContent" class="sapUiMediumMargin" renderType="Bare">
+        <FlexBox id="masterDataStatusStrip" wrap="Wrap" alignItems="Stretch">
+          <VBox id="storesStatusItem" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label id="storesStatusLabel" text="Stores"/>
+            <ObjectNumber id="storesStatusValue" number="{master>/summary/stores}" unit="stores" state="Success"/>
+          </VBox>
+          <VBox id="zonesStatusItem" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label id="zonesStatusLabel" text="Zones"/>
+            <ObjectNumber id="zonesStatusValue" number="{master>/summary/zones}" unit="zones" state="Success"/>
+          </VBox>
+          <VBox id="productsStatusItem" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label id="productsStatusLabel" text="Products"/>
+            <ObjectNumber id="productsStatusValue" number="{master>/summary/products}" unit="products" state="Success"/>
+          </VBox>
+          <VBox id="sensorsStatusItem" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <Label id="sensorsStatusLabel" text="Sensors"/>
+            <ObjectNumber id="sensorsStatusValue" number="{master>/summary/sensors}" unit="sensors" state="Success"/>
+          </VBox>
+        </FlexBox>
+        <OverflowToolbar id="masterDataSectionNav" class="sapUiMediumMarginTop">
+          <Button id="storesAnchor" text="Stores" icon="sap-icon://retail-store" press=".onScrollToSection"><customData><core:CustomData key="target" value="storesSection"/></customData></Button>
+          <Button id="zonesAnchor" text="Zones" icon="sap-icon://map" press=".onScrollToSection"><customData><core:CustomData key="target" value="zonesSection"/></customData></Button>
+          <Button id="productsAnchor" text="Products" icon="sap-icon://product" press=".onScrollToSection"><customData><core:CustomData key="target" value="productsSection"/></customData></Button>
+          <Button id="batchesAnchor" text="Batches" icon="sap-icon://batch-payments" press=".onScrollToSection"><customData><core:CustomData key="target" value="batchesSection"/></customData></Button>
+          <Button id="placementsAnchor" text="Inventory Placements" icon="sap-icon://inventory" press=".onScrollToSection"><customData><core:CustomData key="target" value="placementsSection"/></customData></Button>
+          <Button id="sensorsAnchor" text="Sensors" icon="sap-icon://measuring-point" press=".onScrollToSection"><customData><core:CustomData key="target" value="sensorsSection"/></customData></Button>
+        </OverflowToolbar>
+        <VBox id="masterDataSections" class="sapUiMediumMarginTop" renderType="Bare">
+            <Panel id="storesSection" headerText="Stores" class="sapUiMediumMarginBottom">
+              <Table id="storesTable" items="{master>/stores}" growing="true">
+                <columns>
+                  <Column id="storeCodeColumn"><Text text="Store"/></Column>
+                  <Column id="storeNameColumn"><Text text="Name"/></Column>
+                  <Column id="storeRegionColumn"><Text text="Region"/></Column>
+                  <Column id="storeStatusColumn"><Text text="Status"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <ObjectIdentifier title="{master>storeCode}" text="{master>timezone}"/>
+                      <Text text="{master>name}"/>
+                      <Text text="{master>region}"/>
+                      <ObjectStatus text="{= ${master>active} ? 'Active' : 'Inactive'}" state="{path:'master>active', formatter:'.activeState'}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+            <Panel id="zonesSection" headerText="Zones" class="sapUiMediumMarginBottom">
+              <Table id="zonesTable" items="{master>/zones}" growing="true">
+                <columns>
+                  <Column id="zoneCodeColumn"><Text text="Zone"/></Column>
+                  <Column id="zoneNameColumn"><Text text="Name"/></Column>
+                  <Column id="zoneTypeColumn"><Text text="Type"/></Column>
+                  <Column id="zoneTempColumn"><Text text="Safe Temp"/></Column>
+                  <Column id="zoneActiveColumn"><Text text="Status"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <ObjectIdentifier title="{master>zoneCode}" text="{master>name}"/>
+                      <Text text="{master>name}"/>
+                      <Text text="{master>type}"/>
+                      <Text text="{master>safeTempMinC} - {master>safeTempMaxC} C"/>
+                      <ObjectStatus text="{= ${master>active} ? 'Active' : 'Inactive'}" state="{path:'master>active', formatter:'.activeState'}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+            <Panel id="productsSection" headerText="Products" class="sapUiMediumMarginBottom">
+              <Table id="productsTable" items="{master>/products}" growing="true">
+                <columns>
+                  <Column id="productSkuColumn"><Text text="SKU"/></Column>
+                  <Column id="productNameColumn"><Text text="Name"/></Column>
+                  <Column id="productCategoryColumn"><Text text="Category"/></Column>
+                  <Column id="productTempColumn"><Text text="Recommended Temp"/></Column>
+                  <Column id="productShelfLifeColumn"><Text text="Shelf Life"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <ObjectIdentifier title="{master>sku}" text="{master>packagingType}"/>
+                      <Text text="{master>name}"/>
+                      <Text text="{master>category} / {master>subcategory}"/>
+                      <Text text="{master>recommendedTempMinC} - {master>recommendedTempMaxC} C"/>
+                      <ObjectNumber number="{master>standardShelfLifeDays}" unit="days"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+            <Panel id="batchesSection" headerText="Batches" class="sapUiMediumMarginBottom">
+              <Table id="batchesTable" items="{master>/batches}" growing="true">
+                <columns>
+                  <Column id="batchNumberColumn"><Text text="Batch"/></Column>
+                  <Column id="batchProductionColumn"><Text text="Production"/></Column>
+                  <Column id="batchPackingColumn"><Text text="Packing"/></Column>
+                  <Column id="batchBestBeforeColumn"><Text text="Best Before"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <ObjectIdentifier title="{master>batchNumber}" text="{master>receivedAt}"/>
+                      <Text text="{master>productionDate}"/>
+                      <Text text="{master>packingDate}"/>
+                      <Text text="{master>bestBeforeDate}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+            <Panel id="placementsSection" headerText="Inventory Placements" class="sapUiMediumMarginBottom">
+              <Table id="placementsTable" items="{master>/placements}" growing="true">
+                <columns>
+                  <Column id="placementPlacedColumn"><Text text="Placed At"/></Column>
+                  <Column id="placementQuantityColumn"><Text text="Quantity"/></Column>
+                  <Column id="placementStatusColumn"><Text text="Status"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{master>placedAt}"/>
+                      <ObjectNumber number="{master>quantity}" unit="{master>unit}"/>
+                      <ObjectStatus text="{= ${master>active} ? 'Active' : 'Removed'}" state="{path:'master>active', formatter:'.activeState'}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+            <Panel id="sensorsSection" headerText="Sensors" class="sapUiMediumMarginBottom">
+              <Table id="sensorsTable" items="{master>/sensors}" growing="true">
+                <columns>
+                  <Column id="sensorIdColumn"><Text text="Sensor"/></Column>
+                  <Column id="sensorTypeColumn"><Text text="Type"/></Column>
+                  <Column id="sensorFirmwareColumn"><Text text="Firmware"/></Column>
+                  <Column id="sensorLastSeenColumn"><Text text="Last Seen"/></Column>
+                  <Column id="sensorHealthColumn"><Text text="Health"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <ObjectIdentifier title="{master>sensorId}"/>
+                      <Text text="{master>sensorType}"/>
+                      <Text text="{master>firmwareVersion}"/>
+                      <Text text="{master>lastSeenAt}"/>
+                      <ObjectStatus text="{master>healthStatus}" state="{path:'master>healthStatus', formatter:'.healthState'}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </Panel>
+        </VBox>
+      </VBox>
+    </f:content>
+  </f:DynamicPage>
+    </pages>
+  </App>
+</mvc:View>

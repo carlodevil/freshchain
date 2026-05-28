@@ -1,0 +1,83 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "freshchain.monitoring",
+    "type": "application",
+    "title": "FreshChain Monitoring",
+    "description": "Zone status, active alerts, and rolling aggregates",
+    "applicationVersion": {
+      "version": "0.1.0"
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "FreshChainMonitoring-display": {
+          "semanticObject": "FreshChainMonitoring",
+          "action": "display",
+          "title": "FreshChain Monitoring",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "../../odata/v4/analytics/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.f": {},
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {}
+      }
+    },
+    "models": {
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true,
+          "synchronizationMode": "None"
+        }
+      },
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "rootView": {
+      "viewName": "freshchain.monitoring.view.App",
+      "type": "XML",
+      "async": true,
+      "height": "100%",
+      "id": "app"
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    }
+  },
+  "sap.cloud": {
+    "service": "freshchain"
+  }
+}
