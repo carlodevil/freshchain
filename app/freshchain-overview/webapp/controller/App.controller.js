@@ -29,19 +29,27 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast"], function (Co
       try {
         const results = await Promise.all([
           this.readList("OverviewMetrics", 1),
-          this.readList("RiskTrend", 12),
-          this.readList("ForecastDashboard", 12),
-          this.readList("ReplenishmentDashboard", 12),
-          this.readList("RouteDashboard", 12),
-          this.readList("InferenceTelemetry", 12),
-          this.readList("ModelQualityDashboard", 12),
+          this.readList("RiskTrend", 1),
+          this.readList("ForecastDashboard", 1),
+          this.readList("ReplenishmentDashboard", 1),
+          this.readList("RouteDashboard", 1),
+          this.readList("InferenceTelemetry", 1),
+          this.readList("ModelQualityDashboard", 20),
           this.readList("ScenarioMix", 12),
           this.readList("DataFreshness", 1),
-          this.readList("MLDatasets", 5),
-          this.readList("MLTrainingRuns", 5),
-          this.readList("MLDeployments", 5)
+          this.readList("MLDatasets", 1),
+          this.readList("MLTrainingRuns", 1),
+          this.readList("MLDeployments", 5),
+          this.readList("Predictions", 1)
         ]);
         const metrics = results[0][0] || {};
+        const latestPrediction = results[12][0] || {};
+        const localMode = latestPrediction.deploymentId === "freshchain-local";
+        const latestQualityByMetric = results[6].filter(function (row, index, rows) {
+          return rows.findIndex(function (candidate) {
+            return candidate.metricName === row.metricName;
+          }) === index;
+        });
         model.setData({
           ...model.getData(),
           generatedAt: metrics.generatedAt,
@@ -67,12 +75,18 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast"], function (Co
           replenishments: results[3],
           routes: results[4],
           telemetry: results[5],
-          modelQuality: results[6],
+          modelQuality: latestQualityByMetric,
           scenarioMix: results[7],
           dataFreshness: results[8][0] || {},
           datasets: results[9],
           trainingRuns: results[10],
-          deployments: results[11],
+          deployments: localMode ? [{
+            deploymentId: latestPrediction.deploymentId,
+            modelName: latestPrediction.modelName,
+            modelVersion: latestPrediction.modelVersion,
+            healthStatus: "ONLINE",
+            endpointUrl: "Local Docker model"
+          }] : results[11],
           loading: false
         });
       } catch (error) {

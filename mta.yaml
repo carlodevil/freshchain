@@ -227,7 +227,6 @@ resources:
                 HTML5.ForwardAuthToken: true
 
   - name: freshchain-ai-core
-    type: org.cloudfoundry.managed-service
+    type: org.cloudfoundry.existing-service
     parameters:
-      service: aicore
-      service-plan: standard
+      service-name: ai-core

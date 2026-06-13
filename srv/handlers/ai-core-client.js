@@ -28,6 +28,10 @@ function firstValue(...values) {
   return values.find(value => value !== undefined && value !== null && value !== '');
 }
 
+function delay(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
 function findAiCoreCredentials() {
   const services = parseJson(process.env.VCAP_SERVICES || '{}', {});
   const candidates = Object.values(services).flat().filter(service => {
@@ -42,6 +46,17 @@ function findAiCoreCredentials() {
 }
 
 function aiCoreConfig() {
+  const localModelUrl = normalizeUrl(process.env.FRESHCHAIN_LOCAL_MODEL_URL);
+  if (localModelUrl) {
+    return {
+      localMode: true,
+      localModelUrl,
+      resourceGroup: process.env.AICORE_RESOURCE_GROUP || DEFAULT_RESOURCE_GROUP,
+      scenarioId: process.env.AICORE_SCENARIO_ID || DEFAULT_SCENARIO,
+      trainingExecutableId: process.env.AICORE_TRAINING_EXECUTABLE_ID || DEFAULT_TRAIN_EXECUTABLE,
+      servingExecutableId: process.env.AICORE_SERVING_EXECUTABLE_ID || DEFAULT_SERVE_EXECUTABLE
+    };
+  }
   const credentials = findAiCoreCredentials();
   const uaa = credentials.uaa || credentials.oauth || {};
   return {
@@ -50,7 +65,9 @@ function aiCoreConfig() {
       credentials.tokenurl,
       credentials.tokenUrl,
       uaa.url && `${normalizeUrl(uaa.url)}/oauth/token`,
-      credentials.url && /oauth/.test(credentials.url) ? credentials.url : null
+      credentials.url && /\/oauth\/token(?:$|\?)/.test(credentials.url)
+        ? credentials.url
+        : credentials.url && `${normalizeUrl(credentials.url)}/oauth/token`
     ),
     clientId: firstValue(credentials.clientid, credentials.clientId, uaa.clientid, uaa.clientId),
     clientSecret: firstValue(credentials.clientsecret, credentials.clientSecret, uaa.clientsecret, uaa.clientSecret),
@@ -118,6 +135,9 @@ class AiCoreClient {
   }
 
   async request(path, options = {}) {
+    if (this.config.localMode) {
+      throw new AiCoreError('SAP AI Core management operations are unavailable in local model mode', { statusCode: 409 });
+    }
     if (!this.config.apiUrl) {
       throw new AiCoreError('SAP AI Core API URL is not configured', { statusCode: 503 });
     }
@@ -217,29 +237,44 @@ class AiCoreClient {
   }
 
   async invokeDeployment(deployment, features) {
-    const endpoint = deployment.endpointUrl;
-    if (!endpoint) {
+    const baseEndpoint = normalizeUrl(deployment.endpointUrl);
+    const endpoints = this.config.localMode
+      ? [this.config.localModelUrl]
+      : [`${baseEndpoint}/v2/predict`, baseEndpoint];
+    if (!endpoints[0]) {
       throw new AiCoreError(`AI Core deployment ${deployment.deploymentId} does not have an inference endpoint`, { statusCode: 503 });
     }
     const started = Date.now();
-    const token = await this.accessToken();
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${token}`,
-        'content-type': 'application/json',
-        'AI-Resource-Group': this.config.resourceGroup
-      },
-      body: JSON.stringify({ features })
-    });
-    const text = await response.text();
-    const payload = text ? parseJson(text, { raw: text }) : {};
+    const token = this.config.localMode ? null : await this.accessToken();
+    let response;
+    let text;
+    for (const endpoint of endpoints) {
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              ...(token ? { authorization: `Bearer ${token}`, 'AI-Resource-Group': this.config.resourceGroup } : {})
+            },
+            body: JSON.stringify({ features })
+          });
+          text = await response.text();
+          if (![429, 502, 503, 504].includes(response.status) || attempt === 2) break;
+        } catch (error) {
+          if (attempt === 2) throw error;
+        }
+        await delay(500 * (attempt + 1));
+      }
+      if (response.ok || response.status !== 404) break;
+    }
     if (!response.ok) {
       throw new AiCoreError(`AI Core inference failed with HTTP ${response.status}`, {
         statusCode: 502,
         response: text.slice(0, 1000)
       });
     }
+    const payload = text ? parseJson(text, { raw: text }) : {};
     return {
       output: payload.prediction || payload.output || payload,
       latencyMs: Date.now() - started
@@ -251,6 +286,7 @@ module.exports = {
   AiCoreClient,
   AiCoreError,
   aiCoreConfig,
+  localModelUrl: () => normalizeUrl(process.env.FRESHCHAIN_LOCAL_MODEL_URL),
   constants: {
     DEFAULT_RESOURCE_GROUP,
     DEFAULT_SCENARIO,

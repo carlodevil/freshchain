@@ -6,6 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "cds serve",
+    "start:local": "node scripts/start-local.js",
+    "test:local": "node scripts/test-local.js",
     "watch": "cds watch",
     "deploy:local": "cds deploy --to sqlite:db.sqlite",
     "deploy:sqlite": "npm run deploy:local",

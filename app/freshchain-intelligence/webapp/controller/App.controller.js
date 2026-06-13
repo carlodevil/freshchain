@@ -58,23 +58,31 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/ui/model
           this.readList("InferenceTelemetry", 8),
           this.readList("DataFreshness", 1),
           this.readList("Zones", 4),
-          this.readList("DatasetUploads", 10, "uploadedAt")
+          this.readList("DatasetUploads", 10, "uploadedAt"),
+          this.readList("Predictions", 1, "createdAt")
         ]);
         const latestDataset = results[0][0] || {};
         const latestRun = results[1][0] || {};
         const uploads = results[7].map(this.enrichUpload.bind(this));
         const latestUpload = uploads[0] || {};
+        const latestPrediction = results[8][0] || {};
         const activeDeployment = (results[2] || []).find(function (row) {
-          return row.status === "SUCCEEDED";
-        }) || results[2][0] || {};
+          return row.status === "SUCCEEDED" && !/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::|\/|$)/i.test(row.endpointUrl || "");
+        }) || {};
+        const localMode = !activeDeployment.deploymentId && latestPrediction.deploymentId === "freshchain-local";
         model.setData({
           loading: false,
+          localMode: localMode,
           pipeline: {
             latestDataset: latestDataset.datasetCode,
             latestRun: latestRun.runId,
             latestRunStatus: latestRun.status,
-            activeDeployment: activeDeployment.deploymentId,
-            deploymentHealth: activeDeployment.healthStatus,
+            activeDeployment: localMode ? latestPrediction.deploymentId : activeDeployment.deploymentId,
+            deploymentHealth: localMode ? "ONLINE" : activeDeployment.healthStatus,
+            latestPredictionDeployment: latestPrediction.deploymentId,
+            modeMessage: localMode
+              ? "Local model mode: scoring is available; SAP AI Core management actions require an AI Core connection."
+              : "SAP AI Core mode: training, deployment management, and scoring are available.",
             latestUpload: latestUpload.status,
             latestUploadName: latestUpload.fileName
           },
@@ -215,6 +223,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/ui/model
     },
 
     onStartTraining: async function () {
+      if (this.getOwnerComponent().getModel("workbench").getProperty("/localMode")) {
+        MessageToast.show("Start training requires an SAP AI Core connection");
+        return;
+      }
       const datasets = this.getOwnerComponent().getModel("workbench").getProperty("/datasets") || [];
       if (!datasets.length) {
         MessageToast.show("Seed or ingest a dataset before starting training");
@@ -226,6 +238,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/ui/model
     },
 
     onActivateLatest: async function () {
+      if (this.getOwnerComponent().getModel("workbench").getProperty("/localMode")) {
+        MessageToast.show("Deployment activation requires an SAP AI Core connection");
+        return;
+      }
       const runs = this.getOwnerComponent().getModel("workbench").getProperty("/trainingRuns") || [];
       if (!runs.length) {
         MessageToast.show("Start training before activating a deployment");
@@ -237,6 +253,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/ui/model
     },
 
     onRefreshLatestRun: async function () {
+      if (this.getOwnerComponent().getModel("workbench").getProperty("/localMode")) {
+        MessageToast.show("Training status refresh requires an SAP AI Core connection");
+        return;
+      }
       const runs = this.getOwnerComponent().getModel("workbench").getProperty("/trainingRuns") || [];
       if (!runs.length) {
         MessageToast.show("No training run is available");
@@ -248,6 +268,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/ui/model
     },
 
     onRefreshLatestDeployment: async function () {
+      if (this.getOwnerComponent().getModel("workbench").getProperty("/localMode")) {
+        MessageToast.show("Deployment status refresh requires an SAP AI Core connection");
+        return;
+      }
       const deployments = this.getOwnerComponent().getModel("workbench").getProperty("/deployments") || [];
       if (!deployments.length) {
         MessageToast.show("No deployment is available");
@@ -299,6 +323,26 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/m/MessageToast", "sap/ui/model
 
     boolState: function (value) {
       return value ? "Warning" : "Success";
+    },
+
+    formatSouthAfricaDateTime: function (value) {
+      if (!value) {
+        return "";
+      }
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+      return new Intl.DateTimeFormat("en-ZA", {
+        timeZone: "Africa/Johannesburg",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).format(date) + " SAST";
     }
   });
 });

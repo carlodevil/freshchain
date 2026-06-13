@@ -10,6 +10,7 @@ sap.ui.define(["sap/ui/core/UIComponent", "sap/ui/model/json/JSONModel"], functi
       UIComponent.prototype.init.apply(this, arguments);
       this.setModel(new JSONModel({
         loading: true,
+        localMode: false,
         pipeline: {},
         dataFreshness: {},
         datasets: [],

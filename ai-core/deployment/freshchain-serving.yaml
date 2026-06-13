@@ -1,0 +1,30 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: ServingTemplate
+metadata:
+  name: freshchain-serve
+  annotations:
+    scenarios.ai.sap.com/description: "Cold-chain risk, shelf-life, demand, anomaly, and replenishment inference"
+    scenarios.ai.sap.com/name: "freshchain-intelligence"
+    executables.ai.sap.com/description: "Serve the validated FreshChain intelligence model"
+    executables.ai.sap.com/name: "freshchain-serve"
+  labels:
+    scenarios.ai.sap.com/id: "freshchain-intelligence"
+    ai.sap.com/version: "1.0.0"
+spec:
+  template:
+    apiVersion: "serving.kserve.io/v1beta1"
+    metadata:
+      labels: |
+        ai.sap.com/resourcePlan: starter
+    spec: |
+      predictor:
+        imagePullSecrets:
+          - name: freshchain-docker
+        minReplicas: 1
+        maxReplicas: 1
+        containers:
+          - name: kfserving-container
+            image: "docker.io/cajaegbu/freshchain-intelligence:1.0.0"
+            ports:
+              - containerPort: 9000
+                protocol: TCP

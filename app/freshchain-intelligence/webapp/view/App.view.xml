@@ -16,10 +16,10 @@
           <Title id="intelligenceTitle" text="FreshChain Intelligence" level="H2"/>
         </f:heading>
         <f:actions>
-          <Button id="startTrainingButton" text="Start AI Core Training" type="Emphasized" press=".onStartTraining"/>
-          <Button id="refreshTrainingButton" icon="sap-icon://synchronize" tooltip="Refresh Training Status" press=".onRefreshLatestRun"/>
-          <Button id="activateDeploymentButton" text="Activate Latest Deployment" press=".onActivateLatest"/>
-          <Button id="refreshDeploymentButton" icon="sap-icon://refresh" tooltip="Refresh Deployment Status" press=".onRefreshLatestDeployment"/>
+          <Button id="startTrainingButton" text="Start AI Core Training" type="Emphasized" enabled="{= !${workbench>/localMode} }" press=".onStartTraining"/>
+          <Button id="refreshTrainingButton" icon="sap-icon://synchronize" tooltip="Refresh Training Status" enabled="{= !${workbench>/localMode} }" press=".onRefreshLatestRun"/>
+          <Button id="activateDeploymentButton" text="Activate Latest Deployment" enabled="{= !${workbench>/localMode} }" press=".onActivateLatest"/>
+          <Button id="refreshDeploymentButton" icon="sap-icon://refresh" tooltip="Refresh Deployment Status" enabled="{= !${workbench>/localMode} }" press=".onRefreshLatestDeployment"/>
           <Button id="scoreLatestButton" text="Score Latest Zone" press=".onScoreLatest"/>
           <Button id="refreshIntelligenceButton" icon="sap-icon://refresh" tooltip="Refresh" press=".loadWorkbench"/>
         </f:actions>
@@ -27,7 +27,7 @@
     </f:title>
     <f:header>
       <f:DynamicPageHeader>
-        <MessageStrip id="intelligenceContext" text="Data science workbench for datasets, model runs, deployments, quality gates, and inference telemetry." type="Information" showIcon="true"/>
+        <MessageStrip id="intelligenceContext" text="{workbench>/pipeline/modeMessage}" type="Information" showIcon="true"/>
       </f:DynamicPageHeader>
     </f:header>
     <f:content>
@@ -91,7 +91,7 @@
                 <items>
                   <ColumnListItem>
                     <cells>
-                      <ObjectIdentifier title="{workbench>fileName}" text="{workbench>uploadedAt}"/>
+                      <ObjectIdentifier title="{workbench>fileName}" text="{path:'workbench>uploadedAt', formatter:'.formatSouthAfricaDateTime'}"/>
                       <ObjectStatus text="{workbench>status}" state="{path:'workbench>status', formatter:'.stateForStatus'}"/>
                       <Text text="{workbench>rowSummary}"/>
                       <Text text="{workbench>errorSummary}"/>
@@ -113,7 +113,7 @@
                   <ColumnListItem>
                     <cells>
                       <ObjectIdentifier title="{workbench>datasetCode}" text="{workbench>source}"/>
-                      <Text text="{workbench>generatedAt}"/>
+                      <Text text="{path:'workbench>generatedAt', formatter:'.formatSouthAfricaDateTime'}"/>
                       <ObjectNumber number="{workbench>readingCount}" unit="readings"/>
                       <ObjectNumber number="{workbench>incidentCount}" unit="incidents"/>
                     </cells>
@@ -132,7 +132,7 @@
                 <items>
                   <ColumnListItem>
                     <cells>
-                      <ObjectIdentifier title="{workbench>runId}" text="{workbench>startedAt}"/>
+                      <ObjectIdentifier title="{workbench>runId}" text="{path:'workbench>startedAt', formatter:'.formatSouthAfricaDateTime'}"/>
                       <Text text="{workbench>modelName} {workbench>modelVersion}"/>
                       <ObjectStatus text="{workbench>status}" state="{path:'workbench>status', formatter:'.stateForStatus'}"/>
                       <Text text="{workbench>errorMessage}"/>
@@ -155,7 +155,7 @@
                       <ObjectIdentifier title="{workbench>deploymentId}" text="{workbench>modelVersion}"/>
                       <ObjectStatus text="{workbench>healthStatus}" state="{path:'workbench>healthStatus', formatter:'.stateForStatus'}"/>
                       <Text text="{workbench>endpointUrl}"/>
-                      <Text text="{workbench>lastScoredAt}"/>
+                      <Text text="{path:'workbench>lastScoredAt', formatter:'.formatSouthAfricaDateTime'}"/>
                     </cells>
                   </ColumnListItem>
                 </items>
@@ -192,7 +192,7 @@
                 <items>
                   <ColumnListItem>
                     <cells>
-                      <ObjectIdentifier title="{workbench>requestId}" text="{workbench>createdAt}"/>
+                      <ObjectIdentifier title="{workbench>requestId}" text="{path:'workbench>createdAt', formatter:'.formatSouthAfricaDateTime'}"/>
                       <ObjectStatus text="{workbench>status}" state="{path:'workbench>status', formatter:'.stateForStatus'}"/>
                       <ObjectNumber number="{workbench>latencyMs}" unit="ms"/>
                       <ObjectStatus text="{= ${workbench>aiCoreUnavailable} ? 'Unavailable' : 'Reached' }" state="{path:'workbench>aiCoreUnavailable', formatter:'.boolState'}"/>

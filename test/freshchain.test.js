@@ -156,6 +156,7 @@ test.before(async () => {
         }
         const payload = JSON.parse(body || '{}');
         assert.ok(payload.features.zone);
+        assert.ok(Array.isArray(payload.features.sensorReadings));
         res.end(JSON.stringify(aiPrediction()));
         return;
       }
@@ -246,6 +247,32 @@ test('temperature excursion creates a high operational alert without local ML pr
   const alerts = await GET('/odata/v4/catalog/Alerts?$filter=status ne \'RESOLVED\'');
   assert.ok(alerts.data.value.some(alert => alert.alertType === 'TEMPERATURE_EXCURSION'));
 
+});
+
+test('catalog bound alert actions support the operations UI workflow', async () => {
+  const payload = reading({
+    readings: { temperatureC: 8.6 },
+    scenarioCode: 'DOOR_LEFT_OPEN'
+  });
+  const response = await POST('/ingest/sensor-readings', payload);
+  const alertId = response.data.alertId;
+  assert.ok(alertId);
+
+  const acknowledged = await POST(`/odata/v4/catalog/Alerts(ID=${alertId})/CatalogService.acknowledge`, {
+    comment: 'Acknowledged from test'
+  });
+  assert.equal(acknowledged.data.status, 'ACKNOWLEDGED');
+
+  const resolved = await POST(`/odata/v4/catalog/Alerts(ID=${alertId})/CatalogService.resolve`, {
+    outcome: 'Temperature recovered',
+    comment: 'Resolved from test'
+  });
+  assert.equal(resolved.data.status, 'RESOLVED');
+
+  const reopened = await POST(`/odata/v4/catalog/Alerts(ID=${alertId})/CatalogService.reopen`, {
+    comment: 'Reopened from test'
+  });
+  assert.equal(reopened.data.status, 'REOPENED');
 });
 
 test('invalid oxygen reading is quarantined in IngestionErrors', async () => {
@@ -428,6 +455,21 @@ test('intelligence dashboard exposes structured OData views and recommendation l
   const freshness = await GET('/odata/v4/intelligence/DataFreshness');
   assert.equal(freshness.data.value.length, 1);
   assert.ok(['GOOD', 'WATCH', 'BREACH'].includes(freshness.data.value[0].health));
+});
+
+test('local model mode scores without SAP AI Core credentials or deployment lookup', async () => {
+  const previousServices = process.env.VCAP_SERVICES;
+  process.env.FRESHCHAIN_LOCAL_MODEL_URL = `${aiCoreBaseUrl}/inference`;
+  delete process.env.VCAP_SERVICES;
+  try {
+    const zones = await GET('/odata/v4/intelligence/Zones?$top=1');
+    const prediction = await POST('/odata/v4/intelligence/scoreLatest', { zoneId: zones.data.value[0].ID });
+    assert.equal(prediction.data.deploymentId, 'freshchain-local');
+    assert.equal(prediction.data.aiCoreUnavailable, false);
+  } finally {
+    delete process.env.FRESHCHAIN_LOCAL_MODEL_URL;
+    process.env.VCAP_SERVICES = previousServices;
+  }
 });
 
 test('scoring fails closed when SAP AI Core inference is unavailable', async () => {

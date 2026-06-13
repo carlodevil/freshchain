@@ -12,10 +12,6 @@ function openStatus() {
   return { in: ['OPEN', 'ACKNOWLEDGED', 'ASSIGNED', 'REOPENED'] };
 }
 
-function riskRank(value) {
-  return { LOW: 1, MEDIUM: 2, HIGH: 3, CRITICAL: 4 }[value] || 0;
-}
-
 function limitOf(req, fallback = 20) {
   const rows = req.query && req.query.SELECT && req.query.SELECT.limit && req.query.SELECT.limit.rows;
   const value = rows && (rows.val || rows);
@@ -84,9 +80,20 @@ async function dashboardContext(tx) {
 }
 
 function overviewRow(context) {
-  const highestRisk = context.predictions.reduce((max, row) => riskRank(row.riskLevel) > riskRank(max) ? row.riskLevel : max, 'LOW');
-  const aiFailureRate = context.inferences.length ? context.inferences.filter(row => row.status === 'FAILED').length / context.inferences.length : 0;
-  const activeDeployment = context.deployments.find(row => row.status === 'SUCCEEDED') || context.deployments[0] || {};
+  const latestPrediction = context.predictions[0] || {};
+  const localMode = latestPrediction.deploymentId === 'freshchain-local';
+  const relevantInferences = localMode ? context.inferences.filter(row => !row.deployment_ID) : context.inferences;
+  const highestRisk = latestPrediction.riskLevel || 'LOW';
+  const aiFailureRate = relevantInferences.length
+    ? relevantInferences.filter(row => row.status === 'FAILED').length / relevantInferences.length
+    : 0;
+  const activeDeployment = localMode
+    ? {
+        deploymentId: latestPrediction.deploymentId,
+        modelVersion: latestPrediction.modelVersion,
+        healthStatus: relevantInferences[0] && relevantInferences[0].status === 'SUCCEEDED' ? 'ONLINE' : 'UNAVAILABLE'
+      }
+    : context.deployments.find(row => row.status === 'SUCCEEDED') || context.deployments[0] || {};
   const status = context.alerts.some(a => a.severity === 'CRITICAL') ? 'CRITICAL'
     : context.alerts.some(a => a.severity === 'HIGH') ? 'ATTENTION'
       : 'HEALTHY';
@@ -103,7 +110,7 @@ function overviewRow(context) {
     highestRisk,
     latestReadingAt: context.readings[0] && context.readings[0].measuredAt,
     aiFailureRate: Math.round(aiFailureRate * 1000) / 1000,
-    inferenceCount: context.inferences.length,
+    inferenceCount: relevantInferences.length,
     activeDeploymentId: activeDeployment.deploymentId || null,
     modelVersion: activeDeployment.modelVersion || null,
     deploymentHealth: activeDeployment.healthStatus || 'NOT_DEPLOYED'
@@ -138,7 +145,7 @@ async function readReplenishmentDashboard(tx, req) {
   const [stores, products, rows] = await Promise.all([
     tx.run(SELECT.from(Stores)),
     tx.run(SELECT.from(Products)),
-    tx.run(SELECT.from(ReplenishmentRecommendations).orderBy('priority asc', 'createdAt desc').limit(limitOf(req, 20)))
+    tx.run(SELECT.from(ReplenishmentRecommendations).orderBy('createdAt desc', 'priority asc').limit(limitOf(req, 20)))
   ]);
   const storeById = byId(stores);
   const productById = byId(products);
@@ -161,7 +168,7 @@ async function readRouteDashboard(tx, req) {
   const [stores, products, rows] = await Promise.all([
     tx.run(SELECT.from(Stores)),
     tx.run(SELECT.from(Products)),
-    tx.run(SELECT.from(RouteRecommendations).orderBy('priority asc', 'createdAt desc').limit(limitOf(req, 20)))
+    tx.run(SELECT.from(RouteRecommendations).orderBy('createdAt desc', 'priority asc').limit(limitOf(req, 20)))
   ]);
   const storeById = byId(stores);
   const productById = byId(products);
