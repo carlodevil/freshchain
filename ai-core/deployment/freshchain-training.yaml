@@ -33,7 +33,7 @@ spec:
           - /app/train.py
         env:
           - name: MODEL_DIR
-            value: /app/model
+            value: /tmp/freshchain-model
           - name: TRAINING_DIR
             value: /tmp/freshchain-training-data
           - name: FRESHCHAIN_DATASET_CODE
@@ -44,6 +44,6 @@ spec:
         artifacts:
           - name: freshchain-model
             globalName: freshchain-model
-            path: /app/model
+            path: /tmp/freshchain-model
             archive:
               none: {}
