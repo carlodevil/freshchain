@@ -35,7 +35,7 @@ spec:
           - name: MODEL_DIR
             value: /app/model
           - name: TRAINING_DIR
-            value: /app/training-data
+            value: /tmp/freshchain-training-data
           - name: FRESHCHAIN_DATASET_CODE
             value: "{{inputs.parameters.datasetCode}}"
           - name: FRESHCHAIN_NUM_DAYS
