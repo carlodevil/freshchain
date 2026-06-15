@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: freshchain-train
+  annotations:
+    scenarios.ai.sap.com/description: "Cold-chain risk, shelf-life, demand, anomaly, and replenishment training"
+    scenarios.ai.sap.com/name: "freshchain-intelligence"
+    executables.ai.sap.com/description: "Train the FreshChain intelligence model wrappers"
+    executables.ai.sap.com/name: "freshchain-train"
+  labels:
+    scenarios.ai.sap.com/id: "freshchain-intelligence"
+    ai.sap.com/version: "1.0.0"
+spec:
+  imagePullSecrets:
+    - name: freshchain-docker
+  entrypoint: train
+  arguments:
+    parameters:
+      - name: datasetCode
+        value: "demo"
+      - name: historyDays
+        value: "30"
+  templates:
+    - name: train
+      inputs:
+        parameters:
+          - name: datasetCode
+          - name: historyDays
+      container:
+        image: "docker.io/cajaegbu/freshchain-intelligence:1.0.0"
+        command:
+          - python
+          - /app/train.py
+        env:
+          - name: MODEL_DIR
+            value: /app/model
+          - name: TRAINING_DIR
+            value: /app/training-data
+          - name: FRESHCHAIN_DATASET_CODE
+            value: "{{inputs.parameters.datasetCode}}"
+          - name: FRESHCHAIN_NUM_DAYS
+            value: "{{inputs.parameters.historyDays}}"
+      outputs:
+        artifacts:
+          - name: freshchain-model
+            globalName: freshchain-model
+            path: /app/model
+            archive:
+              none: {}
