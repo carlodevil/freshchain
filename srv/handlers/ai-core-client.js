@@ -59,8 +59,16 @@ function aiCoreConfig() {
   }
   const credentials = findAiCoreCredentials();
   const uaa = credentials.uaa || credentials.oauth || {};
+  const serviceUrls = credentials.serviceurls || credentials.serviceUrls || {};
   return {
-    apiUrl: normalizeUrl(firstValue(credentials.AI_API_URL, credentials.ai_api_url, credentials.apiurl, credentials.url)),
+    apiUrl: normalizeUrl(firstValue(
+      credentials.AI_API_URL,
+      credentials.ai_api_url,
+      credentials.apiurl,
+      serviceUrls.AI_API_URL,
+      serviceUrls.ai_api_url,
+      serviceUrls.apiurl
+    )),
     tokenUrl: firstValue(
       credentials.tokenurl,
       credentials.tokenUrl,

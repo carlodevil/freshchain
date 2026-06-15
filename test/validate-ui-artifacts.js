@@ -7,8 +7,16 @@ const manifests = [
   'app/freshchain-intelligence/webapp/manifest.json',
   'app/freshchain-masterdata/webapp/manifest.json',
   'app/freshchain-admin/webapp/manifest.json',
-  'app/freshchain-monitoring/webapp/manifest.json',
-  'app/router/xs-app.json'
+  'app/freshchain-monitoring/webapp/manifest.json'
+];
+
+const xsApps = [
+  'app/freshchain-operations/webapp/xs-app.json',
+  'app/freshchain-overview/webapp/xs-app.json',
+  'app/freshchain-intelligence/webapp/xs-app.json',
+  'app/freshchain-masterdata/webapp/xs-app.json',
+  'app/freshchain-admin/webapp/xs-app.json',
+  'app/freshchain-monitoring/webapp/xs-app.json'
 ];
 
 for (const file of manifests) {
@@ -19,6 +27,14 @@ for (const file of manifests) {
     if (!defaultModel || !dataSources[defaultModel.dataSource]) {
       throw new Error(`${file} must expose its CAP service through the default UI5 OData model`);
     }
+  }
+}
+
+for (const file of xsApps) {
+  const xsApp = JSON.parse(fs.readFileSync(path.join(__dirname, '..', file), 'utf8'));
+  const hasSrvRoute = (xsApp.routes || []).some(route => route.destination === 'srv-api');
+  if (!hasSrvRoute) {
+    throw new Error(`${file} must route CAP service requests through the srv-api destination`);
   }
 }
 

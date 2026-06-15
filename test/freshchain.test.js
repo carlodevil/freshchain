@@ -185,6 +185,33 @@ test.after(async () => {
   delete process.env.VCAP_SERVICES;
 });
 
+test('reads SAP AI Core API URL from nested serviceurls credentials', () => {
+  const previousServices = process.env.VCAP_SERVICES;
+  process.env.VCAP_SERVICES = JSON.stringify({
+    aicore: [{
+      name: 'ai-core',
+      label: 'aicore',
+      credentials: {
+        url: 'https://issuer.example',
+        serviceurls: {
+          AI_API_URL: 'https://api.ai.example/'
+        },
+        clientid: 'test-client',
+        clientsecret: 'test-secret'
+      }
+    }]
+  });
+
+  try {
+    const { aiCoreConfig } = require('../srv/handlers/ai-core-client');
+    const config = aiCoreConfig();
+    assert.equal(config.apiUrl, 'https://api.ai.example');
+    assert.equal(config.tokenUrl, 'https://issuer.example/oauth/token');
+  } finally {
+    process.env.VCAP_SERVICES = previousServices;
+  }
+});
+
 function reading(overrides = {}) {
   const now = new Date().toISOString();
   return {
