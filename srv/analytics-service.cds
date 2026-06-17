@@ -1,6 +1,16 @@
 using freshchain as db from '../db/schema';
 
+@requires: 'authenticated-user'
 service AnalyticsService @(path: '/odata/v4/analytics') {
+  type DashboardSummary {
+    stores              : Integer;
+    zones               : Integer;
+    activeAlerts        : Integer;
+    highAlerts          : Integer;
+    openIngestionErrors : Integer;
+    lastReadingAt       : Timestamp;
+  }
+
   entity ZoneStatus as select from db.Zones {
     key ID,
     zoneCode,
@@ -42,5 +52,5 @@ service AnalyticsService @(path: '/odata/v4/analytics') {
     zone.ID as zone_ID,
     zone.zoneCode as zoneCode
   };
-  action getDashboardSummary() returns String;
+  action getDashboardSummary() returns DashboardSummary;
 }

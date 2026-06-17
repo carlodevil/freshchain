@@ -3,17 +3,17 @@
   "sap.app": {
     "id": "freshchain.operations",
     "type": "application",
-    "title": "FreshChain Operations",
-    "description": "Operational alert workflow for Smart FreshChain",
+    "title": "FreshChain Act",
+    "description": "Spoilage interventions and operational decisions",
     "applicationVersion": {
       "version": "0.1.0"
     },
     "crossNavigation": {
       "inbounds": {
-        "FreshChainOperations-display": {
-          "semanticObject": "FreshChainOperations",
+        "FreshChainAct-display": {
+          "semanticObject": "FreshChainAct",
           "action": "display",
-          "title": "FreshChain Operations",
+          "title": "FreshChain Act",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -23,7 +23,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "../../odata/v4/catalog/",
+        "uri": "odata/v4/live-demo/",
         "type": "OData",
         "settings": {
           "odataVersion": "4.0"
@@ -43,10 +43,11 @@
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
+        "sap.fe.core": {},
+        "sap.fe.templates": {},
         "sap.f": {},
         "sap.m": {},
-        "sap.ui.core": {},
-        "sap.ui.layout": {}
+        "sap.ui.core": {}
       }
     },
     "models": {
@@ -65,12 +66,58 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "rootView": {
-      "viewName": "freshchain.operations.view.App",
-      "type": "XML",
-      "async": true,
-      "id": "app",
-      "height": "100%"
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "SpoilageInterventionsList",
+          "target": "SpoilageInterventionsList"
+        },
+        {
+          "pattern": "SpoilageInterventions({key}):?query:",
+          "name": "SpoilageInterventionsObjectPage",
+          "target": "SpoilageInterventionsObjectPage"
+        }
+      ],
+      "targets": {
+        "SpoilageInterventionsList": {
+          "type": "Component",
+          "id": "SpoilageInterventionsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "SpoilageInterventions",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "SpoilageInterventions": {
+                  "detail": {
+                    "route": "SpoilageInterventionsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "SpoilageInterventionsObjectPage": {
+          "type": "Component",
+          "id": "SpoilageInterventionsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "entitySet": "SpoilageInterventions"
+            }
+          }
+        }
+      }
     },
     "contentDensities": {
       "compact": true,
@@ -78,6 +125,7 @@
     }
   },
   "sap.cloud": {
+    "public": true,
     "service": "freshchain"
   }
 }

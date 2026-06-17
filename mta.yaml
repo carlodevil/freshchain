@@ -12,6 +12,7 @@ build-parameters:
       commands:
         - npm ci
         - npx cds build --production
+        - node scripts/prune-hana-seed-data.mjs
 
 modules:
   - name: freshchain-srv
@@ -21,6 +22,9 @@ modules:
       buildpack: nodejs_buildpack
       memory: 256M
       disk-quota: 512M
+    properties:
+      NODE_ENV: production
+      HDB_NODEJS_THREADPOOL_SIZE: 8
     provides:
       - name: srv-api
         properties:
@@ -29,6 +33,12 @@ modules:
       - name: freshchain-db
       - name: freshchain-auth
       - name: freshchain-ai-core
+      - name: freshchain-event-mesh
+      - name: freshchain-job-scheduler
+    build-parameters:
+      builder: custom
+      commands:
+        - npm install --production
 
   - name: freshchain-db-deployer
     type: hdb
@@ -50,6 +60,10 @@ modules:
     build-parameters:
       build-result: resources
       requires:
+        - name: freshchain-controltower
+          artifacts:
+            - freshchaincontroltower.zip
+          target-path: resources/
         - name: freshchain-operations
           artifacts:
             - freshchainoperations.zip
@@ -62,13 +76,45 @@ modules:
           artifacts:
             - freshchainintelligence.zip
           target-path: resources/
-        - name: freshchain-masterdata
+        - name: freshchain-configure
           artifacts:
-            - freshchainmasterdata.zip
+            - freshchainconfigure.zip
+          target-path: resources/
+        - name: freshchain-stores
+          artifacts:
+            - freshchainstores.zip
+          target-path: resources/
+        - name: freshchain-areas
+          artifacts:
+            - freshchainareas.zip
+          target-path: resources/
+        - name: freshchain-sensors
+          artifacts:
+            - freshchainsensors.zip
+          target-path: resources/
+        - name: freshchain-products
+          artifacts:
+            - freshchainproducts.zip
+          target-path: resources/
+        - name: freshchain-thresholds
+          artifacts:
+            - freshchainthresholds.zip
+          target-path: resources/
+        - name: freshchain-impactsettings
+          artifacts:
+            - freshchainimpactsettings.zip
+          target-path: resources/
+        - name: freshchain-ingestionerrors
+          artifacts:
+            - freshchainingestionerrors.zip
           target-path: resources/
         - name: freshchain-admin
           artifacts:
             - freshchainadmin.zip
+          target-path: resources/
+        - name: freshchain-masterdata
+          artifacts:
+            - freshchainmasterdata.zip
           target-path: resources/
         - name: freshchain-monitoring
           artifacts:
@@ -106,6 +152,19 @@ modules:
               sap.cloud.service: freshchain
     build-parameters:
       no-source: true
+
+  - name: freshchain-controltower
+    type: html5
+    path: app/freshchain-controltower
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchaincontroltower.zip
+      supported-platforms: []
 
   - name: freshchain-operations
     type: html5
@@ -146,9 +205,9 @@ modules:
         - node ../../scripts/zip-html5-app.js dist freshchainintelligence.zip
       supported-platforms: []
 
-  - name: freshchain-masterdata
+  - name: freshchain-configure
     type: html5
-    path: app/freshchain-masterdata
+    path: app/freshchain-configure
     build-parameters:
       build-result: dist
       builder: custom
@@ -156,7 +215,98 @@ modules:
         - rm -rf dist
         - mkdir -p dist
         - cp -R webapp/. dist/
-        - node ../../scripts/zip-html5-app.js dist freshchainmasterdata.zip
+        - node ../../scripts/zip-html5-app.js dist freshchainconfigure.zip
+      supported-platforms: []
+
+  - name: freshchain-stores
+    type: html5
+    path: app/freshchain-stores
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainstores.zip
+      supported-platforms: []
+
+  - name: freshchain-areas
+    type: html5
+    path: app/freshchain-areas
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainareas.zip
+      supported-platforms: []
+
+  - name: freshchain-sensors
+    type: html5
+    path: app/freshchain-sensors
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainsensors.zip
+      supported-platforms: []
+
+  - name: freshchain-products
+    type: html5
+    path: app/freshchain-products
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainproducts.zip
+      supported-platforms: []
+
+  - name: freshchain-thresholds
+    type: html5
+    path: app/freshchain-thresholds
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainthresholds.zip
+      supported-platforms: []
+
+  - name: freshchain-impactsettings
+    type: html5
+    path: app/freshchain-impactsettings
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainimpactsettings.zip
+      supported-platforms: []
+
+  - name: freshchain-ingestionerrors
+    type: html5
+    path: app/freshchain-ingestionerrors
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainingestionerrors.zip
       supported-platforms: []
 
   - name: freshchain-admin
@@ -170,6 +320,19 @@ modules:
         - mkdir -p dist
         - cp -R webapp/. dist/
         - node ../../scripts/zip-html5-app.js dist freshchainadmin.zip
+      supported-platforms: []
+
+  - name: freshchain-masterdata
+    type: html5
+    path: app/freshchain-masterdata
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - rm -rf dist
+        - mkdir -p dist
+        - cp -R webapp/. dist/
+        - node ../../scripts/zip-html5-app.js dist freshchainmasterdata.zip
       supported-platforms: []
 
   - name: freshchain-monitoring
@@ -227,7 +390,36 @@ resources:
                 HTML5.ForwardAuthToken: true
 
   - name: freshchain-ai-core
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: ai-core
+
+  - name: freshchain-event-mesh
     type: org.cloudfoundry.managed-service
     parameters:
-      service: aicore
-      service-plan: standard
+      service: enterprise-messaging
+      service-plan: default
+      config:
+        emname: freshchain-event-mesh
+        namespace: freshchain/demo/live
+        version: "1.1.0"
+        options:
+          management: true
+          messagingrest: true
+          messaging: true
+        rules:
+          topicRules:
+            publishFilter:
+              - freshchain/sensor/reading/created
+            subscribeFilter:
+              - freshchain/sensor/reading/created
+          queueRules:
+            publishFilter:
+              - freshchain/live-demo/*
+            subscribeFilter:
+              - freshchain/live-demo/*
+
+  - name: freshchain-job-scheduler
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: job-scheduler

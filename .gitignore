@@ -7,10 +7,17 @@ db.sqlite*
 .cdsrc-private.json
 default-env.json
 .env
+__pycache__/
+*.py[cod]
 .codex/
 .auth/
 core.*
+.codehub-tools/
+tools/btp-cli/
 playwright-report/
 test-results/
 app/router/resources/
 deploy-logs/
+mta-op-*/
+app/**/webapp/Component-preload.js
+app/**/webapp/changes/

@@ -1,6 +1,35 @@
 using freshchain as db from '../db/schema';
 
+@requires: 'authenticated-user'
 service IntelligenceService @(path: '/odata/v4/intelligence') {
+  @readonly
+  @cds.persistence.skip
+  entity SpoilagePreventionDemo {
+    key ID                  : String(40);
+    generatedAt            : Timestamp;
+    status                  : String(20);
+    headline                : String(120);
+    storeName               : String(120);
+    zoneName                : String(120);
+    productName             : String(160);
+    riskLevel               : String(20);
+    score                   : Decimal(6,3);
+    confidence              : Decimal(6,3);
+    remainingShelfLifeDays  : Decimal(8,2);
+    demandUnitsForecast     : Decimal(12,3);
+    replenishmentUnits      : Decimal(12,3);
+    expectedWasteAvoidedUnits : Decimal(12,3);
+    expectedLostSalesAvoidedUnits : Decimal(12,3);
+    recommendedAction       : String(500);
+    aiCoreStatus            : String(40);
+    aiCoreExecutionId       : String(120);
+    aiCoreDeploymentId      : String(120);
+    inferenceLatencyMs      : Integer;
+    platformProof           : String(500);
+  } actions {
+    action runDemo() returns SpoilagePreventionDemo;
+  };
+
   @readonly
   @cds.persistence.skip
   entity OverviewMetrics {
@@ -175,7 +204,7 @@ service IntelligenceService @(path: '/odata/v4/intelligence') {
 
   action getOverview() returns String;
   action scoreLatest(zoneId: UUID, batchId: UUID) returns Predictions;
-  action seedDemoData(days: Integer, stores: Integer, anomalyRate: Decimal(6,3)) returns String;
+  action runSpoilagePreventionDemo() returns SpoilagePreventionDemo;
   action uploadDatasetPackage(fileName: String, mimeType: String, contentBase64: LargeString) returns DatasetUploads;
   action downloadDatasetPackageTemplate() returns LargeString;
   action validateDatasetPackage(uploadId: UUID) returns DatasetUploads;

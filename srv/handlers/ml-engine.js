@@ -18,7 +18,22 @@ function modelVersion() {
 
 async function latestDeployment(tx) {
   const { MLDeployments } = cds.entities('freshchain');
-  return tx.run(SELECT.one.from(MLDeployments).where({ status: 'SUCCEEDED' }).orderBy('modifiedAt desc'));
+  const deployments = await tx.run(SELECT.from(MLDeployments).where({ status: 'SUCCEEDED' }).orderBy('modifiedAt desc'));
+  const aiCoreApiUrl = new AiCoreClient().config.apiUrl || '';
+  const deployment = deployments.find(deployment => deployment.aiCoreDeploymentId || deployment.endpointUrl);
+  if (deployment) return deployment;
+  if (!aiCoreApiUrl) return null;
+  const activeAiCoreDeployment = await new AiCoreClient().findActiveDeployment();
+  if (!activeAiCoreDeployment) return null;
+  return {
+    deploymentId: activeAiCoreDeployment.deploymentId,
+    aiCoreDeploymentId: activeAiCoreDeployment.deploymentId,
+    modelName: 'freshchain-intelligence',
+    modelVersion: modelVersion(),
+    endpointUrl: activeAiCoreDeployment.endpointUrl,
+    status: activeAiCoreDeployment.status,
+    healthStatus: activeAiCoreDeployment.healthStatus
+  };
 }
 
 async function featureSnapshot(tx, zoneId, batchId) {
@@ -27,14 +42,17 @@ async function featureSnapshot(tx, zoneId, batchId) {
   if (!zone) return null;
   const store = await tx.run(SELECT.one.from(Stores).where({ ID: zone.store_ID }));
   const latestReading = await tx.run(SELECT.one.from(SensorReadings).where({ zone_ID: zone.ID }).orderBy('measuredAt desc'));
+  const sensorReadings = await tx.run(SELECT.from(SensorReadings).where({ zone_ID: zone.ID }).orderBy('measuredAt desc').limit(2500));
   const aggregate = await tx.run(SELECT.one.from(ReadingAggregates).where({ zone_ID: zone.ID }).orderBy('windowEnd desc'));
 
   let batch = null;
   let product = null;
+  let placement = null;
   if (batchId) {
     batch = await tx.run(SELECT.one.from(Batches).where({ ID: batchId }));
+    placement = await tx.run(SELECT.one.from(InventoryPlacements).where({ zone_ID: zone.ID, batch_ID: batchId, active: true }).orderBy('placedAt desc'));
   } else {
-    const placement = await tx.run(SELECT.one.from(InventoryPlacements).where({ zone_ID: zone.ID, active: true }).orderBy('placedAt desc'));
+    placement = await tx.run(SELECT.one.from(InventoryPlacements).where({ zone_ID: zone.ID, active: true }).orderBy('placedAt desc'));
     if (placement) batch = await tx.run(SELECT.one.from(Batches).where({ ID: placement.batch_ID }));
   }
   if (batch) product = await tx.run(SELECT.one.from(Products).where({ ID: batch.product_ID }));
@@ -43,7 +61,7 @@ async function featureSnapshot(tx, zoneId, batchId) {
     ? await tx.run(SELECT.from(SalesObservations).where({ store_ID: store.ID, product_ID: product.ID }).orderBy('businessDate desc').limit(14))
     : [];
 
-  return { store, zone, batch, product, latestReading, aggregate, sales };
+  return { store, zone, batch, product, placement, latestReading, sensorReadings, aggregate, sales };
 }
 
 function requiredNumber(output, key) {
@@ -100,8 +118,14 @@ async function scoreLatest(tx, input, client = new AiCoreClient()) {
   const features = await featureSnapshot(tx, input.zoneId, input.batchId);
   if (!features) return null;
 
-  const deployment = await latestDeployment(tx);
   const requestId = crypto.randomUUID();
+  let deployment;
+  try {
+    deployment = await latestDeployment(tx);
+  } catch (error) {
+    await recordFailedInference(tx, requestId, null, features, error);
+    return { failed: true, error };
+  }
   if (!deployment) {
     const error = new AiCoreError('No successful SAP AI Core deployment is active for FreshChain scoring', { statusCode: 409 });
     await recordFailedInference(tx, requestId, deployment, features, error);
@@ -115,7 +139,9 @@ async function scoreLatest(tx, input, client = new AiCoreClient()) {
     output = normalizeOutput(result.output);
   } catch (error) {
     await recordFailedInference(tx, requestId, deployment, features, error);
-    await tx.run(UPDATE(MLDeployments).set({ healthStatus: 'UNAVAILABLE' }).where({ ID: deployment.ID }));
+    if (deployment.ID) {
+      await tx.run(UPDATE(MLDeployments).set({ healthStatus: 'UNAVAILABLE' }).where({ ID: deployment.ID }));
+    }
     return { failed: true, error };
   }
 
@@ -133,7 +159,9 @@ async function scoreLatest(tx, input, client = new AiCoreClient()) {
     responsePayload: JSON.stringify(output),
     errorMessage: null
   }));
-  await tx.run(UPDATE(MLDeployments).set({ lastScoredAt: now, healthStatus: 'ONLINE' }).where({ ID: deployment.ID }));
+  if (deployment.ID) {
+    await tx.run(UPDATE(MLDeployments).set({ lastScoredAt: now, healthStatus: 'ONLINE' }).where({ ID: deployment.ID }));
+  }
 
   await tx.run(INSERT.into(Predictions).entries({
     modelName: deployment.modelName || 'freshchain-ai-core',
@@ -178,8 +206,8 @@ async function scoreLatest(tx, input, client = new AiCoreClient()) {
       recommendedUnits: output.replenishmentUnits,
       priority: output.routePriority,
       reasonCode: output.anomalyType,
-      expectedWasteAvoidedUnits: output.businessImpact.expectedWasteAvoidedUnits || (output.score > 0.65 ? 4 : 1),
-      expectedLostSalesAvoidedUnits: output.businessImpact.expectedLostSalesAvoidedUnits || (output.replenishmentUnits > 0 ? 3 : 0),
+      expectedWasteAvoidedUnits: Number(output.businessImpact.expectedWasteAvoidedUnits || 0),
+      expectedLostSalesAvoidedUnits: Number(output.businessImpact.expectedLostSalesAvoidedUnits || 0),
       status: 'NEW'
     }));
     const alternateStore = await tx.run(SELECT.one.from(Stores).where({ ID: { '!=': features.store.ID }, active: true }));

@@ -3,17 +3,17 @@
   "sap.app": {
     "id": "freshchain.intelligence",
     "type": "application",
-    "title": "FreshChain Intelligence",
-    "description": "ML datasets, training runs, deployments, metrics, and inference telemetry",
+    "title": "FreshChain Predict",
+    "description": "SAP AI Core risk decisions for live spoilage prevention",
     "applicationVersion": {
       "version": "0.1.0"
     },
     "crossNavigation": {
       "inbounds": {
-        "FreshChainIntelligence-display": {
-          "semanticObject": "FreshChainIntelligence",
+        "FreshChainPredict-display": {
+          "semanticObject": "FreshChainPredict",
           "action": "display",
-          "title": "FreshChain Intelligence",
+          "title": "FreshChain Predict",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -23,7 +23,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "../../odata/v4/intelligence/",
+        "uri": "odata/v4/live-demo/",
         "type": "OData",
         "settings": {
           "odataVersion": "4.0"
@@ -43,11 +43,11 @@
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
+        "sap.fe.core": {},
+        "sap.fe.templates": {},
         "sap.f": {},
         "sap.m": {},
-        "sap.ui.core": {},
-        "sap.ui.layout": {},
-        "sap.ui.unified": {}
+        "sap.ui.core": {}
       }
     },
     "models": {
@@ -66,12 +66,58 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "rootView": {
-      "viewName": "freshchain.intelligence.view.App",
-      "type": "XML",
-      "async": true,
-      "height": "100%",
-      "id": "app"
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "RiskDecisionsList",
+          "target": "RiskDecisionsList"
+        },
+        {
+          "pattern": "RiskDecisions({key}):?query:",
+          "name": "RiskDecisionsObjectPage",
+          "target": "RiskDecisionsObjectPage"
+        }
+      ],
+      "targets": {
+        "RiskDecisionsList": {
+          "type": "Component",
+          "id": "RiskDecisionsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "RiskDecisions",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "RiskDecisions": {
+                  "detail": {
+                    "route": "RiskDecisionsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "RiskDecisionsObjectPage": {
+          "type": "Component",
+          "id": "RiskDecisionsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "entitySet": "RiskDecisions"
+            }
+          }
+        }
+      }
     },
     "contentDensities": {
       "compact": true,
@@ -79,6 +125,7 @@
     }
   },
   "sap.cloud": {
+    "public": true,
     "service": "freshchain"
   }
 }

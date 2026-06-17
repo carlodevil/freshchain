@@ -1,24 +1,42 @@
 const cds = require('@sap/cds');
+const { SELECT } = cds.ql;
 
-module.exports = cds.service.impl(function () {
-  this.on('getDashboardSummary', async req => {
-    const { Stores, Zones, Alerts, SensorReadings, IngestionErrors } = cds.entities('freshchain');
-    const tx = this.tx(req);
-    const [stores, zones, alerts, readings, errors] = await Promise.all([
-      tx.run(SELECT.from(Stores)),
-      tx.run(SELECT.from(Zones)),
-      tx.run(SELECT.from(Alerts).where({ status: { in: ['OPEN', 'ACKNOWLEDGED', 'ASSIGNED', 'REOPENED'] } })),
-      tx.run(SELECT.from(SensorReadings).orderBy('measuredAt desc').limit(1)),
-      tx.run(SELECT.from(IngestionErrors).where({ status: 'OPEN' }))
-    ]);
+const ACTIVE_ALERT_STATUSES = ['OPEN', 'ACKNOWLEDGED', 'ASSIGNED', 'REOPENED'];
+const HIGH_ALERT_SEVERITIES = ['HIGH', 'CRITICAL'];
 
-    return JSON.stringify({
-      stores: stores.length,
-      zones: zones.length,
-      activeAlerts: alerts.length,
-      highAlerts: alerts.filter(a => ['HIGH', 'CRITICAL'].includes(a.severity)).length,
-      openIngestionErrors: errors.length,
-      lastReadingAt: readings[0] && readings[0].measuredAt || null
-    });
-  });
+module.exports = cds.service.impl(function AnalyticsService() {
+  this.on('getDashboardSummary', getDashboardSummary);
 });
+
+async function getDashboardSummary(req) {
+  const { Stores, Zones, Alerts, SensorReadings, IngestionErrors } = cds.entities('freshchain');
+  const tx = cds.tx(req);
+  const [stores, zones, activeAlerts, highAlerts, openIngestionErrors, latestReading] = await Promise.all([
+    countRows(tx, Stores),
+    countRows(tx, Zones),
+    countRows(tx, Alerts, { status: { in: ACTIVE_ALERT_STATUSES } }),
+    countRows(tx, Alerts, {
+      status: { in: ACTIVE_ALERT_STATUSES },
+      severity: { in: HIGH_ALERT_SEVERITIES }
+    }),
+    countRows(tx, IngestionErrors, { status: 'OPEN' }),
+    tx.run(SELECT.one.from(SensorReadings).columns('measuredAt').orderBy('measuredAt desc'))
+  ]);
+
+  return {
+    stores,
+    zones,
+    activeAlerts,
+    highAlerts,
+    openIngestionErrors,
+    lastReadingAt: latestReading && latestReading.measuredAt || null
+  };
+}
+
+async function countRows(tx, entity, where) {
+  const query = SELECT.one`count(*) as count`.from(entity);
+  if (where) query.where(where);
+
+  const row = await tx.run(query);
+  return Number(row && row.count || 0);
+}

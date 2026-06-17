@@ -22,4 +22,4 @@ spec:
     artifacts:
       - name: freshchain-model
         kind: model
-        path: /app/model
+        path: /tmp/freshchain-model

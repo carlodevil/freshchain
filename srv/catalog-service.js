@@ -1,86 +1,117 @@
 const cds = require('@sap/cds');
+const { SELECT } = cds.ql;
 const { evaluateZoneRisk } = require('./handlers/rules');
+const {
+  receiveStock,
+  moveStock,
+  applyMarkdown,
+  writeOffStock,
+  readZoneOccupancy
+} = require('./handlers/stock-ledger');
+const {
+  acknowledgeAlert,
+  addAlertNote,
+  assignAlert,
+  reopenAlert,
+  resolveAlert
+} = require('./handlers/alert-workflow');
 
-function userId(req) {
-  return (req.user && req.user.id) || 'anonymous';
+function authenticatedUserId(req) {
+  const id = req.user && req.user.id;
+  if (!id) req.reject(401, 'Authenticated user is required for stock and alert audit proof');
+  return id;
 }
 
-async function appendAction(tx, alert, data) {
-  const { AlertActions } = cds.entities('freshchain');
-  await tx.run(INSERT.into(AlertActions).entries({
-    alert_ID: alert.ID,
-    actionType: data.actionType,
-    assignedTo: data.assignedTo,
-    performedBy: data.performedBy,
-    comment: data.comment,
-    previousStatus: alert.status,
-    newStatus: data.newStatus,
-    outcome: data.outcome,
-    completedAt: new Date().toISOString()
-  }));
+async function readZoneOccupancyForRequest(req, entities) {
+  const rows = await readZoneOccupancy(cds.tx(req), entities);
+  rows.$count = rows.length;
+  return rows;
 }
 
-async function loadAlert(tx, req) {
-  const { Alerts } = cds.entities('freshchain');
-  const id = req.params && req.params[0] && req.params[0].ID;
-  const alert = await tx.run(SELECT.one.from(Alerts).where({ ID: id }));
-  if (!alert) req.reject(404, `Alert ${id} not found`);
-  return alert;
+async function triggerManualRiskEvaluationForRequest(req, entities) {
+  const { Alerts, Zones, Stores, SensorReadings } = entities;
+  const tx = cds.tx(req);
+  const zone = await tx.run(SELECT.one.from(Zones).where({ ID: req.data.zoneId }));
+  if (!zone) return req.reject(404, `Zone ${req.data.zoneId} not found`);
+
+  const store = await tx.run(SELECT.one.from(Stores).where({ ID: zone.store_ID }));
+  const reading = await tx.run(SELECT.one.from(SensorReadings).where({ zone_ID: zone.ID }).orderBy('measuredAt desc'));
+  if (!reading) return req.reject(409, `Zone ${zone.zoneCode} has no readings to evaluate`);
+
+  const result = await evaluateZoneRisk(tx, { store, zone, reading });
+  if (!result.alertId) return null;
+
+  return tx.run(SELECT.one.from(Alerts).where({ ID: result.alertId }));
 }
 
-module.exports = cds.service.impl(function () {
-  const { Alerts, Zones, Stores, SensorReadings } = cds.entities('freshchain');
+async function runStockAction(req, action, entities) {
+  try {
+    return await action(cds.tx(req), req.data, authenticatedUserId(req), entities);
+  } catch (error) {
+    return req.reject(error.statusCode || 500, error.message);
+  }
+}
 
-  this.before(['UPDATE', 'DELETE'], 'SensorReadings', req => req.reject(405, 'Sensor readings are append-only'));
+module.exports = cds.service.impl(function CatalogService() {
+  const persistenceEntities = cds.entities('freshchain');
+  const { Alerts, AlertActions, Zones, Stores, SensorReadings } = persistenceEntities;
+  const catalogEntities = { Alerts, Zones, Stores, SensorReadings };
+  const alertActions = { Alerts, AlertActions, auditMessage: 'Authenticated user is required for stock and alert audit proof' };
 
-  this.on('acknowledge', Alerts, async req => {
-    const tx = this.tx(req);
-    const alert = await loadAlert(tx, req);
-    await tx.run(UPDATE(Alerts).set({ status: 'ACKNOWLEDGED', acknowledgedAt: new Date().toISOString() }).where({ ID: alert.ID }));
-    await appendAction(tx, alert, { actionType: 'ACKNOWLEDGED', performedBy: userId(req), comment: req.data.comment, newStatus: 'ACKNOWLEDGED' });
-    return tx.run(SELECT.one.from(Alerts).where({ ID: alert.ID }));
-  });
+  function readZoneOccupancy(req) {
+    return readZoneOccupancyForRequest(req, persistenceEntities);
+  }
 
-  this.on('assign', Alerts, async req => {
-    const tx = this.tx(req);
-    const alert = await loadAlert(tx, req);
-    await tx.run(UPDATE(Alerts).set({ status: 'ASSIGNED', assignedTo: req.data.userId }).where({ ID: alert.ID }));
-    await appendAction(tx, alert, { actionType: 'ASSIGNED', assignedTo: req.data.userId, performedBy: userId(req), comment: req.data.comment, newStatus: 'ASSIGNED' });
-    return tx.run(SELECT.one.from(Alerts).where({ ID: alert.ID }));
-  });
+  function acknowledgeAlertAction(req) {
+    return acknowledgeAlert(req, alertActions);
+  }
 
-  this.on('resolve', Alerts, async req => {
-    const tx = this.tx(req);
-    const alert = await loadAlert(tx, req);
-    await tx.run(UPDATE(Alerts).set({ status: 'RESOLVED', resolvedAt: new Date().toISOString(), outcome: req.data.outcome }).where({ ID: alert.ID }));
-    await appendAction(tx, alert, { actionType: 'RESOLVED', performedBy: userId(req), comment: req.data.comment, outcome: req.data.outcome, newStatus: 'RESOLVED' });
-    return tx.run(SELECT.one.from(Alerts).where({ ID: alert.ID }));
-  });
+  function assignAlertAction(req) {
+    return assignAlert(req, alertActions);
+  }
 
-  this.on('reopen', Alerts, async req => {
-    const tx = this.tx(req);
-    const alert = await loadAlert(tx, req);
-    await tx.run(UPDATE(Alerts).set({ status: 'REOPENED', resolvedAt: null, outcome: null }).where({ ID: alert.ID }));
-    await appendAction(tx, alert, { actionType: 'REOPENED', performedBy: userId(req), comment: req.data.comment, newStatus: 'REOPENED' });
-    return tx.run(SELECT.one.from(Alerts).where({ ID: alert.ID }));
-  });
+  function resolveAlertAction(req) {
+    return resolveAlert(req, alertActions);
+  }
 
-  this.on('addNote', Alerts, async req => {
-    const tx = this.tx(req);
-    const alert = await loadAlert(tx, req);
-    await appendAction(tx, alert, { actionType: 'NOTE', performedBy: userId(req), comment: req.data.comment, newStatus: alert.status });
-    return tx.run(SELECT.one.from(Alerts).where({ ID: alert.ID }));
-  });
+  function reopenAlertAction(req) {
+    return reopenAlert(req, alertActions);
+  }
 
-  this.on('triggerManualRiskEvaluation', async req => {
-    const tx = this.tx(req);
-    const zone = await tx.run(SELECT.one.from(Zones).where({ ID: req.data.zoneId }));
-    if (!zone) req.reject(404, `Zone ${req.data.zoneId} not found`);
-    const store = await tx.run(SELECT.one.from(Stores).where({ ID: zone.store_ID }));
-    const reading = await tx.run(SELECT.one.from(SensorReadings).where({ zone_ID: zone.ID }).orderBy('measuredAt desc'));
-    if (!reading) req.reject(409, `Zone ${zone.zoneCode} has no readings to evaluate`);
-    const result = await evaluateZoneRisk(tx, { store, zone, reading });
-    if (!result.alertId) return null;
-    return tx.run(SELECT.one.from(Alerts).where({ ID: result.alertId }));
-  });
+  function addAlertNoteAction(req) {
+    return addAlertNote(req, alertActions);
+  }
+
+  this.on('acknowledge', 'Alerts', acknowledgeAlertAction);
+  this.on('assign', 'Alerts', assignAlertAction);
+  this.on('resolve', 'Alerts', resolveAlertAction);
+  this.on('reopen', 'Alerts', reopenAlertAction);
+  this.on('addNote', 'Alerts', addAlertNoteAction);
+
+  function triggerManualRiskEvaluation(req) {
+    return triggerManualRiskEvaluationForRequest(req, catalogEntities);
+  }
+
+  function receiveStockAction(req) {
+    return runStockAction(req, receiveStock, persistenceEntities);
+  }
+
+  function moveStockAction(req) {
+    return runStockAction(req, moveStock, persistenceEntities);
+  }
+
+  function applyMarkdownAction(req) {
+    return runStockAction(req, applyMarkdown, persistenceEntities);
+  }
+
+  function writeOffStockAction(req) {
+    return runStockAction(req, writeOffStock, persistenceEntities);
+  }
+
+  this.on('READ', 'ZoneOccupancy', readZoneOccupancy);
+  this.on('triggerManualRiskEvaluation', triggerManualRiskEvaluation);
+  this.on('receiveStock', receiveStockAction);
+  this.on('moveStock', moveStockAction);
+  this.on('applyMarkdown', applyMarkdownAction);
+  this.on('writeOffStock', writeOffStockAction);
 });

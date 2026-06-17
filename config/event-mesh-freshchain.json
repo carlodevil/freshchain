@@ -1,0 +1,28 @@
+{
+  "emname": "freshchain-event-mesh",
+  "namespace": "freshchain/demo/live",
+  "version": "1.1.0",
+  "options": {
+    "management": true,
+    "messagingrest": true,
+    "messaging": true
+  },
+  "rules": {
+    "topicRules": {
+      "publishFilter": [
+        "freshchain/sensor/reading/created"
+      ],
+      "subscribeFilter": [
+        "freshchain/sensor/reading/created"
+      ]
+    },
+    "queueRules": {
+      "publishFilter": [
+        "freshchain/live-demo/*"
+      ],
+      "subscribeFilter": [
+        "freshchain/live-demo/*"
+      ]
+    }
+  }
+}

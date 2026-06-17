@@ -8,7 +8,7 @@ Audience: SAP BTP administrators, platform engineers, CAP developers, and soluti
 
 This guide explains exactly how to deploy the FreshChain production demo suite to an SAP BTP Cloud Foundry subaccount with SAP AI Core and SAP AI Launchpad. It covers the CAP backend, HANA persistence, managed HTML5 application deployment, Destination/XSUAA setup, AI Core runtime setup, Launchpad connection, validation, and troubleshooting.
 
-FreshChain uses SAP AI Core for training, deployment, and inference. SAP AI Launchpad is the operator console for AI Core scenarios, executions, deployments, logs, and metrics. The CAP application does not perform local inference and does not use a local model fallback. If SAP AI Core inference is unavailable, FreshChain records failed telemetry and returns an operational error.
+FreshChain uses SAP AI Core for training, deployment, and inference. SAP AI Launchpad is the operator console for AI Core scenarios, executions, deployments, logs, and metrics. The CAP application does not perform local inference or create synthetic predictions. If SAP AI Core inference is unavailable, FreshChain records failed telemetry and returns an operational error.
 
 ## 2. Solution Components
 
@@ -85,7 +85,7 @@ Expected result:
 
 - `npm run check` prints `UI artifact validation passed`.
 - `npm test` passes all tests.
-- Tests mock SAP AI Core and verify that inference fails closed when AI Core is unavailable.
+- Tests use a local SAP AI Core contract server and verify that inference fails closed when AI Core is unavailable.
 
 ## 5. Build and Push the AI Image
 
@@ -331,6 +331,13 @@ The apps are:
 | FreshChain Monitoring | Zone health and active alert monitoring |
 | FreshChain Master Data | Stores, zones, products, batches, sensors |
 | FreshChain Administration | Thresholds and ingestion errors |
+| FreshChain Stores | Draft-enabled store maintenance |
+| FreshChain Areas | Draft-enabled cold-chain area and threshold-band maintenance |
+| FreshChain Sensors | Draft-enabled sensor and area assignment maintenance |
+| FreshChain Products | Draft-enabled product shelf-life and cold-chain policy maintenance |
+| FreshChain Thresholds | Draft-enabled alert threshold maintenance |
+| FreshChain Impact Settings | Draft-enabled rescue economics and SLA maintenance |
+| FreshChain Ingestion Errors | Draft-enabled ingestion error status and payload maintenance |
 
 In Work Zone, add the HTML5 applications to the desired site/catalog/group according to your tenant's content management process. Use the app titles and semantic objects defined in each app manifest.
 
@@ -379,7 +386,7 @@ If AI Core inference is unavailable:
 - `InferenceTelemetry` records status `FAILED`.
 - `aiCoreUnavailable` is true.
 - No synthetic prediction is generated.
-- No local model is used.
+- No embedded model server is used.
 
 ## 15. Troubleshooting
 
@@ -405,4 +412,4 @@ If AI Core inference is unavailable:
 - Training execution visible in Launchpad.
 - Deployment online in Launchpad.
 - FreshChain scoring creates predictions and recommendations from AI Core output.
-- Failed inference telemetry is visible and no local fallback is active.
+- Failed inference telemetry is visible and no synthetic prediction path is active.

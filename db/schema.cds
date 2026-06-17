@@ -9,6 +9,9 @@ type RiskLevel    : String enum { LOW; MEDIUM; HIGH; CRITICAL; }
 type RunStatus    : String enum { PLANNED; RUNNING; SUCCEEDED; FAILED; CANCELLED; DEGRADED; }
 type RecommendationStatus : String enum { NEW; ACCEPTED; REJECTED; APPLIED; EXPIRED; }
 type DatasetUploadStatus : String enum { UPLOADED; VALIDATED; IMPORTED; FAILED; }
+type StockLotStatus : String enum { AVAILABLE; RESERVED; MOVED; MARKDOWN; WASTE; SOLD; EXPIRED; }
+type StockMovementType : String enum { RECEIPT; ZONE_TRANSFER; SALE; WASTE_WRITE_OFF; MARKDOWN; ADJUSTMENT; RESCUE_MOVE; }
+type InterventionImpactStatus : String enum { POTENTIAL; ACTIONED; VERIFIED; CANCELLED; }
 
 entity Stores : cuid, managed {
   storeCode     : String(20) @assert.unique;
@@ -52,6 +55,8 @@ entity Products : cuid, managed {
   recommendedTempMinC : Decimal(5,2);
   recommendedTempMaxC : Decimal(5,2);
   standardShelfLifeDays: Integer;
+  unitCostZar         : Decimal(12,2);
+  sellingPriceZar     : Decimal(12,2);
 }
 
 entity Batches : cuid, managed {
@@ -71,6 +76,45 @@ entity InventoryPlacements : cuid, managed {
   quantity : Decimal(12,3);
   unit     : String(20);
   active   : Boolean default true;
+}
+
+entity StockLots : cuid, managed {
+  lotNumber       : String(80) @assert.unique;
+  product         : Association to Products;
+  batch           : Association to Batches;
+  store           : Association to Stores;
+  zone            : Association to Zones;
+  quantityOnHand  : Decimal(12,3);
+  unit            : String(20);
+  unitCostZar     : Decimal(12,2);
+  sellingPriceZar : Decimal(12,2);
+  bestBeforeDate  : Date;
+  status          : StockLotStatus default 'AVAILABLE';
+  sourceSystem    : String(40);
+  lastMovementAt  : Timestamp;
+  movements       : Composition of many StockMovements on movements.stockLot = $self;
+}
+
+entity StockMovements : cuid, managed {
+  stockLot          : Association to StockLots;
+  product           : Association to Products;
+  batch             : Association to Batches;
+  store             : Association to Stores;
+  fromZone          : Association to Zones;
+  toZone            : Association to Zones;
+  movementType      : StockMovementType;
+  movementSign      : Integer;
+  quantity          : Decimal(12,3);
+  quantityBalanceAfter : Decimal(12,3);
+  unit              : String(20);
+  unitCostZar       : Decimal(12,2);
+  sellingPriceZar   : Decimal(12,2);
+  movementValueZar  : Decimal(15,2);
+  valueBasis        : String(40);
+  reasonCode        : String(80);
+  referenceDocument : String(120);
+  performedBy       : String(120);
+  businessTimestamp : Timestamp;
 }
 
 entity SensorReadings : cuid, managed {
@@ -191,6 +235,21 @@ entity ThresholdConfigs : cuid, managed {
   active                : Boolean default true;
 }
 
+entity ImpactSettings : cuid, managed {
+  settingCode                 : String(40) @assert.unique;
+  description                 : String(240);
+  currencyCode                : String(3) default 'ZAR';
+  criticalRiskSalvageRate     : Decimal(6,3);
+  highRiskSalvageRate         : Decimal(6,3);
+  mediumRiskSalvageRate       : Decimal(6,3);
+  lowRiskSalvageRate          : Decimal(6,3);
+  criticalResponseSlaMinutes  : Integer;
+  highResponseSlaMinutes      : Integer;
+  mediumResponseSlaMinutes    : Integer;
+  lowResponseSlaMinutes       : Integer;
+  active                      : Boolean default true;
+}
+
 entity MLDatasets : cuid, managed {
   datasetCode       : String(80) @assert.unique;
   description       : String(240);
@@ -301,6 +360,120 @@ entity ReplenishmentRecommendations : cuid, managed {
   expectedWasteAvoidedUnits : Decimal(12,3);
   expectedLostSalesAvoidedUnits : Decimal(12,3);
   status            : RecommendationStatus default 'NEW';
+}
+
+entity InterventionImpacts : cuid, managed {
+  scenarioID                   : String(80) @assert.unique;
+  prediction                   : Association to Predictions;
+  store                        : Association to Stores;
+  zone                         : Association to Zones;
+  product                      : Association to Products;
+  status                       : InterventionImpactStatus default 'POTENTIAL';
+  actionType                   : String(60);
+  lotCount                     : Integer;
+  affectedUnits                : Decimal(12,3);
+  stockValueAtRiskZar          : Decimal(15,2);
+  spoilageProbability          : Decimal(6,3);
+  confidence                   : Decimal(6,3);
+  expectedLossZar              : Decimal(15,2);
+  salvageRate                  : Decimal(6,3);
+  potentialProtectedRevenueZar : Decimal(15,2);
+  actualProtectedRevenueZar    : Decimal(15,2);
+  wasteAvoidedUnits            : Decimal(12,3);
+  lostSalesAvoidedUnits        : Decimal(12,3);
+  responseSlaMinutes           : Integer;
+  completedAt                  : Timestamp;
+  affectedLotNumbers           : String(1000);
+  movementReferences           : String(1000);
+  calculationSummary           : String(1000);
+}
+
+entity RescueScenarios : managed {
+  key ID                       : String(80);
+  status                       : String(40);
+  headline                     : String(180);
+  store                        : Association to Stores;
+  zone                         : Association to Zones;
+  product                      : Association to Products;
+  prediction                   : Association to Predictions;
+  affectedLotIDs               : String(1000);
+  affectedLotNumbers           : String(1000);
+  storeCode                    : String(20);
+  zoneCode                     : String(40);
+  productName                  : String(160);
+  affectedLotCount             : Integer;
+  affectedUnits                : Decimal(12,3);
+  riskLevel                    : RiskLevel;
+  riskScore                    : Decimal(6,3);
+  confidence                   : Decimal(6,3);
+  spoilageProbability          : Decimal(6,3);
+  shelfLifeHoursRemaining      : Decimal(8,2);
+  businessValueAtRiskZar       : Decimal(15,2);
+  potentialProtectedRevenueZar : Decimal(15,2);
+  protectedRevenueZar          : Decimal(15,2);
+  expectedLossZar              : Decimal(15,2);
+  salvageRate                  : Decimal(6,3);
+  wasteAvoidedUnits            : Decimal(12,3);
+  lostSalesAvoidedUnits        : Decimal(12,3);
+  responseSlaMinutes           : Integer;
+  processStatus                : String(40);
+  actionBriefStatus            : String(40);
+  nextBestAction               : String(500);
+  managerMessage               : String(500);
+  aiCoreProof                  : String(500);
+  bpaProof                     : String(500);
+  calculationSummary           : String(1000);
+  criticality                  : Integer;
+}
+
+entity ActionBriefs : managed {
+  key ID                    : String(80);
+  scenario                  : Association to RescueScenarios;
+  generationMode            : String(80);
+  modelProvider             : String(80);
+  modelName                 : String(120);
+  generationLatencyMs       : Integer;
+  promptVersion             : String(40);
+  unavailableReason         : String(240);
+  title                     : String(160);
+  actionSummary             : String(500);
+  managerNotification       : String(500);
+  auditSummary              : String(800);
+  customerSafeExplanation   : String(500);
+  criticality               : Integer;
+}
+
+entity ProcessTasks : managed {
+  key ID             : String(80);
+  scenario           : Association to RescueScenarios;
+  processName        : String(120);
+  assignee           : String(120);
+  status             : String(40);
+  priority           : String(20);
+  dueInMinutes       : Integer;
+  taskTitle          : String(180);
+  taskInstruction    : String(500);
+  outcome            : String(500);
+  completedAt        : Timestamp;
+  bpaMode            : String(80);
+  bpaInstanceId      : String(120);
+  bpaProcessId       : String(120);
+  bpaTriggerStatus   : String(80);
+  bpaStartedAt       : Timestamp;
+  bpaTaskUrl         : String(500);
+  unavailableReason  : String(240);
+  criticality        : Integer;
+}
+
+entity NotificationEvents : managed {
+  key ID       : String(80);
+  scenario     : Association to RescueScenarios;
+  channel      : String(40);
+  recipient    : String(120);
+  subject      : String(160);
+  message      : String(500);
+  status       : String(40);
+  criticality  : Integer;
 }
 
 entity RouteRecommendations : cuid, managed {

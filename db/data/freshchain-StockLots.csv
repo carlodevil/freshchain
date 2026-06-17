@@ -1,0 +1,4 @@
+ID;lotNumber;product_ID;batch_ID;store_ID;zone_ID;quantityOnHand;unit;unitCostZar;sellingPriceZar;bestBeforeDate;status;sourceSystem;lastMovementAt
+eeeeffff-1111-4111-8111-eeeeffff0001;LOT-MILK-20260520-A;cccccccc-cccc-cccc-cccc-ccccccccccc1;dddddddd-dddd-dddd-dddd-ddddddddddd1;11111111-1111-1111-1111-111111111111;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1;40;EA;17.40;29.99;2026-05-30;AVAILABLE;ERP;2026-05-21T09:00:00Z
+eeeeffff-1111-4111-8111-eeeeffff0002;LOT-YOG-20260518-A;cccccccc-cccc-cccc-cccc-ccccccccccc2;dddddddd-dddd-dddd-dddd-ddddddddddd2;11111111-1111-1111-1111-111111111111;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1;30;EA;18.20;32.99;2026-06-01;AVAILABLE;ERP;2026-05-19T09:00:00Z
+eeeeffff-1111-4111-8111-eeeeffff0003;LOT-BEEF-20260524-A;cccccccc-cccc-cccc-cccc-ccccccccccc3;dddddddd-dddd-dddd-dddd-ddddddddddd3;11111111-1111-1111-1111-111111111111;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2;20;EA;118.50;189.99;2026-05-29;AVAILABLE;ERP;2026-05-24T13:00:00Z

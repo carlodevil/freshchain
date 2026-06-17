@@ -3,8 +3,8 @@
   "sap.app": {
     "id": "freshchain.monitoring",
     "type": "application",
-    "title": "FreshChain Monitoring",
-    "description": "Zone status, active alerts, and rolling aggregates",
+    "title": "FreshChain Monitor",
+    "description": "Cold-zone health, active alerts, and rolling temperature aggregates",
     "applicationVersion": {
       "version": "0.1.0"
     },
@@ -13,7 +13,7 @@
         "FreshChainMonitoring-display": {
           "semanticObject": "FreshChainMonitoring",
           "action": "display",
-          "title": "FreshChain Monitoring",
+          "title": "FreshChain Monitor",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -23,7 +23,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "../../odata/v4/analytics/",
+        "uri": "odata/v4/analytics/",
         "type": "OData",
         "settings": {
           "odataVersion": "4.0"
@@ -43,10 +43,11 @@
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
+        "sap.fe.core": {},
+        "sap.fe.templates": {},
         "sap.f": {},
         "sap.m": {},
-        "sap.ui.core": {},
-        "sap.ui.layout": {}
+        "sap.ui.core": {}
       }
     },
     "models": {
@@ -65,12 +66,58 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "rootView": {
-      "viewName": "freshchain.monitoring.view.App",
-      "type": "XML",
-      "async": true,
-      "height": "100%",
-      "id": "app"
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ActiveAlertsList",
+          "target": "ActiveAlertsList"
+        },
+        {
+          "pattern": "ActiveAlerts({key}):?query:",
+          "name": "ActiveAlertsObjectPage",
+          "target": "ActiveAlertsObjectPage"
+        }
+      ],
+      "targets": {
+        "ActiveAlertsList": {
+          "type": "Component",
+          "id": "ActiveAlertsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "ActiveAlerts",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "ActiveAlerts": {
+                  "detail": {
+                    "route": "ActiveAlertsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ActiveAlertsObjectPage": {
+          "type": "Component",
+          "id": "ActiveAlertsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "entitySet": "ActiveAlerts"
+            }
+          }
+        }
+      }
     },
     "contentDensities": {
       "compact": true,
@@ -78,6 +125,7 @@
     }
   },
   "sap.cloud": {
+    "public": true,
     "service": "freshchain"
   }
 }

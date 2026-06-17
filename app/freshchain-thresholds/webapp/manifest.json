@@ -1,0 +1,131 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "freshchain.thresholds",
+    "type": "application",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "0.1.0"
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "FreshChainThresholds-display": {
+          "semanticObject": "FreshChainThresholds",
+          "action": "display",
+          "title": "{{appTitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "odata/v4/configuration/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.fe.core": {},
+        "sap.fe.templates": {},
+        "sap.f": {},
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "models": {
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true,
+          "synchronizationMode": "None"
+        }
+      },
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ThresholdConfigsList",
+          "target": "ThresholdConfigsList"
+        },
+        {
+          "pattern": "ThresholdConfigs({key}):?query:",
+          "name": "ThresholdConfigsObjectPage",
+          "target": "ThresholdConfigsObjectPage"
+        }
+      ],
+      "targets": {
+        "ThresholdConfigsList": {
+          "type": "Component",
+          "id": "ThresholdConfigsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "ThresholdConfigs",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "ThresholdConfigs": {
+                  "detail": {
+                    "route": "ThresholdConfigsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ThresholdConfigsObjectPage": {
+          "type": "Component",
+          "id": "ThresholdConfigsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "entitySet": "ThresholdConfigs"
+            }
+          }
+        }
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "freshchain"
+  }
+}

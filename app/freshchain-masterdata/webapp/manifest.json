@@ -3,8 +3,8 @@
   "sap.app": {
     "id": "freshchain.masterdata",
     "type": "application",
-    "title": "FreshChain Master Data",
-    "description": "Stores, zones, products, and batches",
+    "title": "FreshChain Stock Ledger",
+    "description": "Maintain cold-chain stock lots, batches, products, and zone positions",
     "applicationVersion": {
       "version": "0.1.0"
     },
@@ -13,7 +13,7 @@
         "FreshChainMasterData-display": {
           "semanticObject": "FreshChainMasterData",
           "action": "display",
-          "title": "FreshChain Master Data",
+          "title": "FreshChain Stock Ledger",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -23,7 +23,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "../../odata/v4/catalog/",
+        "uri": "odata/v4/catalog/",
         "type": "OData",
         "settings": {
           "odataVersion": "4.0"
@@ -43,10 +43,11 @@
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
+        "sap.fe.core": {},
+        "sap.fe.templates": {},
         "sap.f": {},
         "sap.m": {},
-        "sap.ui.core": {},
-        "sap.ui.layout": {}
+        "sap.ui.core": {}
       }
     },
     "models": {
@@ -65,12 +66,58 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "rootView": {
-      "viewName": "freshchain.masterdata.view.App",
-      "type": "XML",
-      "async": true,
-      "height": "100%",
-      "id": "app"
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "StockLotsList",
+          "target": "StockLotsList"
+        },
+        {
+          "pattern": "StockLots({key}):?query:",
+          "name": "StockLotsObjectPage",
+          "target": "StockLotsObjectPage"
+        }
+      ],
+      "targets": {
+        "StockLotsList": {
+          "type": "Component",
+          "id": "StockLotsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "StockLots",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "StockLots": {
+                  "detail": {
+                    "route": "StockLotsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "StockLotsObjectPage": {
+          "type": "Component",
+          "id": "StockLotsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "entitySet": "StockLots"
+            }
+          }
+        }
+      }
     },
     "contentDensities": {
       "compact": true,
@@ -78,6 +125,7 @@
     }
   },
   "sap.cloud": {
+    "public": true,
     "service": "freshchain"
   }
 }
