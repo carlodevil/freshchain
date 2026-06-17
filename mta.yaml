@@ -24,6 +24,7 @@ modules:
       disk-quota: 512M
     properties:
       NODE_ENV: production
+      HDB_NODEJS_THREADPOOL_SIZE: 8
     provides:
       - name: srv-api
         properties:

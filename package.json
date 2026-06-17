@@ -14,10 +14,7 @@
     "simulator": "node simulator/src/index.js",
     "build": "cds build --production",
     "build:mta": "mbt build",
-    "demo:pdf": "node scripts/capture-demo-journey.mjs",
-    "workzone:kpis": "node scripts/update-workzone-dynamic-kpis.mjs",
-    "workzone:maintenance": "node scripts/update-workzone-maintenance-group.mjs",
-    "check:bpa": "node scripts/check-bpa-readiness.mjs",
+    "predeploy:mta": "npm run build:mta",
     "deploy:mta": "cf deploy mta_archives/freshchain_0.1.0.mtar",
     "deploy:cf": "npm run deploy:mta"
   },
@@ -65,7 +62,12 @@
       },
       "[production]": {
         "db": {
-          "kind": "hana"
+          "kind": "hana",
+          "pool": {
+            "acquireTimeoutMillis": 10000,
+            "max": 10,
+            "min": 0
+          }
         },
         "auth": {
           "kind": "xsuaa"
