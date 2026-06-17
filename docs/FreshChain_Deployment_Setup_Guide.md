@@ -358,9 +358,9 @@ For the hackathon site, verify this specific Work Zone composition before a judg
 1. Open Content Manager and confirm `FreshChain Command` is a local group with `FreshChain Rescue Cockpit`, `FreshChain Rescue Command Center`, `FreshChain Act`, `FreshChain Predict`, `FreshChain Prove`, and `FreshChain Monitor` assigned.
 2. Open the HTML5 Apps item `FreshChain Rescue Command Center` and confirm its Visualization tab reads `Dynamic Tile` with service URL `DynamicTileKpis('protectedRevenue')`.
 3. Open the HTML5 Apps item `FreshChain Rescue Cockpit` after the latest HTML5 content upload and provider sync. Confirm the clean `FreshChainRescueCockpit-display` intent is available while the legacy `FreshChainSense-display` intent remains as a compatibility alias for old site tiles.
-4. Open the runtime site home page and confirm the first tile shows a live protected-revenue value from CAP/HANA. Do not treat a placeholder or stale value as proof.
+4. Open the runtime site home page and confirm the first row starts with live protected revenue, stock at risk, intervention completion proof, and waste avoided tiles from CAP/HANA. Do not treat a placeholder or stale value as proof.
 5. Confirm the command group shows `FreshChain Rescue Cockpit`, not `FreshChain Sense`. If a local copy is used for compatibility, inspect its CDM payload and make sure the visualization title and target inbound title both say `FreshChain Rescue Cockpit`.
-6. If additional KPI tiles for stock at risk, rescue proof, or waste avoided are needed in the first viewport, add them as Work Zone page content/cards only when each tile resolves against the live `DynamicTileKpis` service. Do not add static tiles that imply live proof.
+6. Keep action apps after the live KPI tiles: `FreshChain Rescue Cockpit`, `FreshChain Act`, `FreshChain Predict`, `FreshChain Prove`, and `FreshChain Monitor`. Do not add static tiles that imply live proof.
 
 Do not enable fallback business data for demos. The only mocked input should be the live-demo sensor reading payload; persistence, scoring, stock-ledger financials, workflow task proof, cards, tiles, and screenshots must come from the live deployed system. If HANA, AI Core, Work Zone, or another platform dependency fails, fix the live dependency and record the defect instead of masking it.
 
