@@ -164,6 +164,7 @@ sap.ui.define([
       const score = Number(risk.score || scenario.spoilageProbability || 0);
       const confidence = Number(risk.confidence || scenario.confidence || 0);
       const averageUnitRetail = affectedUnits ? stockAtRisk / affectedUnits : 0;
+      const estateImpact = this._estateImpact(protectedValue, affectedUnits);
       const taskStatus = task.status || "No task yet";
       const workflowState = this._stateForTask(taskStatus);
       const successfulIntegrations = integrations.filter(function (row) {
@@ -202,8 +203,45 @@ sap.ui.define([
         affectedStockLabel: lotCount ? lotCount + " lots / " + this._formatQuantity(affectedUnits) + " units / " + (scenario.productName || "mixed chilled stock") : "No rescue stock selected yet",
         calculationSummary: scenario.calculationSummary || "Financial proof appears once the rescue scenario is generated.",
         financialLines: this._financialLines(stockAtRisk, expectedLoss, protectedValue, affectedUnits, averageUnitRetail, score, confidence, salvageRate),
+        scaleMetrics: estateImpact.metrics,
+        scaleAssumption: estateImpact.assumption,
         steps: this._steps(status, reading, risk, scenario, task)
       });
+    },
+
+    _estateImpact: function (protectedValue, affectedUnits) {
+      const incidentValue = Number(protectedValue || 0);
+      const units = Number(affectedUnits || 0);
+      const storeCount = 20;
+      const weeklyIncidentsPerStore = 1;
+      const weeksPerYear = 52;
+      const weeklyEstateValue = incidentValue * storeCount * weeklyIncidentsPerStore;
+      const annualEstateValue = weeklyEstateValue * weeksPerYear;
+      const weeklyUnits = units * storeCount * weeklyIncidentsPerStore;
+
+      return {
+        assumption: "Scale scenario: one comparable cold-chain incident per store per week across a 20-store estate. The live proof remains the single ST001 movement; these figures show why the same control loop matters at chain scale.",
+        metrics: [
+          {
+            title: "This incident",
+            value: this._formatCurrency(incidentValue),
+            detail: "Persisted protected revenue after the store action is completed.",
+            state: "Success"
+          },
+          {
+            title: "Weekly estate exposure",
+            value: this._formatCurrency(weeklyEstateValue),
+            detail: storeCount + " stores x one comparable incident, based on the same stock-ledger calculation.",
+            state: "Warning"
+          },
+          {
+            title: "Annualized upside",
+            value: this._formatCurrency(annualEstateValue),
+            detail: "52-week extrapolation, equivalent to rescuing about " + this._formatQuantity(weeklyUnits * weeksPerYear) + " units.",
+            state: "Information"
+          }
+        ]
+      };
     },
 
     _financialLines: function (stockAtRisk, expectedLoss, protectedValue, affectedUnits, averageUnitRetail, score, confidence, salvageRate) {

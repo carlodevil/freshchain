@@ -36,10 +36,11 @@ In the captured live run:
 **Say:** Show the executive view. Call out protected revenue, risk by zone, active rescue, store task, and BTP readiness as the first business signals.  
 **Concrete outcome:** This is the command-center view for an operations manager deciding where to intervene.
 
-### 1:20-1:45 — Open FreshChain Sense / Rescue Cockpit and press Start
-![Open FreshChain Sense / Live Demo and press Start](screenshots/03-live-demo-running.png)
+### 1:20-1:45 — Open FreshChain Rescue Cockpit and press Start
+![Open FreshChain Rescue Cockpit and press Start](screenshots/03-live-demo-running.png)
 
-**Button/path:** Open FreshChain Sense / Rescue Cockpit and press Start.  
+**Button/path:** Open FreshChain Rescue Cockpit from the Work Zone tile currently labelled FreshChain Sense, then press Start incident.
+
 **Say:** Press Start. Explain that the demo run is now accepting live events and actions.  
 **Concrete outcome:** This begins a controlled cold-chain incident run.
 
@@ -61,10 +62,13 @@ In the captured live run:
 ![Press Run Rescue, then open Rescue](screenshots/06-live-demo-rescue.png)
 
 **Button/path:** Press Build rescue, then read the KPI row and financial calculation panel.  
-**Say:** Press Build rescue. Explain the business outcome: 3 affected lots, 90.000 units, R 5 899 stock at risk, R 4 532 expected loss, and R 4 532 protected value if the store action is completed.  
+**Say:** Press Build rescue. Explain the business outcome: 3 affected lots, 90.000 units, R 5 899 stock at risk, R 4 532 expected loss, and R 4 532 protected value if the store action is completed. Then show the estate-impact panel: the persisted proof is one incident, while the scale scenario shows why the same control loop matters across stores.
+
 **Concrete outcome:** The app converts AI risk into financial impact and a recommended rescue action.
 
 **Financial proof to explain:** Stock at risk comes from active stock lots in the affected zone priced from the stock ledger. Expected loss is `stock at risk x AI risk score x AI confidence`. Protected value is the lower of expected loss and the salvage cap, where the salvage cap is `stock at risk x maintained salvage rate`. In this run: `R 5 899 x 100% x 77.6% = R 4 532`; the 82% salvage cap is higher, so protected value is R 4 532.
+
+**Scale proof to explain:** The estate-impact panel is an explicit extrapolation, not hidden persisted data. It uses the proven single-incident value and shows a 20-store scenario with one comparable incident per store per week, so judges can see both audited proof and board-level potential.
 
 ### 3:45-4:25 — Open Task and press Complete Task
 ![Open Task and press Complete Task](screenshots/08-live-demo-completed.png)
@@ -121,9 +125,9 @@ In the captured live run:
 
 | Area | Observed issue | Impact on prize demo | Workaround for panel | Recommended fix |
 |---|---|---|---|---|
-| Work Zone first impression | Work Zone launches and shows FreshChain apps, but tiles are mostly static/blank and do not show dynamic KPI numbers. | The first screen proves BTP deployment, but does not itself communicate business value. | Spend less than a minute on Work Zone, then open Control Tower and Live Demo for value proof. | Configure Work Zone dynamic tiles/cards for protected revenue, stock at risk, rescue proof, and waste avoided. |
-| Work Zone app naming | The live demo shell still appears as `FreshChain Sense` in Work Zone even though the deployed app title is now `FreshChain Rescue Cockpit`. | Judges may not immediately know this is the main live-action demo app. | Verbally introduce it as “FreshChain Sense, our Rescue Cockpit.” | Sync/update Work Zone content so the tile and shell title read `FreshChain Rescue Cockpit`. |
-| Business value scale | The captured run proves the flow with about R 4,532 protected value. This is concrete, but modest for an executive hackathon story. | Judges may see the impact as operationally valid but not transformative enough. | Frame it as one store-zone incident and extrapolate across stores, days, and categories. | Add an executive annualized/same-day rollup KPI for multi-store avoided waste and margin protection. |
+| Work Zone first impression | Work Zone launches and shows FreshChain apps, but tiles are mostly static/blank and do not show dynamic KPI numbers. | The first screen proves BTP deployment, but does not itself communicate business value. | Spend less than a minute on Work Zone, then open Control Tower and Rescue Cockpit for value proof. | Configure Work Zone dynamic tiles/cards for protected revenue, stock at risk, rescue proof, and waste avoided. |
+| Work Zone app naming | Content Manager now has a local `FreshChain Rescue Cockpit` app assigned to the `FreshChain Command` group and `Everyone` role, but the runtime home page still paints the old `FreshChain Sense` label until the site page/cache is refreshed. The tile launches the correct local app ID. | Judges may not immediately know this is the main live-action demo app. | Verbally introduce the stale-labelled tile as the Rescue Cockpit; the opened app title and runtime content are correct. | Republish/refresh the Work Zone site page so the home tile metadata catches up with the local content item. |
+| Business value scale | The cockpit now shows a single-incident proof plus a clearly-labelled 20-store extrapolation. The extrapolation is directional, not persisted chain-wide evidence. | Judges can understand upside, but may ask what is real versus assumed. | Say: “The R4,532 is persisted proof; the annualized panel is the business-case scenario using the same calculation.” | Later, populate estate-level KPIs from multi-store historical incidents instead of a demo assumption. |
 | Operations/Prove depth | Operations, Prove, Monitoring, and Ingestion Errors show useful Fiori surfaces, but the strongest story is still in the Live Demo cockpit. | Secondary apps can feel like supporting lists rather than dramatic action screens. | Keep these screens short and only use them as traceability proof. | Add clearer default filters, object titles, and value-focused columns for panel-ready screenshots. |
 | Headless Work Zone screenshots | Work Zone loads the Rescue Cockpit iframe and app resources, but headless screenshots intermittently paint only the iframe header while the DOM and app text are present. | Presentation screenshots of detailed cockpit steps are captured from a temporary shell instead of Work Zone chrome. | For the panel, open the cockpit manually from Work Zone; the app itself loads and actions are live. | Validate final manual browser run and, if needed, use native browser screenshots instead of headless capture. |
 

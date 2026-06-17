@@ -96,6 +96,20 @@
               </CustomListItem>
             </List>
           </Panel>
+          <Panel headerText="Single incident to estate impact" class="fcWidePanel sapUiSmallMarginEnd sapUiSmallMarginBottom">
+            <VBox>
+              <FlexBox wrap="Wrap" alignItems="Stretch" class="fcScaleGrid" items="{view>/display/scaleMetrics}">
+                <items>
+                  <VBox class="fcScaleMetric">
+                    <Label text="{view>title}"/>
+                    <ObjectNumber number="{view>value}" emphasized="true" state="{view>state}" class="fcKpiNumber sapUiTinyMarginTop"/>
+                    <Text text="{view>detail}" class="sapUiTinyMarginTop"/>
+                  </VBox>
+                </items>
+              </FlexBox>
+              <MessageStrip text="{view>/display/scaleAssumption}" type="Information" showIcon="true" class="sapUiSmallMarginTop"/>
+            </VBox>
+          </Panel>
           <Panel headerText="How the financial impact is calculated" class="fcWidePanel sapUiSmallMarginBottom">
             <VBox>
               <Text text="The app prices only active stock lots in the affected zone, then applies the AI risk score, AI confidence, and the maintained salvage rate from impact settings."/>

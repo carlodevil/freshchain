@@ -30,6 +30,21 @@
   width: 100%;
 }
 
+.fcRescueCockpit .fcScaleGrid {
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.fcRescueCockpit .fcScaleMetric {
+  box-sizing: border-box;
+  flex: 1 1 12rem;
+  min-width: 12rem;
+  padding: 0.75rem;
+  border: 1px solid var(--sapList_BorderColor);
+  border-radius: 0.375rem;
+  background: var(--sapList_Background);
+}
+
 .fcRescueCockpit .fcKpiPanel {
   box-sizing: border-box;
   flex: 1 1 15rem;
