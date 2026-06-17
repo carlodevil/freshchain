@@ -83,6 +83,7 @@ for (const file of manifests) {
     if (!dataSources.liveDemoService || dataSources.liveDemoService.uri !== 'odata/v4/live-demo/') {
       throw new Error(`${file} must stay wired to LiveDemoService`);
     }
+    validateRescueCockpitInbounds(file, manifest);
   } else {
     const targets = manifest['sap.ui5'] && manifest['sap.ui5'].routing && manifest['sap.ui5'].routing.targets;
     const targetNames = Object.values(targets || {}).map(target => target.name);
@@ -202,6 +203,26 @@ function validateOvpCard(file, card) {
   }
   if (!settings.annotationPath) {
     throw new Error(`${file} OVP card ${settings.title} must provide annotationPath`);
+  }
+}
+
+function validateRescueCockpitInbounds(file, manifest) {
+  const inbounds = manifest['sap.app']?.crossNavigation?.inbounds || {};
+  const rescueInbound = inbounds['FreshChainRescueCockpit-display'];
+  if (!rescueInbound || rescueInbound.semanticObject !== 'FreshChainRescueCockpit') {
+    throw new Error(`${file} must expose a non-stale FreshChainRescueCockpit intent for Work Zone`);
+  }
+  const legacyInbound = inbounds['FreshChainSense-display'];
+  if (!legacyInbound || legacyInbound.semanticObject !== 'FreshChainSense') {
+    throw new Error(`${file} must retain the legacy FreshChainSense intent until existing Work Zone tiles are replaced`);
+  }
+  for (const [inboundId, inbound] of Object.entries({ rescueInbound, legacyInbound })) {
+    if (inbound.title !== 'FreshChain Rescue Cockpit') {
+      throw new Error(`${file} ${inboundId} must render as FreshChain Rescue Cockpit`);
+    }
+    if (inbound.indicatorDataSource?.path !== "DynamicTileKpis('stockAtRisk')") {
+      throw new Error(`${file} ${inboundId} must use the live stock-at-risk dynamic tile`);
+    }
   }
 }
 

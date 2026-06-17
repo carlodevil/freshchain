@@ -325,12 +325,13 @@ The apps are:
 
 | App | Purpose |
 | --- | --- |
-| FreshChain Overview | Executive and operational summary |
-| FreshChain Intelligence | AI Core training, deployment, scoring, quality, telemetry |
-| FreshChain Operations | Alert workflow |
-| FreshChain Monitoring | Zone health and active alert monitoring |
-| FreshChain Master Data | Stores, zones, products, batches, sensors |
-| FreshChain Administration | Thresholds and ingestion errors |
+| FreshChain Rescue Command Center | Executive rescue value, risk, active incident, store task, and BTP readiness cockpit |
+| FreshChain Rescue Cockpit | Demo-first app for live reading trigger, AI Core scoring, rescue calculation, task proof, and protected revenue |
+| FreshChain Act | Frontline spoilage intervention work queue |
+| FreshChain Predict | SAP AI Core risk decisions, confidence, deployment, and scoring evidence |
+| FreshChain Prove | Audited intervention impact, protected revenue, movement proof, and calculation summary |
+| FreshChain Monitor | Cold-zone health, active alerts, and rolling temperature aggregates |
+| FreshChain Stock Ledger | Stores, zones, products, batches, sensors, and stock positions |
 | FreshChain Stores | Draft-enabled store maintenance |
 | FreshChain Areas | Draft-enabled cold-chain area and threshold-band maintenance |
 | FreshChain Sensors | Draft-enabled sensor and area assignment maintenance |
@@ -356,13 +357,43 @@ For the hackathon site, verify this specific Work Zone composition before a judg
 
 1. Open Content Manager and confirm `FreshChain Command` is a local group with `FreshChain Rescue Cockpit`, `FreshChain Rescue Command Center`, `FreshChain Act`, `FreshChain Predict`, `FreshChain Prove`, and `FreshChain Monitor` assigned.
 2. Open the HTML5 Apps item `FreshChain Rescue Command Center` and confirm its Visualization tab reads `Dynamic Tile` with service URL `DynamicTileKpis('protectedRevenue')`.
-3. Open the runtime site home page and confirm the first tile shows a live protected-revenue value from CAP/HANA. Do not treat a placeholder or stale value as proof.
-4. If the home page still shows the old `FreshChain Sense` label, republish or refresh the site page assignment in Work Zone. Content Manager can show the corrected local `FreshChain Rescue Cockpit` item while the runtime classic home page still paints stale metadata.
-5. If additional KPI tiles for stock at risk, rescue proof, or waste avoided are needed in the first viewport, add them as Work Zone page content/cards only when each tile resolves against the live `DynamicTileKpis` service. Do not add static tiles that imply live proof.
+3. Open the HTML5 Apps item `FreshChain Rescue Cockpit` after the latest HTML5 content upload and provider sync. Confirm the clean `FreshChainRescueCockpit-display` intent is available while the legacy `FreshChainSense-display` intent remains as a compatibility alias for old site tiles.
+4. Open the runtime site home page and confirm the first tile shows a live protected-revenue value from CAP/HANA. Do not treat a placeholder or stale value as proof.
+5. If the home page still shows the old `FreshChain Sense` label, inspect the local `FreshChain Rescue Cockpit` content item. A local copy can retain stale visualization metadata even when the HTML5 app manifest title is corrected; replace the stale visualization with the clean `FreshChainRescueCockpit-display` item or republish the site page after provider sync.
+6. If additional KPI tiles for stock at risk, rescue proof, or waste avoided are needed in the first viewport, add them as Work Zone page content/cards only when each tile resolves against the live `DynamicTileKpis` service. Do not add static tiles that imply live proof.
 
 Do not enable fallback business data for demos. The only mocked input should be the live-demo sensor reading payload; persistence, scoring, stock-ledger financials, workflow task proof, cards, tiles, and screenshots must come from the live deployed system. If HANA, AI Core, Work Zone, or another platform dependency fails, fix the live dependency and record the defect instead of masking it.
 
-For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push -n freshchain-html5-repo-host ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, push the complete FreshChain app set or use the MTA HTML5 content module while excluding database deployment.
+For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, rebuild and push the complete FreshChain `dist` app set or use the MTA HTML5 content module while excluding database deployment. Do not push raw `webapp` folders for the shared app host; the `dist` build includes generated `Component-preload.js` files expected by the managed UI5 runtime.
+
+HTML5-only redeploy check:
+
+```sh
+for app in app/freshchain-*; do
+  [ -d "$app/webapp" ] || continue
+  name=$(basename "$app" | sed 's/freshchain-//; s/-//g')
+  rm -rf "$app/dist"
+  mkdir -p "$app/dist"
+  cp -R "$app/webapp/." "$app/dist/"
+  node scripts/zip-html5-app.js "$app/dist" "freshchain${name}.zip"
+done
+
+cf html5-push -r \
+  app/freshchain-controltower/dist \
+  app/freshchain-operations/dist \
+  app/freshchain-overview/dist \
+  app/freshchain-intelligence/dist \
+  app/freshchain-stores/dist \
+  app/freshchain-areas/dist \
+  app/freshchain-sensors/dist \
+  app/freshchain-products/dist \
+  app/freshchain-thresholds/dist \
+  app/freshchain-impactsettings/dist \
+  app/freshchain-ingestionerrors/dist \
+  app/freshchain-admin/dist \
+  app/freshchain-masterdata/dist \
+  app/freshchain-monitoring/dist
+```
 
 Post-upload check:
 
