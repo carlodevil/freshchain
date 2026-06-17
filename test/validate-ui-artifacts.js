@@ -10,7 +10,6 @@ const manifests = [
   'app/freshchain-operations/webapp/manifest.json',
   'app/freshchain-overview/webapp/manifest.json',
   'app/freshchain-intelligence/webapp/manifest.json',
-  'app/freshchain-configure/webapp/manifest.json',
   'app/freshchain-stores/webapp/manifest.json',
   'app/freshchain-areas/webapp/manifest.json',
   'app/freshchain-sensors/webapp/manifest.json',
@@ -28,7 +27,6 @@ const xsApps = [
   'app/freshchain-operations/webapp/xs-app.json',
   'app/freshchain-overview/webapp/xs-app.json',
   'app/freshchain-intelligence/webapp/xs-app.json',
-  'app/freshchain-configure/webapp/xs-app.json',
   'app/freshchain-stores/webapp/xs-app.json',
   'app/freshchain-areas/webapp/xs-app.json',
   'app/freshchain-sensors/webapp/xs-app.json',
@@ -76,6 +74,15 @@ for (const file of manifests) {
     for (const card of cards) {
       validateOvpCard(file, card);
     }
+  } else if (file.includes('freshchain-overview')) {
+    const rootView = manifest['sap.ui5'] && manifest['sap.ui5'].rootView;
+    if (!rootView || rootView.viewName !== 'freshchain.overview.view.App') {
+      throw new Error(`${file} must use the live demo cockpit root view`);
+    }
+    const dataSources = manifest['sap.app']?.dataSources || {};
+    if (!dataSources.liveDemoService || dataSources.liveDemoService.uri !== 'odata/v4/live-demo/') {
+      throw new Error(`${file} must stay wired to LiveDemoService`);
+    }
   } else {
     const targets = manifest['sap.ui5'] && manifest['sap.ui5'].routing && manifest['sap.ui5'].routing.targets;
     const targetNames = Object.values(targets || {}).map(target => target.name);
@@ -86,7 +93,7 @@ for (const file of manifests) {
   if (JSON.stringify(manifest).includes('sap.fe.core.fpm')) {
     throw new Error(`${file} must not use Flexible Programming Model pages`);
   }
-  if (manifest['sap.ui5'].rootView) {
+  if (manifest['sap.ui5'].rootView && !file.includes('freshchain-overview')) {
     throw new Error(`${file} must not use a freestyle rootView`);
   }
 
@@ -123,7 +130,6 @@ for (const file of [
   'app/freshchain-controltower/webapp/Component.js',
   'app/freshchain-overview/webapp/Component.js',
   'app/freshchain-intelligence/webapp/Component.js',
-  'app/freshchain-configure/webapp/Component.js',
   'app/freshchain-stores/webapp/Component.js',
   'app/freshchain-areas/webapp/Component.js',
   'app/freshchain-sensors/webapp/Component.js',
@@ -229,10 +235,10 @@ function validateControlTowerCards(file, cardMap) {
   const expectedCardIds = [
     'businessImpact',
     'riskByZone',
-    'scenarioMix',
-    'interventionStatus',
+    'demoImpact',
     'rescueScenario',
-    'processTasks'
+    'processTasks',
+    'integrations'
   ];
   if (cardIds.join(',') !== expectedCardIds.join(',')) {
     throw new Error(`${file} must keep the judge cockpit focused on ${expectedCardIds.join(', ')}`);
@@ -241,13 +247,12 @@ function validateControlTowerCards(file, cardMap) {
   const cards = Object.values(cardMap);
   const analyticalCards = cards.filter(card => card.template === 'sap.ovp.cards.v4.charts.analytical');
   const tableCards = cards.filter(card => card.template === 'sap.ovp.cards.v4.table');
-  if (analyticalCards.length < 3 || tableCards.length > 3) {
-    throw new Error(`${file} must be chart-first: at least 3 analytical cards and at most 3 table cards`);
+  if (analyticalCards.length < 1 || tableCards.length < 4) {
+    throw new Error(`${file} must keep one analytical risk card and table cards for proof-oriented demo evidence`);
   }
 
   const hiddenFromCockpit = new Set([
     'ActionBriefs',
-    'DemoImpactMetrics',
     'InterventionImpacts',
     'LiveSensorEvents',
     'NotificationEvents',

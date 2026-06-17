@@ -34,7 +34,6 @@ modules:
       - name: freshchain-auth
       - name: freshchain-ai-core
       - name: freshchain-event-mesh
-      - name: freshchain-job-scheduler
     build-parameters:
       builder: custom
       commands:
@@ -75,10 +74,6 @@ modules:
         - name: freshchain-intelligence
           artifacts:
             - freshchainintelligence.zip
-          target-path: resources/
-        - name: freshchain-configure
-          artifacts:
-            - freshchainconfigure.zip
           target-path: resources/
         - name: freshchain-stores
           artifacts:
@@ -203,19 +198,6 @@ modules:
         - mkdir -p dist
         - cp -R webapp/. dist/
         - node ../../scripts/zip-html5-app.js dist freshchainintelligence.zip
-      supported-platforms: []
-
-  - name: freshchain-configure
-    type: html5
-    path: app/freshchain-configure
-    build-parameters:
-      build-result: dist
-      builder: custom
-      commands:
-        - rm -rf dist
-        - mkdir -p dist
-        - cp -R webapp/. dist/
-        - node ../../scripts/zip-html5-app.js dist freshchainconfigure.zip
       supported-platforms: []
 
   - name: freshchain-stores
@@ -418,8 +400,3 @@ resources:
               - freshchain/live-demo/*
             subscribeFilter:
               - freshchain/live-demo/*
-
-  - name: freshchain-job-scheduler
-    type: org.cloudfoundry.existing-service
-    parameters:
-      service-name: job-scheduler

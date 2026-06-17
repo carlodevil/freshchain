@@ -11,7 +11,6 @@ cds.on('bootstrap', app => {
     ['overview', 'freshchain-overview'],
     ['operations', 'freshchain-operations'],
     ['intelligence', 'freshchain-intelligence'],
-    ['configure', 'freshchain-configure'],
     ['stores', 'freshchain-stores'],
     ['areas', 'freshchain-areas'],
     ['sensors', 'freshchain-sensors'],
@@ -26,7 +25,7 @@ cds.on('bootstrap', app => {
 
   app.use((req, _res, next) => {
     const match = req.url.match(/^\/freshchain-[^/]+\/webapp\/odata\/(.*)$/)
-      || req.url.match(/^\/(?:controltower|overview|operations|intelligence|configure|stores|areas|sensors|products|thresholds|impactsettings|ingestionerrors|masterdata|monitoring|admin)\/odata\/(.*)$/);
+      || req.url.match(/^\/(?:controltower|overview|operations|intelligence|stores|areas|sensors|products|thresholds|impactsettings|ingestionerrors|masterdata|monitoring|admin)\/odata\/(.*)$/);
     if (match) {
       req.url = `/odata/${match[1]}`;
     }

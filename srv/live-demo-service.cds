@@ -155,7 +155,7 @@ service LiveDemoService @(path: '/odata/v4/live-demo') {
     nextBestAction,
     managerMessage,
     aiCoreProof,
-    bpaProof,
+    bpaProof as workflowProof,
     calculationSummary,
     criticality
   };
@@ -205,12 +205,12 @@ service LiveDemoService @(path: '/odata/v4/live-demo') {
     taskInstruction,
     outcome,
     completedAt,
-    bpaMode,
-    bpaInstanceId,
-    bpaProcessId,
-    bpaTriggerStatus,
-    bpaStartedAt,
-    bpaTaskUrl,
+    bpaMode as workflowMode,
+    bpaInstanceId as workflowInstanceId,
+    bpaProcessId as workflowProcessId,
+    bpaTriggerStatus as workflowStatus,
+    bpaStartedAt as workflowStartedAt,
+    bpaTaskUrl as workflowUrl,
     unavailableReason,
     criticality
   };

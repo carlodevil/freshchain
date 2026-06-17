@@ -178,30 +178,16 @@
           "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenPredict"
         }
       },
-      "scenarioMix": {
+      "demoImpact": {
         "model": "mainService",
-        "template": "sap.ovp.cards.v4.charts.analytical",
+        "template": "sap.ovp.cards.v4.table",
         "settings": {
-          "title": "{{cardScenarioTitle}}",
-          "subTitle": "{{cardScenarioSubTitle}}",
-          "entitySet": "ScenarioMix",
-          "selectionAnnotationPath": "com.sap.vocabularies.UI.v1.SelectionVariant#ScenarioShare",
-          "chartAnnotationPath": "com.sap.vocabularies.UI.v1.Chart#ScenarioShare",
-          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ScenarioShare",
+          "title": "{{cardDemoImpactTitle}}",
+          "subTitle": "{{cardDemoImpactSubTitle}}",
+          "entitySet": "DemoImpactMetrics",
+          "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#ControlTowerDemoImpact",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ControlTowerDemoImpact",
           "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenSense"
-        }
-      },
-      "interventionStatus": {
-        "model": "mainService",
-        "template": "sap.ovp.cards.v4.charts.analytical",
-        "settings": {
-          "title": "{{cardInterventionTitle}}",
-          "subTitle": "{{cardInterventionSubTitle}}",
-          "entitySet": "InterventionStatusMix",
-          "selectionAnnotationPath": "com.sap.vocabularies.UI.v1.SelectionVariant#StatusMix",
-          "chartAnnotationPath": "com.sap.vocabularies.UI.v1.Chart#StatusMix",
-          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#StatusMix",
-          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenAct"
         }
       },
       "rescueScenario": {
@@ -226,6 +212,18 @@
           "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#ControlTowerTasks",
           "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ControlTowerTasks",
           "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenAct"
+        }
+      },
+      "integrations": {
+        "model": "mainService",
+        "template": "sap.ovp.cards.v4.table",
+        "settings": {
+          "title": "{{cardIntegrationsTitle}}",
+          "subTitle": "{{cardIntegrationsSubTitle}}",
+          "entitySet": "IntegrationStatuses",
+          "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#ControlTowerIntegrations",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ControlTowerIntegrations",
+          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenSense"
         }
       }
     }

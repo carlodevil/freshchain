@@ -35,7 +35,7 @@ const runState = {
   lastTickAt: null,
   lastMessageId: null,
   lastScenario: null,
-  message: 'Live demo is stopped. Start it before allowing scheduler ticks.'
+  message: 'Live demo is stopped. Start it before creating demo events.'
 };
 
 let messagingPromise;
@@ -61,12 +61,6 @@ function firstText(...values) {
 
 function envText(name, defaultValue = null) {
   return firstText(process.env[name], defaultValue);
-}
-
-function envFlag(name) {
-  if (process.env[name] === 'true') return true;
-  if (process.env[name] === 'false') return false;
-  return null;
 }
 
 function serviceBindingsFromEnv() {
@@ -404,68 +398,9 @@ function statusCriticality(status) {
         : 0;
 }
 
-function bpaCriticality(scenario) {
+function workflowCriticality(scenario) {
   if (Number.isInteger(scenario.criticality)) return scenario.criticality;
   return riskCriticality(scenario.riskLevel);
-}
-
-function bpaRecipient() {
-  return envText('FRESHCHAIN_BPA_USER');
-}
-
-function bpaProcessDefinitionId() {
-  return envText('FRESHCHAIN_BPA_PROCESS_ID');
-}
-
-function bpaTriggerUrl() {
-  return envText('FRESHCHAIN_BPA_TRIGGER_URL');
-}
-
-function bpaBearerToken() {
-  return envText('FRESHCHAIN_BPA_BEARER_TOKEN');
-}
-
-function bpaOAuthConfig() {
-  const tokenUrl = envText('FRESHCHAIN_BPA_TOKEN_URL');
-  const clientId = envText('FRESHCHAIN_BPA_CLIENT_ID');
-  const clientSecret = envText('FRESHCHAIN_BPA_CLIENT_SECRET');
-  return tokenUrl && clientId && clientSecret
-    ? { tokenUrl, clientId, clientSecret }
-    : null;
-}
-
-function hasProcessServiceBinding() {
-  const service = cds.env.requires && cds.env.requires.ProcessService;
-  return Boolean(
-    service && (
-      service.binding ||
-      (service.credentials && service.credentials.uaa && service.credentials.endpoints && service.credentials.endpoints.api)
-    )
-  );
-}
-
-function useCapProcessService() {
-  const configured = envFlag('FRESHCHAIN_BPA_USE_CAP_PROCESS');
-  if (configured !== null) return configured;
-  const profiles = new Set(cds.env.profiles || []);
-  return (profiles.has('production') || profiles.has('hybrid')) && hasProcessServiceBinding();
-}
-
-function bpaProcessContext(scenario, task) {
-  return {
-    criticality: bpaCriticality(scenario),
-    message: scenario.managerMessage,
-    user: task.assignee,
-    scenarioID: scenario.ID,
-    storeCode: scenario.storeCode,
-    zoneCode: scenario.zoneCode,
-    productName: scenario.productName,
-    riskLevel: scenario.riskLevel,
-    protectedRevenueZar: scenario.protectedRevenueZar,
-    dueInMinutes: task.dueInMinutes,
-    managerMessage: scenario.managerMessage,
-    callbackTaskID: task.ID
-  };
 }
 
 async function readLiveSensorEvents(tx, options = {}) {
@@ -763,12 +698,12 @@ async function buildScenario(tx, result, inputProductName) {
     wasteAvoidedUnits: financials.wasteAvoidedUnits,
     lostSalesAvoidedUnits: financials.lostSalesAvoidedUnits,
     responseSlaMinutes: financials.responseSlaMinutes,
-    processStatus: 'WAITING_FOR_PROCESS',
+    processStatus: 'WAITING_FOR_WORKFLOW',
     actionBriefStatus: 'WAITING_FOR_BRIEF',
     nextBestAction: prediction.recommendedAction || 'Move affected stock to a safe zone, inspect compressor status, and markdown items at risk.',
     managerMessage: 'Action brief not generated yet.',
     aiCoreProof: `SAP AI Core scored the latest reading through deployment ${prediction.deploymentId}.`,
-    bpaProof: 'SAP Build Process Automation task not triggered yet.',
+    bpaProof: 'FreshChain in-app rescue workflow not started yet.',
     calculationSummary: financials.calculationSummary,
     criticality: riskCriticality(prediction.riskLevel)
   };
@@ -1051,78 +986,6 @@ async function buildActionBrief(tx, scenario) {
   return stored;
 }
 
-async function callBpaTrigger(scenario, task) {
-  const definitionId = bpaProcessDefinitionId();
-  if (!definitionId) throw new Error('FRESHCHAIN_BPA_PROCESS_ID is not configured');
-  const context = bpaProcessContext(scenario, task);
-  if (useCapProcessService()) {
-    try {
-      const processService = await cds.connect.to('ProcessService');
-      await processService.emit('start', {
-        definitionId,
-        context
-      });
-      return {
-        bpaInstanceId: null,
-        bpaProcessId: definitionId,
-        bpaTaskUrl: null,
-        bpaStartedAt: isoNow(),
-        bpaTriggerStatus: 'START_REQUESTED',
-        bpaMode: 'SAP Build Process Automation via CAP ProcessService'
-      };
-    } catch (error) {
-      throw new Error(`CAP ProcessService start failed: ${redact(error.message)}`);
-    }
-  }
-
-  const url = bpaTriggerUrl();
-  if (!url) throw new Error('FRESHCHAIN_BPA_TRIGGER_URL is not configured');
-  const startedAt = isoNow();
-  const headers = {
-    'content-type': 'application/json',
-    accept: 'application/json'
-  };
-  const bearerToken = bpaBearerToken();
-  const oauth = bpaOAuthConfig();
-  if (bearerToken) {
-    headers.authorization = `Bearer ${bearerToken}`;
-  } else if (oauth) {
-    const tokenResponse = await fetch(oauth.tokenUrl, {
-      method: 'POST',
-      headers: {
-        authorization: `Basic ${Buffer.from(`${oauth.clientId}:${oauth.clientSecret}`).toString('base64')}`,
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({ grant_type: 'client_credentials' })
-    });
-    const tokenPayload = parseJson(await tokenResponse.text(), {});
-    if (!tokenResponse.ok || !tokenPayload.access_token) {
-      throw new Error(`SAP Build Process Automation token request failed with HTTP ${tokenResponse.status}`);
-    }
-    headers.authorization = `Bearer ${tokenPayload.access_token}`;
-  }
-  const response = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      definitionId,
-      ...context,
-      context
-    })
-  });
-  const text = await response.text();
-  const payload = parseJson(text, { raw: text });
-  if (!response.ok) {
-    throw new Error(`SAP Build Process Automation trigger failed with HTTP ${response.status}: ${redact(text)}`);
-  }
-  return {
-    bpaInstanceId: firstText(payload.id, payload.instanceId, payload.processInstanceId, payload.workflowInstanceId),
-    bpaProcessId: firstText(payload.definitionId, payload.processDefinitionId, definitionId),
-    bpaTaskUrl: firstText(payload.taskUrl, payload.url, payload.instanceUrl),
-    bpaStartedAt: startedAt
-  };
-}
-
 async function writeProcessTask(tx, task) {
   const { ProcessTasks } = cds.entities('freshchain');
   const existing = await tx.run(SELECT.one.from(ProcessTasks).where({ ID: task.ID }));
@@ -1158,66 +1021,42 @@ async function writeNotificationEvent(tx, notification) {
 }
 
 async function buildProcessTask(tx, scenario) {
-  const assignee = bpaRecipient();
-  const processId = bpaProcessDefinitionId();
   const task = {
     ID: `TASK-${scenario.ID}`,
     scenario_ID: scenario.ID,
-    processName: 'FreshChain Spoilage Intervention',
-    assignee,
-    status: assignee && processId ? 'REQUESTING' : 'UNAVAILABLE',
+    processName: 'FreshChain Store Rescue Workflow',
+    assignee: 'store.manager',
+    status: 'READY',
     priority: scenario.riskLevel === 'CRITICAL' ? 'VERY_HIGH' : 'HIGH',
     dueInMinutes: scenario.responseSlaMinutes,
     taskTitle: `Rescue ${scenario.productName} in ${scenario.zoneCode}`,
     taskInstruction: scenario.nextBestAction,
     outcome: null,
     completedAt: null,
-    bpaMode: assignee && processId ? 'SAP Build Process Automation' : 'SAP Build Process Automation unavailable',
-    bpaInstanceId: null,
-    bpaProcessId: processId,
-    bpaTriggerStatus: assignee && processId ? 'REQUESTING' : 'UNAVAILABLE',
-    bpaStartedAt: null,
+    bpaMode: 'FreshChain in-app workflow',
+    bpaInstanceId: `WF-${scenario.ID}`,
+    bpaProcessId: 'freshchain-store-rescue',
+    bpaTriggerStatus: 'READY',
+    bpaStartedAt: isoNow(),
     bpaTaskUrl: null,
-    unavailableReason: assignee && processId ? null : 'FRESHCHAIN_BPA_USER and FRESHCHAIN_BPA_PROCESS_ID are required for live BPA proof',
-    criticality: scenario.criticality
+    unavailableReason: null,
+    criticality: workflowCriticality(scenario)
   };
-  if (assignee && processId && (bpaTriggerUrl() || useCapProcessService())) {
-    try {
-      const bpa = await withTimeout(callBpaTrigger(scenario, task), 8000, 'SAP Build Process Automation trigger timed out');
-      Object.assign(task, {
-        status: 'READY',
-        bpaMode: bpa.bpaMode || 'SAP Build Process Automation',
-        bpaTriggerStatus: bpa.bpaTriggerStatus || 'STARTED',
-        unavailableReason: null,
-        ...bpa
-      });
-    } catch (error) {
-      cds.log('live-demo').warn(`BPA trigger failed: ${error.message}`);
-      Object.assign(task, {
-        status: 'FAILED',
-        bpaMode: 'SAP Build Process Automation trigger failed',
-        bpaTriggerStatus: 'FAILED',
-        unavailableReason: redact(error.message)
-      });
-    }
-  }
   const storedTask = await writeProcessTask(tx, task);
   const notification = {
     ID: `NOTIF-${scenario.ID}`,
     scenario_ID: scenario.ID,
-    channel: 'Work Zone Notification',
+    channel: 'FreshChain Demo Notification',
     recipient: storedTask.assignee,
     subject: task.taskTitle,
     message: scenario.managerMessage,
-    status: storedTask.status === 'READY' ? 'SENT' : 'NOT_SENT',
-    criticality: scenario.criticality
+    status: 'SENT',
+    criticality: workflowCriticality(scenario)
   };
   await writeNotificationEvent(tx, notification);
   await updateRescueScenario(tx, scenario.ID, {
-    processStatus: storedTask.status === 'READY' ? 'TASK_READY' : storedTask.status,
-    bpaProof: storedTask.status === 'READY'
-      ? `${storedTask.bpaMode} task ${storedTask.ID} was started for ${storedTask.assignee}.`
-      : storedTask.unavailableReason,
+    processStatus: 'TASK_READY',
+    bpaProof: `${storedTask.bpaMode} task ${storedTask.ID} is ready for ${storedTask.assignee}.`,
   });
   return storedTask;
 }
@@ -1408,9 +1247,6 @@ function hasAiCoreBinding() {
 function readIntegrationStatuses() {
   const aiCoreConfigured = hasAiCoreBinding();
   const genAiConfigured = hasGenAiConfiguration();
-  const bpaUser = bpaRecipient();
-  const bpaProcessId = bpaProcessDefinitionId();
-  const bpaConfigured = Boolean((bpaTriggerUrl() || useCapProcessService()) && bpaUser && bpaProcessId);
   const eventMeshConfigured = hasMessagingBinding();
   const managedBaseUrlConfigured = Boolean(managedBaseUrl());
   return [
@@ -1429,11 +1265,11 @@ function readIntegrationStatuses() {
       'Environment and AI Core binding'
     ),
     integrationStatus(
-      'bpa',
-      'SAP Build Process Automation',
-      bpaConfigured,
-      bpaConfigured ? `Process ${bpaProcessId} is configured for ${bpaUser}` : 'BPA trigger/process/user configuration is required',
-      'ProcessService binding or trigger environment'
+      'workflow',
+      'FreshChain in-app workflow',
+      true,
+      'Store rescue workflow is handled by CAP actions and persisted task proof',
+      'LiveDemoService'
     ),
     integrationStatus(
       'eventMesh',
@@ -1591,7 +1427,7 @@ async function startLiveDemo() {
     status: 'RUNNING',
     startedAt: runState.startedAt || isoNow(),
     stoppedAt: null,
-    message: 'Live demo is running. Job Scheduler can now create one reading per minute.'
+    message: 'Live demo is running. Use Create Reading or Run Rescue Scenario to trigger live events.'
   });
   return stateRow();
 }
@@ -1600,7 +1436,7 @@ function stopLiveDemo() {
   Object.assign(runState, {
     status: 'STOPPED',
     stoppedAt: isoNow(),
-    message: 'Live demo is stopped. Scheduler ticks will be ignored unless forced manually.'
+    message: 'Live demo is stopped. Demo actions can still run when forced by the app.'
   });
   return stateRow();
 }
@@ -1680,7 +1516,7 @@ async function runRescueScenario(req) {
     lastTickAt: isoNow(),
     lastMessageId: payload.messageId,
     lastScenario: payload.scenarioCode,
-    message: 'One rescue scenario was created and scored. Scheduler remains stopped to control AI Core usage.'
+    message: 'One rescue scenario was created and scored. Demo run stopped to control AI Core usage.'
   });
   return storedScenario;
 }

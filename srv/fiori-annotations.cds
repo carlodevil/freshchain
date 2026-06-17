@@ -1202,6 +1202,25 @@ annotate live.DemoImpactMetrics with @(
     Title: 'AI Inferences',
     Value: inferenceCount
   },
+  UI.LineItem #ControlTowerDemoImpact: [
+    { Value: latestRisk, Label: 'Latest Risk', Criticality: latestRiskCriticality },
+    { Value: inferenceCount, Label: 'AI Inferences' },
+    { Value: successfulInferences, Label: 'Successful' },
+    { Value: averageLatencyMs, Label: 'Avg Latency ms', Criticality: latencyCriticality },
+    { Value: expectedWasteAvoidedUnits, Label: 'Waste Avoided' }
+  ],
+  UI.PresentationVariant #ControlTowerDemoImpact: {
+    Visualizations: ['@UI.LineItem#ControlTowerDemoImpact']
+  },
+  UI.Identification #OpenSense: [
+    {
+      $Type: 'UI.DataFieldForIntentBasedNavigation',
+      Label: 'Open Demo Cockpit',
+      SemanticObject: 'FreshChainSense',
+      Action: 'display',
+      RequiresContext: false
+    }
+  ],
   UI.Facets: [
     { $Type: 'UI.ReferenceFacet', Label: 'Business Impact', Target: '@UI.FieldGroup#Impact' },
     { $Type: 'UI.ReferenceFacet', Label: 'BTP Proof', Target: '@UI.FieldGroup#Platform' }
@@ -1233,6 +1252,37 @@ annotate live.DemoImpactMetrics with {
   criticalAlertsCriticality @Aggregation.default: #MAX;
   expectedWasteAvoidedUnits @Aggregation.default: #SUM;
   latencyCriticality        @Aggregation.default: #MAX;
+};
+
+annotate live.IntegrationStatuses with @(
+  UI.HeaderInfo: {
+    TypeName: 'Integration Status',
+    TypeNamePlural: 'Integration Statuses',
+    Title: { Value: serviceName },
+    Description: { Value: status }
+  },
+  UI.LineItem #ControlTowerIntegrations: [
+    { Value: serviceName, Label: 'Service', Criticality: criticality },
+    { Value: status, Label: 'Status', Criticality: criticality },
+    { Value: proofSource, Label: 'Proof Source' },
+    { Value: message, Label: 'Message' }
+  ],
+  UI.PresentationVariant #ControlTowerIntegrations: {
+    Visualizations: ['@UI.LineItem#ControlTowerIntegrations']
+  },
+  UI.Identification #OpenSense: [
+    {
+      $Type: 'UI.DataFieldForIntentBasedNavigation',
+      Label: 'Open Demo Cockpit',
+      SemanticObject: 'FreshChainSense',
+      Action: 'display',
+      RequiresContext: false
+    }
+  ]
+);
+
+annotate live.IntegrationStatuses with {
+  criticality @Aggregation.default: #MAX;
 };
 
 annotate live.BusinessImpactSummary with @(
@@ -1351,8 +1401,8 @@ annotate live.RescueScenarios with @(
   UI.Identification #OpenAct: [
     {
       $Type: 'UI.DataFieldForIntentBasedNavigation',
-      Label: 'Open Store Action',
-      SemanticObject: 'FreshChainAct',
+      Label: 'Open Demo Cockpit',
+      SemanticObject: 'FreshChainSense',
       Action: 'display',
       RequiresContext: false
     }
@@ -1396,7 +1446,7 @@ annotate live.RescueScenarios with @(
   UI.FieldGroup #Proof: {
     Data: [
       { Value: aiCoreProof, Label: 'AI Core Proof' },
-      { Value: bpaProof, Label: 'BPA Proof' },
+      { Value: workflowProof, Label: 'Workflow Proof' },
       { Value: calculationSummary, Label: 'KPI Calculation' }
     ]
   }
@@ -1431,7 +1481,7 @@ annotate live.CurrentRescueScenarios with @(
     {
       $Type: 'UI.DataFieldForIntentBasedNavigation',
       Label: 'Open Store Action',
-      SemanticObject: 'FreshChainAct',
+      SemanticObject: 'FreshChainSense',
       Action: 'display',
       RequiresContext: false
     }
@@ -1475,7 +1525,7 @@ annotate live.ActionBriefs with {
 annotate live.ProcessTasks with @(
   UI.HeaderInfo: {
     TypeName: 'Store Workflow Task',
-    TypeNamePlural: 'BPA Store Workflow Tasks',
+    TypeNamePlural: 'Store Rescue Workflow Tasks',
     Title: { Value: taskTitle },
     Description: { Value: status }
   },
@@ -1486,9 +1536,9 @@ annotate live.ProcessTasks with @(
     { Value: priority, Label: 'Priority' },
     { Value: assignee, Label: 'Assignee' },
     { Value: dueInMinutes, Label: 'Due In min' },
-    { Value: bpaMode, Label: 'Workflow Mode' },
-    { Value: bpaTriggerStatus, Label: 'BPA Status' },
-    { Value: bpaInstanceId, Label: 'BPA Instance' },
+    { Value: workflowMode, Label: 'Workflow Mode' },
+    { Value: workflowStatus, Label: 'Workflow Status' },
+    { Value: workflowInstanceId, Label: 'Workflow Instance' },
     { Value: outcome, Label: 'Outcome' }
   ],
   UI.LineItem #ControlTowerTasks: [
@@ -1508,8 +1558,8 @@ annotate live.ProcessTasks with @(
   UI.Identification #OpenAct: [
     {
       $Type: 'UI.DataFieldForIntentBasedNavigation',
-      Label: 'Open Store Tasks',
-      SemanticObject: 'FreshChainAct',
+      Label: 'Open Demo Cockpit',
+      SemanticObject: 'FreshChainSense',
       Action: 'display',
       RequiresContext: false
     }
@@ -1546,7 +1596,7 @@ annotate live.CurrentProcessTasks with @(
     {
       $Type: 'UI.DataFieldForIntentBasedNavigation',
       Label: 'Open Store Tasks',
-      SemanticObject: 'FreshChainAct',
+      SemanticObject: 'FreshChainSense',
       Action: 'display',
       RequiresContext: false
     }
@@ -1978,8 +2028,8 @@ annotate live.InterventionStatusMix with @(
   UI.Identification #OpenAct: [
     {
       $Type: 'UI.DataFieldForIntentBasedNavigation',
-      Label: 'Open Intervention Queue',
-      SemanticObject: 'FreshChainAct',
+      Label: 'Open Demo Cockpit',
+      SemanticObject: 'FreshChainSense',
       Action: 'display',
       RequiresContext: false
     }

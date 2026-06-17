@@ -3,8 +3,8 @@
   "sap.app": {
     "id": "freshchain.overview",
     "type": "application",
-    "title": "FreshChain Sense",
-    "description": "Live sensor events entering the FreshChain spoilage-prevention flow",
+    "title": "FreshChain Live Demo",
+    "description": "Panel-ready demo cockpit for live readings, AI Core scoring, rescue workflow, and proof",
     "applicationVersion": {
       "version": "0.1.0"
     },
@@ -13,7 +13,7 @@
         "FreshChainSense-display": {
           "semanticObject": "FreshChainSense",
           "action": "display",
-          "title": "FreshChain Sense",
+          "title": "FreshChain Live Demo",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -43,11 +43,10 @@
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
-        "sap.fe.core": {},
-        "sap.fe.templates": {},
         "sap.f": {},
         "sap.m": {},
-        "sap.ui.core": {}
+        "sap.ui.core": {},
+        "sap.ui.layout": {}
       }
     },
     "models": {
@@ -66,58 +65,11 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "routing": {
-      "routes": [
-        {
-          "pattern": ":?query:",
-          "name": "LiveSensorEventsList",
-          "target": "LiveSensorEventsList"
-        },
-        {
-          "pattern": "LiveSensorEvents({key}):?query:",
-          "name": "LiveSensorEventsObjectPage",
-          "target": "LiveSensorEventsObjectPage"
-        }
-      ],
-      "targets": {
-        "LiveSensorEventsList": {
-          "type": "Component",
-          "id": "LiveSensorEventsList",
-          "name": "sap.fe.templates.ListReport",
-          "options": {
-            "settings": {
-              "entitySet": "LiveSensorEvents",
-              "variantManagement": "None",
-              "initialLoad": "Enabled",
-              "navigation": {
-                "LiveSensorEvents": {
-                  "detail": {
-                    "route": "LiveSensorEventsObjectPage"
-                  }
-                }
-              },
-              "controlConfiguration": {
-                "@com.sap.vocabularies.UI.v1.LineItem": {
-                  "tableSettings": {
-                    "type": "ResponsiveTable",
-                    "selectionMode": "Single"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "LiveSensorEventsObjectPage": {
-          "type": "Component",
-          "id": "LiveSensorEventsObjectPage",
-          "name": "sap.fe.templates.ObjectPage",
-          "options": {
-            "settings": {
-              "entitySet": "LiveSensorEvents"
-            }
-          }
-        }
-      }
+    "rootView": {
+      "viewName": "freshchain.overview.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
     },
     "contentDensities": {
       "compact": true,

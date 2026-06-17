@@ -206,17 +206,6 @@ test.before(async () => {
         }));
         return;
       }
-      if (req.method === 'POST' && req.url === '/bpa') {
-        const payload = JSON.parse(body || '{}');
-        assert.ok(payload.context.scenarioID);
-        assert.ok(payload.context.managerMessage);
-        res.end(JSON.stringify({
-          id: 'bpa-instance-test-1',
-          definitionId: 'freshchain-spoilage-intervention',
-          taskUrl: 'https://afsug-hackathon.eu20.build.cloud.sap/task/test'
-        }));
-        return;
-      }
       res.statusCode = 404;
       res.end(JSON.stringify({ error: 'not found' }));
     });
@@ -529,7 +518,8 @@ test('invalid oxygen reading is quarantined in IngestionErrors', async () => {
   const replay = await POST('/odata/v4/admin/replayIngestionError', {
     errorId: errors.data.value[0].ID
   });
-  assert.equal(replay.data.status, 'NOT_REPLAYED');
+  assert.equal(replay.data.status, 'REPLAY_FAILED');
+  assert.match(replay.data.reason, /oxygenPct/);
   assert.equal(replay.data.messageId, payload.messageId);
   assert.equal(Object.prototype.hasOwnProperty.call(replay.data, 'value'), false);
 });
@@ -922,7 +912,7 @@ test('rescue scenario creates executive impact, action brief, workflow task, and
   assert.ok(Number(scenario.data.responseSlaMinutes) > 0);
   assert.ok(scenario.data.calculationSummary.includes('Expected loss'));
   assert.equal(scenario.data.actionBriefStatus, 'GENAI_UNAVAILABLE');
-  assert.equal(scenario.data.processStatus, 'UNAVAILABLE');
+  assert.equal(scenario.data.processStatus, 'TASK_READY');
 
   const briefRows = await GET(`/odata/v4/live-demo/ActionBriefs?$filter=scenarioID eq '${scenario.data.ID}'`);
   assert.ok(briefRows.data.value.length >= 1);
@@ -933,44 +923,40 @@ test('rescue scenario creates executive impact, action brief, workflow task, and
 
   const taskRows = await GET(`/odata/v4/live-demo/ProcessTasks?$filter=scenarioID eq '${scenario.data.ID}'`);
   assert.ok(taskRows.data.value.length >= 1);
-  assert.equal(taskRows.data.value[0].status, 'UNAVAILABLE');
-  assert.equal(taskRows.data.value[0].bpaMode, 'SAP Build Process Automation unavailable');
-  assert.equal(taskRows.data.value[0].bpaTriggerStatus, 'UNAVAILABLE');
-  assert.ok(taskRows.data.value[0].unavailableReason);
+  assert.equal(taskRows.data.value[0].status, 'READY');
+  assert.equal(taskRows.data.value[0].workflowMode, 'FreshChain in-app workflow');
+  assert.equal(taskRows.data.value[0].workflowStatus, 'READY');
+  assert.equal(taskRows.data.value[0].workflowProcessId, 'freshchain-store-rescue');
+  assert.equal(taskRows.data.value[0].unavailableReason, null);
 
   const notificationRows = await GET(`/odata/v4/live-demo/NotificationEvents?$filter=scenarioID eq '${scenario.data.ID}'`);
   assert.ok(notificationRows.data.value.length >= 1);
-  assert.equal(notificationRows.data.value[0].status, 'NOT_SENT');
+  assert.equal(notificationRows.data.value[0].status, 'SENT');
 
-  await assert.rejects(() => POST('/odata/v4/live-demo/completeInterventionTask', {
+  const completed = await POST('/odata/v4/live-demo/completeInterventionTask', {
     taskID: taskRows.data.value[0].ID,
     outcome: 'Stock moved to safe refrigeration and markdown started.'
-  }), /409/);
+  });
+  assert.equal(completed.data.status, 'COMPLETED');
 
   const impact = await GET('/odata/v4/live-demo/BusinessImpactSummary');
-  assert.equal(impact.data.value[0].incidentStatus, 'POTENTIAL');
-  assert.equal(Number(impact.data.value[0].processCompletionPct), 25);
-  assert.equal(Number(impact.data.value[0].actualProtectedRevenueZar), 0);
+  assert.equal(impact.data.value[0].incidentStatus, 'ACTIONED');
+  assert.equal(Number(impact.data.value[0].processCompletionPct), 100);
+  assert.ok(Number(impact.data.value[0].actualProtectedRevenueZar) > 0);
   assert.ok(Number(impact.data.value[0].responseSlaMinutes) > 0);
 
   const impactRows = await GET(`/odata/v4/live-demo/InterventionImpacts?$filter=scenarioID eq '${scenario.data.ID}'`);
   assert.equal(impactRows.data.value.length, 1);
-  assert.equal(impactRows.data.value[0].status, 'POTENTIAL');
+  assert.equal(impactRows.data.value[0].status, 'ACTIONED');
   assert.ok(Number(impactRows.data.value[0].responseSlaMinutes) > 0);
-  assert.equal(impactRows.data.value[0].movementReferences, null);
+  assert.ok(impactRows.data.value[0].movementReferences);
 });
 
-test('rescue scenario can use live-style GenAI and BPA trigger integrations', async () => {
+test('rescue scenario can use live-style GenAI and in-app workflow integrations', async () => {
   const previousGenAiEndpoint = process.env.FRESHCHAIN_GENAI_ENDPOINT;
   const previousGenAiModel = process.env.FRESHCHAIN_GENAI_MODEL;
-  const previousBpaUrl = process.env.FRESHCHAIN_BPA_TRIGGER_URL;
-  const previousBpaProcessId = process.env.FRESHCHAIN_BPA_PROCESS_ID;
-  const previousBpaUser = process.env.FRESHCHAIN_BPA_USER;
   process.env.FRESHCHAIN_GENAI_ENDPOINT = `${aiCoreBaseUrl}/genai`;
   process.env.FRESHCHAIN_GENAI_MODEL = 'gpt-5';
-  process.env.FRESHCHAIN_BPA_TRIGGER_URL = `${aiCoreBaseUrl}/bpa`;
-  process.env.FRESHCHAIN_BPA_PROCESS_ID = 'freshchain-spoilage-intervention';
-  process.env.FRESHCHAIN_BPA_USER = 'manager@example.test';
   try {
     await prepareAiCoreDeployment('rescue-integrations');
 
@@ -987,22 +973,16 @@ test('rescue scenario can use live-style GenAI and BPA trigger integrations', as
     assert.equal(briefRows.data.value[0].unavailableReason, null);
 
     const taskRows = await GET(`/odata/v4/live-demo/ProcessTasks?$filter=scenarioID eq '${scenario.data.ID}'`);
-    assert.equal(taskRows.data.value[0].bpaMode, 'SAP Build Process Automation');
-    assert.equal(taskRows.data.value[0].bpaTriggerStatus, 'STARTED');
-    assert.equal(taskRows.data.value[0].bpaInstanceId, 'bpa-instance-test-1');
-    assert.equal(taskRows.data.value[0].bpaProcessId, 'freshchain-spoilage-intervention');
-    assert.ok(taskRows.data.value[0].bpaTaskUrl.includes('build.cloud.sap'));
+    assert.equal(taskRows.data.value[0].workflowMode, 'FreshChain in-app workflow');
+    assert.equal(taskRows.data.value[0].workflowStatus, 'READY');
+    assert.equal(taskRows.data.value[0].workflowInstanceId, `WF-${scenario.data.ID}`);
+    assert.equal(taskRows.data.value[0].workflowProcessId, 'freshchain-store-rescue');
+    assert.equal(taskRows.data.value[0].workflowUrl, null);
   } finally {
     if (previousGenAiEndpoint === undefined) delete process.env.FRESHCHAIN_GENAI_ENDPOINT;
     else process.env.FRESHCHAIN_GENAI_ENDPOINT = previousGenAiEndpoint;
     if (previousGenAiModel === undefined) delete process.env.FRESHCHAIN_GENAI_MODEL;
     else process.env.FRESHCHAIN_GENAI_MODEL = previousGenAiModel;
-    if (previousBpaUrl === undefined) delete process.env.FRESHCHAIN_BPA_TRIGGER_URL;
-    else process.env.FRESHCHAIN_BPA_TRIGGER_URL = previousBpaUrl;
-    if (previousBpaProcessId === undefined) delete process.env.FRESHCHAIN_BPA_PROCESS_ID;
-    else process.env.FRESHCHAIN_BPA_PROCESS_ID = previousBpaProcessId;
-    if (previousBpaUser === undefined) delete process.env.FRESHCHAIN_BPA_USER;
-    else process.env.FRESHCHAIN_BPA_USER = previousBpaUser;
   }
 });
 

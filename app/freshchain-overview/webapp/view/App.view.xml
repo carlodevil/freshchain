@@ -1,0 +1,153 @@
+<mvc:View
+  controllerName="freshchain.overview.controller.App"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  displayBlock="true">
+  <f:DynamicPage busy="{view>/busy}" fitContent="false">
+    <f:title>
+      <f:DynamicPageTitle>
+        <f:heading>
+          <Title text="FreshChain Live Demo" level="H1"/>
+        </f:heading>
+        <f:expandedContent>
+          <ObjectStatus text="{view>/status/message}" state="Information"/>
+        </f:expandedContent>
+        <f:actions>
+          <Button text="Start" icon="sap-icon://media-play" press=".onStart" type="Emphasized"/>
+          <Button text="Create Reading" icon="sap-icon://sensor" press=".onCreateReading"/>
+          <Button text="Score" icon="sap-icon://activity-individual" press=".onScore"/>
+          <Button text="Run Rescue" icon="sap-icon://shipping-status" press=".onRunRescue" type="Accept"/>
+          <Button text="Complete Task" icon="sap-icon://complete" press=".onCompleteTask"/>
+          <Button icon="sap-icon://refresh" tooltip="Refresh" press=".refresh"/>
+          <Button icon="sap-icon://media-pause" tooltip="Stop" press=".onStop"/>
+          <Button icon="sap-icon://reset" tooltip="Reset" press=".onReset"/>
+        </f:actions>
+      </f:DynamicPageTitle>
+    </f:title>
+    <f:content>
+      <VBox class="sapUiMediumMargin" renderType="Bare">
+        <FlexBox wrap="Wrap" alignItems="Stretch" class="sapUiTinyMarginBottom">
+          <GenericTile header="Run Status" subheader="{view>/status/lastScenario}" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent footer="{view>/status/lastMessageId}">
+              <NumericContent value="{view>/status/status}" icon="sap-icon://process"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile header="Latest Risk" subheader="{view>/latestRisk/modelName}" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent footer="{view>/latestRisk/recommendedAction}">
+              <NumericContent value="{view>/latestRisk/riskLevel}" icon="sap-icon://alert"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile header="Potential Protected" subheader="ZAR" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent footer="{view>/scenario/productName}">
+              <NumericContent value="{view>/scenario/potentialProtectedRevenueZar}" icon="sap-icon://money-bills"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile header="Workflow" subheader="{view>/task/assignee}" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <TileContent footer="{view>/task/taskTitle}">
+              <NumericContent value="{view>/task/status}" icon="sap-icon://workflow-tasks"/>
+            </TileContent>
+          </GenericTile>
+        </FlexBox>
+
+        <IconTabBar expandable="false" class="sapUiResponsiveContentPadding">
+          <items>
+            <IconTabFilter text="Event" icon="sap-icon://sensor">
+              <VBox class="sapUiSmallMargin">
+                <ObjectHeader title="{view>/latestReading/sourceMessageId}" number="{view>/latestReading/temperatureC}" numberUnit="C">
+                  <attributes>
+                    <ObjectAttribute title="Store" text="{view>/latestReading/storeCode}"/>
+                    <ObjectAttribute title="Zone" text="{view>/latestReading/zoneCode}"/>
+                    <ObjectAttribute title="Sensor" text="{view>/latestReading/sensorId}"/>
+                    <ObjectAttribute title="Scenario" text="{view>/latestReading/scenarioCode}"/>
+                    <ObjectAttribute title="Measured" text="{view>/latestReading/measuredAt}"/>
+                  </attributes>
+                </ObjectHeader>
+              </VBox>
+            </IconTabFilter>
+            <IconTabFilter text="AI Decision" icon="sap-icon://ai">
+              <VBox class="sapUiSmallMargin">
+                <ObjectHeader title="{view>/latestRisk/recommendedAction}" number="{view>/latestRisk/score}" numberUnit="risk score">
+                  <statuses>
+                    <ObjectStatus text="{view>/latestRisk/riskLevel}" state="Warning"/>
+                    <ObjectStatus text="{view>/latestRisk/modelUnavailableReason}" state="Error"/>
+                  </statuses>
+                  <attributes>
+                    <ObjectAttribute title="Model" text="{view>/latestRisk/modelName} {view>/latestRisk/modelVersion}"/>
+                    <ObjectAttribute title="Deployment" text="{view>/latestRisk/deploymentId}"/>
+                    <ObjectAttribute title="Confidence" text="{view>/latestRisk/confidence}"/>
+                  </attributes>
+                </ObjectHeader>
+              </VBox>
+            </IconTabFilter>
+            <IconTabFilter text="Rescue" icon="sap-icon://shipping-status">
+              <VBox class="sapUiSmallMargin">
+                <ObjectHeader title="{view>/scenario/headline}" number="{view>/scenario/protectedRevenueZar}" numberUnit="ZAR protected">
+                  <statuses>
+                    <ObjectStatus text="{view>/scenario/status}" state="Information"/>
+                    <ObjectStatus text="{view>/scenario/processStatus}" state="Success"/>
+                  </statuses>
+                  <attributes>
+                    <ObjectAttribute title="Next Best Action" text="{view>/scenario/nextBestAction}"/>
+                    <ObjectAttribute title="Workflow Proof" text="{view>/scenario/workflowProof}"/>
+                    <ObjectAttribute title="AI Core Proof" text="{view>/scenario/aiCoreProof}"/>
+                    <ObjectAttribute title="KPI Calculation" text="{view>/scenario/calculationSummary}"/>
+                  </attributes>
+                </ObjectHeader>
+              </VBox>
+            </IconTabFilter>
+            <IconTabFilter text="Task" icon="sap-icon://workflow-tasks">
+              <VBox class="sapUiSmallMargin">
+                <ObjectHeader title="{view>/task/taskTitle}" number="{view>/task/dueInMinutes}" numberUnit="min">
+                  <statuses>
+                    <ObjectStatus text="{view>/task/status}" state="Success"/>
+                    <ObjectStatus text="{view>/task/priority}" state="Warning"/>
+                  </statuses>
+                  <attributes>
+                    <ObjectAttribute title="Instruction" text="{view>/task/taskInstruction}"/>
+                    <ObjectAttribute title="Workflow Mode" text="{view>/task/workflowMode}"/>
+                    <ObjectAttribute title="Workflow Instance" text="{view>/task/workflowInstanceId}"/>
+                    <ObjectAttribute title="Outcome" text="{view>/task/outcome}"/>
+                  </attributes>
+                </ObjectHeader>
+                <TextArea value="{view>/outcome}" rows="3" width="100%" class="sapUiSmallMarginTop"/>
+              </VBox>
+            </IconTabFilter>
+            <IconTabFilter text="Brief" icon="sap-icon://discussion">
+              <VBox class="sapUiSmallMargin">
+                <ObjectHeader title="{view>/brief/title}" intro="{view>/brief/generationMode}">
+                  <attributes>
+                    <ObjectAttribute title="Store Action" text="{view>/brief/actionSummary}"/>
+                    <ObjectAttribute title="Manager Notification" text="{view>/brief/managerNotification}"/>
+                    <ObjectAttribute title="Audit Summary" text="{view>/brief/auditSummary}"/>
+                    <ObjectAttribute title="Unavailable Reason" text="{view>/brief/unavailableReason}"/>
+                  </attributes>
+                </ObjectHeader>
+              </VBox>
+            </IconTabFilter>
+            <IconTabFilter text="Integrations" icon="sap-icon://connected">
+              <Table items="{view>/integrations}" growing="false">
+                <columns>
+                  <Column><Text text="Service"/></Column>
+                  <Column><Text text="Status"/></Column>
+                  <Column><Text text="Proof"/></Column>
+                  <Column><Text text="Message"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{view>serviceName}"/>
+                      <ObjectStatus text="{view>status}" state="Information"/>
+                      <Text text="{view>proofSource}"/>
+                      <Text text="{view>message}"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </IconTabFilter>
+          </items>
+        </IconTabBar>
+      </VBox>
+    </f:content>
+  </f:DynamicPage>
+</mvc:View>
