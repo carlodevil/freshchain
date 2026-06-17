@@ -352,6 +352,15 @@ For the hackathon tenant, the value is the FreshChain Work Zone site URL. Do not
 
 FreshChain's primary Work Zone launchers can expose live KPI values through dynamic tile metadata in the app `manifest.json`. The primary inbound should define `subTitle`, `info`, `icon`, and an `indicatorDataSource` that points at the managed CAP route, for example `DynamicTileKpis('protectedRevenue')`. After uploading the HTML5 app content, sync the HTML5 Apps channel in SAP Build Work Zone Channel Manager and confirm the app's Visualization tab in Content Manager reads `Dynamic Tile`.
 
+If the HANA-backed service is temporarily unavailable during a demo, the Rescue Cockpit can be protected with the CAP fallback path:
+
+```sh
+cf set-env freshchain-srv FRESHCHAIN_FORCE_DEMO_FALLBACK true
+cf restart freshchain-srv
+```
+
+This keeps the Work Zone dynamic tile and Rescue Cockpit button flow responsive with the documented ST001 / ZN_DAIRY_01 incident economics. Treat it as a demo-continuity switch only. After HANA connectivity is recovered, unset the variable, restart `freshchain-srv`, and rerun the Work Zone action path against persisted HANA data.
+
 For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push -n freshchain-html5-repo-host ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, push the complete FreshChain app set or use the MTA HTML5 content module while excluding database deployment.
 
 Post-upload check:

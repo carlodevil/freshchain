@@ -1,6 +1,6 @@
 # FreshChain Hackathon Judge Demo Guide
 
-_Last updated: 2026-06-17. Screenshots were refreshed after restoring all HTML5 apps, setting the managed Work Zone base URL, syncing the HTML5 Apps channel, and validating the Work Zone launch paths._
+_Last updated: 2026-06-17. Screenshots were refreshed after restoring all HTML5 apps, setting the managed Work Zone base URL, syncing the HTML5 Apps channel, enabling Live Demo fallback mode while HANA is unavailable, and validating the Work Zone launch paths._
 
 ## Prize-Winning Narrative
 FreshChain is not a dashboard of ambiguous cold-chain data. The demo shows a concrete store incident progressing from telemetry to AI decision, financial impact, assigned workflow, completed store action, and audit proof.
@@ -64,7 +64,7 @@ In the captured live run:
 ![Press Run Rescue, then open Rescue](screenshots/06-live-demo-rescue.png)
 
 **Button/path:** Press Build rescue, then read the KPI row and financial calculation panel.  
-**Say:** Press Build rescue. Explain the business outcome: 3 affected lots, 90.000 units, R 5 899 stock at risk, R 4 532 expected loss, and R 4 532 protected value if the store action is completed. Then show the estate-impact panel: the persisted proof is one incident, while the scale scenario shows why the same control loop matters across stores.
+**Say:** Press Build rescue. Explain the business outcome: 3 affected lots, 90.000 units, R 5 899 stock at risk, R 4 532 expected loss, and R 4 532 protected value if the store action is completed. If fallback mode is visible or asked about, state that HANA is currently unavailable, so this run uses the CAP live-demo fallback path with the same stock-ledger calculation values. Then show the estate-impact panel: the incident proof is one store-zone event, while the scale scenario shows why the same control loop matters across stores.
 
 **Concrete outcome:** The app converts AI risk into financial impact and a recommended rescue action.
 
@@ -77,7 +77,7 @@ In the captured live run:
 
 **Button/path:** Open Operational Proof and press Complete proof.  
 **Say:** Open Operational Proof, keep the outcome text, and press Complete proof. Show workflow status COMPLETED and actual protected revenue R 4 532.  
-**Concrete outcome:** The store action is not a passive chart: it creates a task, captures the outcome, and persists proof.
+**Concrete outcome:** The store action is not a passive chart: it creates a task, captures the outcome, and exposes proof through the live CAP service.
 
 ### 4:25-4:55 — Open Integrations
 ![Open Integrations](screenshots/09-live-demo-integrations.png)
@@ -121,7 +121,7 @@ In the captured live run:
 - Use the phrase “decision to action to proof” repeatedly: event, AI score, rescue scenario, workflow task, completion, protected value.
 - When showing SAP AI Core, say that the app fails closed if AI Core cannot score. That is safer than fabricating risk numbers.
 - Do not spend time on master data apps. Mention them only as configuration support for stores, products, sensors, thresholds, and impact settings.
-- If judges ask whether it is real, point to Work Zone, deployed HTML5 apps, live BTP service bindings, and the persisted CAP evidence in the screenshots.
+- If judges ask whether it is real, point to Work Zone, deployed HTML5 apps, live BTP service bindings, and the live CAP/OData action responses. Also be transparent that `FRESHCHAIN_FORCE_DEMO_FALLBACK=true` is enabled because HANA is currently timing out; the main demo actions are live service calls, but the incident rows are in-memory fallback proof until HANA is recovered.
 - If a tile label still says `FreshChain Sense`, state plainly that the content item now launches the Rescue Cockpit and the stale label is a Work Zone page metadata issue, not a broken app.
 
 ## Defect / Shortcoming Log
@@ -130,7 +130,8 @@ In the captured live run:
 |---|---|---|---|---|
 | Work Zone secondary KPIs | The first Work Zone tile now shows the dynamic protected-revenue KPI, but secondary KPI tiles for stock at risk, rescue proof, and waste avoided are not yet published as first-row dynamic tiles. | The first impression is now business-led, but the page does not yet tell the whole operational story before opening apps. | Start with the dynamic protected-revenue tile, then open Control Tower for the full KPI set. | Rebuild the Work Zone page with additional dynamic KPI tiles or cards for stock at risk, live rescue proof, and waste avoided. |
 | Work Zone app naming | Content Manager now has a local `FreshChain Rescue Cockpit` app assigned to the `FreshChain Command` group and `Everyone` role, but the runtime home page still paints the old `FreshChain Sense` label until the site page/cache is refreshed. The tile launches the correct local app ID. | Judges may not immediately know this is the main live-action demo app. | Verbally introduce the stale-labelled tile as the Rescue Cockpit; the opened app title and runtime content are correct. | Republish/refresh the Work Zone site page so the home tile metadata catches up with the local content item. |
-| Business value scale | The cockpit now shows a single-incident proof plus a clearly-labelled 20-store extrapolation. The extrapolation is directional, not persisted chain-wide evidence. | Judges can understand upside, but may ask what is real versus assumed. | Say: “The R4,532 is persisted proof; the annualized panel is the business-case scenario using the same calculation.” | Later, populate estate-level KPIs from multi-store historical incidents instead of a demo assumption. |
+| HANA-backed reads | On 2026-06-17, HANA/HDI-backed reads through `freshchain-srv` were timing out through the managed Work Zone route. The Rescue Cockpit is temporarily protected by `FRESHCHAIN_FORCE_DEMO_FALLBACK=true`, which returns the same ST001 / ZN_DAIRY_01 incident proof through live CAP actions without using HANA. | The main prize flow works, but secondary apps and master-data surfaces may still fail or hang while HANA connectivity is unhealthy. | Demo the Rescue Cockpit and Control Tower KPI only. Do not rely on master-data apps during the panel. Be transparent that fallback mode is active for the main incident. | Recover HANA connectivity, then unset `FRESHCHAIN_FORCE_DEMO_FALLBACK`, restart `freshchain-srv`, and rerun the full Work Zone action path against persisted HANA data. |
+| Business value scale | The cockpit now shows a single-incident proof plus a clearly-labelled 20-store extrapolation. The extrapolation is directional, not persisted chain-wide evidence. | Judges can understand upside, but may ask what is real versus assumed. | Say: “The R4,532 is the single-incident proof value; the annualized panel is the business-case scenario using the same calculation.” | Later, populate estate-level KPIs from multi-store historical incidents instead of a demo assumption. |
 | HTML5 app-host content | On 2026-06-17, the app-host was restored by pushing the full FreshChain HTML5 app set. `cf html5-list` showed all deployable apps under `freshchain-html5-repo-host` after the repair. | A partial app-host upload can make apps 404 even though tiles still appear. | Use the current live tenant, where Control Tower, Rescue Cockpit, Act, Predict, Prove, and Monitor were validated from Work Zone. | When doing UI-only deployments, push the complete HTML5 app set or use the MTA content module without redeploying the DB module. |
 | Operations/Prove depth | Operations, Prove, Monitoring, and Ingestion Errors show useful Fiori surfaces, but the strongest story is still in the Live Demo cockpit. | Secondary apps can feel like supporting lists rather than dramatic action screens. | Keep these screens short and only use them as traceability proof. | Add clearer default filters, object titles, and value-focused columns for panel-ready screenshots. |
 | Headless Work Zone screenshots | Work Zone loads the Rescue Cockpit iframe and app resources, but headless screenshots intermittently paint only the iframe header while the DOM and app text are present. | Presentation screenshots of detailed cockpit steps are captured from a temporary shell instead of Work Zone chrome. | For the panel, open the cockpit manually from Work Zone; the app itself loads and actions are live. | Validate final manual browser run and, if needed, use native browser screenshots instead of headless capture. |
@@ -141,5 +142,6 @@ In the captured live run:
 - Work Zone launch paths validated on 2026-06-17: FreshChain Rescue Command Center, FreshChain Rescue Cockpit, FreshChain Act, FreshChain Predict, FreshChain Prove, and FreshChain Monitor.
 - Control Tower BTP Readiness showed `SAP Build Work Zone dynamic tiles` as `READY` after setting `FRESHCHAIN_MANAGED_BASE_URL` on `freshchain-srv` and restarting the app.
 - Content Manager showed the Control Tower visualization as `Dynamic Tile` after the HTML5 Apps provider sync. The tile preview may show a placeholder while the runtime Work Zone page resolves the live KPI value.
+- Live Demo fallback mode was enabled on `freshchain-srv` with `FRESHCHAIN_FORCE_DEMO_FALLBACK=true` after HANA-backed OData reads returned gateway/pool timeouts. The validated Start, Create Reading, Score, Build Rescue, Complete Proof, dynamic tile, and BusinessImpactSummary calls all returned HTTP 200 through the managed Work Zone route in fallback mode.
 - Detailed Rescue Cockpit action screenshots were captured through a temporary local UI shell that proxied OData/actions to the live BTP `freshchain-srv`. This avoided a headless Work Zone iframe screenshot-painting issue; the backend actions and data are live BTP outcomes.
 - Do not commit or present auth files, service keys, or the temporary local proxy. Only the screenshots and this guide are intended presentation artifacts.
