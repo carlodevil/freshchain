@@ -352,6 +352,14 @@ For the hackathon tenant, the value is the FreshChain Work Zone site URL. Do not
 
 FreshChain's primary Work Zone launchers can expose live KPI values through dynamic tile metadata in the app `manifest.json`. The primary inbound should define `subTitle`, `info`, `icon`, and an `indicatorDataSource` that points at the managed CAP route, for example `DynamicTileKpis('protectedRevenue')`. After uploading the HTML5 app content, sync the HTML5 Apps channel in SAP Build Work Zone Channel Manager and confirm the app's Visualization tab in Content Manager reads `Dynamic Tile`.
 
+For the hackathon site, verify this specific Work Zone composition before a judged demo:
+
+1. Open Content Manager and confirm `FreshChain Command` is a local group with `FreshChain Rescue Cockpit`, `FreshChain Rescue Command Center`, `FreshChain Act`, `FreshChain Predict`, `FreshChain Prove`, and `FreshChain Monitor` assigned.
+2. Open the HTML5 Apps item `FreshChain Rescue Command Center` and confirm its Visualization tab reads `Dynamic Tile` with service URL `DynamicTileKpis('protectedRevenue')`.
+3. Open the runtime site home page and confirm the first tile shows a live protected-revenue value from CAP/HANA. Do not treat a placeholder or stale value as proof.
+4. If the home page still shows the old `FreshChain Sense` label, republish or refresh the site page assignment in Work Zone. Content Manager can show the corrected local `FreshChain Rescue Cockpit` item while the runtime classic home page still paints stale metadata.
+5. If additional KPI tiles for stock at risk, rescue proof, or waste avoided are needed in the first viewport, add them as Work Zone page content/cards only when each tile resolves against the live `DynamicTileKpis` service. Do not add static tiles that imply live proof.
+
 Do not enable fallback business data for demos. The only mocked input should be the live-demo sensor reading payload; persistence, scoring, stock-ledger financials, workflow task proof, cards, tiles, and screenshots must come from the live deployed system. If HANA, AI Core, Work Zone, or another platform dependency fails, fix the live dependency and record the defect instead of masking it.
 
 For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push -n freshchain-html5-repo-host ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, push the complete FreshChain app set or use the MTA HTML5 content module while excluding database deployment.
