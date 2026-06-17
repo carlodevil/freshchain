@@ -1,6 +1,6 @@
 # FreshChain Hackathon Judge Demo Guide
 
-_Last updated: 2026-06-17. Screenshots were refreshed after deploying the redesigned Rescue Cockpit to live SAP BTP._
+_Last updated: 2026-06-17. Screenshots were refreshed after restoring all HTML5 apps in the live SAP BTP HTML5 repository and validating the Work Zone launch paths._
 
 ## Prize-Winning Narrative
 FreshChain is not a dashboard of ambiguous cold-chain data. The demo shows a concrete store incident progressing from telemetry to AI decision, financial impact, assigned workflow, completed store action, and audit proof.
@@ -35,6 +35,8 @@ In the captured live run:
 **Button/path:** Open FreshChain Rescue Command Center.  
 **Say:** Show the executive view. Call out protected revenue, risk by zone, active rescue, store task, and BTP readiness as the first business signals.  
 **Concrete outcome:** This is the command-center view for an operations manager deciding where to intervene.
+
+**Live validation note:** The Work Zone-hosted app now loads from the managed HTML5 repository with real OVP cards: Rescue Value, Live Demo Proof, BTP Readiness, Store Task, Active Rescue, and Risk by Zone.
 
 ### 1:20-1:45 — Open FreshChain Rescue Cockpit and press Start
 ![Open FreshChain Rescue Cockpit and press Start](screenshots/03-live-demo-running.png)
@@ -120,19 +122,22 @@ In the captured live run:
 - When showing SAP AI Core, say that the app fails closed if AI Core cannot score. That is safer than fabricating risk numbers.
 - Do not spend time on master data apps. Mention them only as configuration support for stores, products, sensors, thresholds, and impact settings.
 - If judges ask whether it is real, point to Work Zone, deployed HTML5 apps, live BTP service bindings, and the persisted CAP evidence in the screenshots.
+- If a tile label still says `FreshChain Sense`, state plainly that the content item now launches the Rescue Cockpit and the stale label is a Work Zone page metadata issue, not a broken app.
 
 ## Defect / Shortcoming Log
 
 | Area | Observed issue | Impact on prize demo | Workaround for panel | Recommended fix |
 |---|---|---|---|---|
-| Work Zone first impression | Work Zone launches and shows FreshChain apps, but tiles are mostly static/blank and do not show dynamic KPI numbers. | The first screen proves BTP deployment, but does not itself communicate business value. | Spend less than a minute on Work Zone, then open Control Tower and Rescue Cockpit for value proof. | Configure Work Zone dynamic tiles/cards for protected revenue, stock at risk, rescue proof, and waste avoided. |
+| Work Zone first impression | Work Zone launches and shows FreshChain apps, but tiles are mostly static/blank and do not show dynamic KPI numbers. Control Tower confirms the `SAP Build Work Zone dynamic tiles` integration status is currently `UNAVAILABLE`. | The first screen proves BTP deployment, but does not itself communicate business value. | Spend less than a minute on Work Zone, then open Control Tower and Rescue Cockpit for value proof. | Configure the managed app base URL / Work Zone dynamic tile setup so protected revenue, stock at risk, rescue proof, and waste avoided appear before opening an app. |
 | Work Zone app naming | Content Manager now has a local `FreshChain Rescue Cockpit` app assigned to the `FreshChain Command` group and `Everyone` role, but the runtime home page still paints the old `FreshChain Sense` label until the site page/cache is refreshed. The tile launches the correct local app ID. | Judges may not immediately know this is the main live-action demo app. | Verbally introduce the stale-labelled tile as the Rescue Cockpit; the opened app title and runtime content are correct. | Republish/refresh the Work Zone site page so the home tile metadata catches up with the local content item. |
 | Business value scale | The cockpit now shows a single-incident proof plus a clearly-labelled 20-store extrapolation. The extrapolation is directional, not persisted chain-wide evidence. | Judges can understand upside, but may ask what is real versus assumed. | Say: “The R4,532 is persisted proof; the annualized panel is the business-case scenario using the same calculation.” | Later, populate estate-level KPIs from multi-store historical incidents instead of a demo assumption. |
+| HTML5 app-host content | On 2026-06-17, the app-host was restored by pushing the full FreshChain HTML5 app set. `cf html5-list` showed all deployable apps under `freshchain-html5-repo-host` after the repair. | A partial app-host upload can make apps 404 even though tiles still appear. | Use the current live tenant, where Control Tower, Rescue Cockpit, Act, Predict, Prove, and Monitor were validated from Work Zone. | When doing UI-only deployments, push the complete HTML5 app set or use the MTA content module without redeploying the DB module. |
 | Operations/Prove depth | Operations, Prove, Monitoring, and Ingestion Errors show useful Fiori surfaces, but the strongest story is still in the Live Demo cockpit. | Secondary apps can feel like supporting lists rather than dramatic action screens. | Keep these screens short and only use them as traceability proof. | Add clearer default filters, object titles, and value-focused columns for panel-ready screenshots. |
 | Headless Work Zone screenshots | Work Zone loads the Rescue Cockpit iframe and app resources, but headless screenshots intermittently paint only the iframe header while the DOM and app text are present. | Presentation screenshots of detailed cockpit steps are captured from a temporary shell instead of Work Zone chrome. | For the panel, open the cockpit manually from Work Zone; the app itself loads and actions are live. | Validate final manual browser run and, if needed, use native browser screenshots instead of headless capture. |
 
 ## Capture Notes
 - Work Zone screenshot was captured from: https://afsug-hackathon.launchpad.cfapps.eu20.hana.ondemand.com/site?siteId=97d11aec-866b-4a20-8f25-695b8927576e#Shell-home
-- Control Tower screenshot was captured from Work Zone.
+- Control Tower screenshot was captured from Work Zone after restoring the full HTML5 app-host content.
+- Work Zone launch paths validated on 2026-06-17: FreshChain Rescue Command Center, FreshChain Rescue Cockpit, FreshChain Act, FreshChain Predict, FreshChain Prove, and FreshChain Monitor.
 - Detailed Rescue Cockpit action screenshots were captured through a temporary local UI shell that proxied OData/actions to the live BTP `freshchain-srv`. This avoided a headless Work Zone iframe screenshot-painting issue; the backend actions and data are live BTP outcomes.
 - Do not commit or present auth files, service keys, or the temporary local proxy. Only the screenshots and this guide are intended presentation artifacts.

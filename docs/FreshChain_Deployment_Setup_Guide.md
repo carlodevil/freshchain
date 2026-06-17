@@ -341,6 +341,31 @@ The apps are:
 
 In Work Zone, add the HTML5 applications to the desired site/catalog/group according to your tenant's content management process. Use the app titles and semantic objects defined in each app manifest.
 
+For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push -n freshchain-html5-repo-host ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, push the complete FreshChain app set or use the MTA HTML5 content module while excluding database deployment.
+
+Post-upload check:
+
+```sh
+cf html5-list
+```
+
+Expected FreshChain apps under `freshchain-html5-repo-host`:
+
+- `freshchaincontroltower`
+- `freshchainoverview`
+- `freshchainoperations`
+- `freshchainintelligence`
+- `freshchainadmin`
+- `freshchainmonitoring`
+- `freshchainmasterdata`
+- `freshchainstores`
+- `freshchainareas`
+- `freshchainsensors`
+- `freshchainproducts`
+- `freshchainthresholds`
+- `freshchainimpactsettings`
+- `freshchainingestionerrors`
+
 ## 14. Validation Checklist
 
 ### 14.1 CAP and OData
