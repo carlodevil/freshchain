@@ -341,6 +341,15 @@ The apps are:
 
 In Work Zone, add the HTML5 applications to the desired site/catalog/group according to your tenant's content management process. Use the app titles and semantic objects defined in each app manifest.
 
+Set the managed Work Zone base URL on the CAP service so runtime integration checks and Work Zone dynamic tile navigation are enabled:
+
+```sh
+cf set-env freshchain-srv FRESHCHAIN_MANAGED_BASE_URL "https://<work-zone-runtime-host>/site?siteId=<site-id>"
+cf restart freshchain-srv
+```
+
+For the hackathon tenant, the value is the FreshChain Work Zone site URL. Do not store this as a secret; it is a public runtime URL, but keep tenant-specific values out of reusable templates.
+
 For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push -n freshchain-html5-repo-host ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, push the complete FreshChain app set or use the MTA HTML5 content module while excluding database deployment.
 
 Post-upload check:
