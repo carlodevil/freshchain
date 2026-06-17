@@ -157,16 +157,18 @@ sap.ui.define([
       const riskLevel = risk.riskLevel || scenario.riskLevel || "Not scored";
       const stockAtRisk = Number(scenario.businessValueAtRiskZar || 0);
       const expectedLoss = Number(scenario.expectedLossZar || 0);
-      const protectedValue = Number(scenario.protectedRevenueZar || scenario.potentialProtectedRevenueZar || 0);
+      const potentialProtectedValue = Number(scenario.potentialProtectedRevenueZar || 0);
+      const actualProtectedValue = Number(scenario.protectedRevenueZar || 0);
       const affectedUnits = Number(scenario.affectedUnits || 0);
       const lotCount = Number(scenario.affectedLotCount || 0);
       const salvageRate = Number(scenario.salvageRate || 0);
       const score = Number(risk.score || scenario.spoilageProbability || 0);
       const confidence = Number(risk.confidence || scenario.confidence || 0);
       const averageUnitRetail = affectedUnits ? stockAtRisk / affectedUnits : 0;
-      const estateImpact = this._estateImpact(protectedValue, affectedUnits);
+      const estateImpact = this._estateImpact(actualProtectedValue, potentialProtectedValue, affectedUnits);
       const taskStatus = task.status || "No task yet";
       const workflowState = this._stateForTask(taskStatus);
+      const isTaskCompleted = String(taskStatus || "").toUpperCase() === "COMPLETED";
       const successfulIntegrations = integrations.filter(function (row) {
         return String(row.status || "").toUpperCase() === "ONLINE" || String(row.status || "").toUpperCase() === "SIMULATED" || String(row.status || "").toUpperCase() === "READY";
       }).length;
@@ -192,8 +194,10 @@ sap.ui.define([
         stockAtRiskContext: lotCount ? lotCount + " lots, " + this._formatQuantity(affectedUnits) + " units priced from stock ledger" : "No affected stock priced yet",
         expectedLoss: this._formatCurrency(expectedLoss),
         expectedLossContext: this._formatPercent(score) + " AI risk x " + this._formatPercent(confidence) + " confidence",
-        protectedValue: this._formatCurrency(protectedValue),
-        protectedValueContext: salvageRate ? "Capped by " + this._formatPercent(salvageRate) + " maintained salvage rate" : "Pending rescue plan",
+        potentialProtectedValue: this._formatCurrency(potentialProtectedValue),
+        potentialProtectedValueContext: salvageRate ? "Lower of expected loss and " + this._formatPercent(salvageRate) + " salvage cap" : "Pending rescue plan",
+        protectedValue: this._formatCurrency(actualProtectedValue),
+        protectedValueContext: isTaskCompleted ? "Actual value protected by completed store action" : "Complete proof to convert potential value into actual protected revenue",
         slaMinutes: scenario.responseSlaMinutes || task.dueInMinutes || 0,
         slaContext: task.assignee ? "Assigned to " + task.assignee : "Generated from risk-level response policy",
         riskScore: score ? score.toFixed(3) : "0.000",
@@ -202,15 +206,16 @@ sap.ui.define([
         measuredAt: this._formatDateTime(reading.measuredAt),
         affectedStockLabel: lotCount ? lotCount + " lots / " + this._formatQuantity(affectedUnits) + " units / " + (scenario.productName || "mixed chilled stock") : "No rescue stock selected yet",
         calculationSummary: scenario.calculationSummary || "Financial proof appears once the rescue scenario is generated.",
-        financialLines: this._financialLines(stockAtRisk, expectedLoss, protectedValue, affectedUnits, averageUnitRetail, score, confidence, salvageRate),
+        financialLines: this._financialLines(stockAtRisk, expectedLoss, potentialProtectedValue, actualProtectedValue, affectedUnits, averageUnitRetail, score, confidence, salvageRate),
         scaleMetrics: estateImpact.metrics,
         scaleAssumption: estateImpact.assumption,
         steps: this._steps(status, reading, risk, scenario, task)
       });
     },
 
-    _estateImpact: function (protectedValue, affectedUnits) {
-      const incidentValue = Number(protectedValue || 0);
+    _estateImpact: function (actualProtectedValue, potentialProtectedValue, affectedUnits) {
+      const incidentValue = Number(actualProtectedValue || 0);
+      const potentialValue = Number(potentialProtectedValue || 0);
       const units = Number(affectedUnits || 0);
       const storeCount = 20;
       const weeklyIncidentsPerStore = 1;
@@ -225,13 +230,19 @@ sap.ui.define([
           {
             title: "This incident",
             value: this._formatCurrency(incidentValue),
-            detail: "Persisted protected revenue after the store action is completed.",
-            state: "Success"
+            detail: incidentValue ? "Actual protected revenue after store action completion." : "No protected revenue is counted until the store action is completed.",
+            state: incidentValue ? "Success" : "Warning"
+          },
+          {
+            title: "Actionable upside",
+            value: this._formatCurrency(potentialValue),
+            detail: "Potential protection available from the current priced rescue plan.",
+            state: "Information"
           },
           {
             title: "Weekly estate exposure",
             value: this._formatCurrency(weeklyEstateValue),
-            detail: storeCount + " stores x one comparable incident, based on the same stock-ledger calculation.",
+            detail: storeCount + " stores x one completed comparable incident, based on the same stock-ledger calculation.",
             state: "Warning"
           },
           {
@@ -244,7 +255,7 @@ sap.ui.define([
       };
     },
 
-    _financialLines: function (stockAtRisk, expectedLoss, protectedValue, affectedUnits, averageUnitRetail, score, confidence, salvageRate) {
+    _financialLines: function (stockAtRisk, expectedLoss, potentialProtectedValue, actualProtectedValue, affectedUnits, averageUnitRetail, score, confidence, salvageRate) {
       return [
         {
           title: "Stock at risk",
@@ -257,9 +268,14 @@ sap.ui.define([
           icon: "sap-icon://trend-down"
         },
         {
-          title: "Protected value",
-          detail: "Lower of expected loss and salvage cap (" + this._formatCurrency(stockAtRisk) + " x " + this._formatPercent(salvageRate) + ") = " + this._formatCurrency(protectedValue),
+          title: "Potential protected value",
+          detail: "Lower of expected loss and salvage cap (" + this._formatCurrency(stockAtRisk) + " x " + this._formatPercent(salvageRate) + ") = " + this._formatCurrency(potentialProtectedValue),
           icon: "sap-icon://money-bills"
+        },
+        {
+          title: "Actual protected value",
+          detail: "Counts as " + this._formatCurrency(actualProtectedValue) + " only after the store task is completed with outcome proof.",
+          icon: "sap-icon://sys-enter-2"
         }
       ];
     },
@@ -269,7 +285,7 @@ sap.ui.define([
         this._step(1, "Start incident", status.startedAt, "Run context is active and ready for telemetry."),
         this._step(2, "Create live reading", reading.ID, reading.ID ? this._temperatureLabel(reading) + " from " + (reading.sensorId || "sensor") : "Generate the temperature breach."),
         this._step(3, "Score risk", risk.ID, risk.ID ? "AI returned " + (risk.riskLevel || "risk") + " with " + this._formatPercent(Number(risk.confidence || 0)) + " confidence." : "Send the latest reading to AI Core scoring."),
-        this._step(4, "Build rescue plan", scenario.ID, scenario.ID ? this._formatCurrency(Number(scenario.potentialProtectedRevenueZar || scenario.protectedRevenueZar || 0)) + " protected revenue calculated." : "Price the affected stock and create the store action."),
+        this._step(4, "Build rescue plan", scenario.ID, scenario.ID ? this._formatCurrency(Number(scenario.potentialProtectedRevenueZar || 0)) + " potential protected revenue calculated." : "Price the affected stock and create the store action."),
         this._step(5, "Complete proof", String(task.status || "").toUpperCase() === "COMPLETED", task.ID ? "Task status: " + (task.status || "created") : "Complete the action to write movement and audit proof.")
       ];
     },

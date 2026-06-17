@@ -68,7 +68,14 @@
           </Panel>
           <Panel class="fcKpiPanel sapUiTinyMarginEnd sapUiTinyMarginBottom">
             <VBox>
-              <Label text="Protected value"/>
+              <Label text="Potential protected value"/>
+              <ObjectNumber number="{view>/display/potentialProtectedValue}" emphasized="true" state="Information" class="fcKpiNumber"/>
+              <Text text="{view>/display/potentialProtectedValueContext}"/>
+            </VBox>
+          </Panel>
+          <Panel class="fcKpiPanel sapUiTinyMarginEnd sapUiTinyMarginBottom">
+            <VBox>
+              <Label text="Actual protected value"/>
               <ObjectNumber number="{view>/display/protectedValue}" emphasized="true" state="Success" class="fcKpiNumber"/>
               <Text text="{view>/display/protectedValueContext}"/>
             </VBox>

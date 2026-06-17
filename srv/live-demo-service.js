@@ -40,17 +40,9 @@ const runState = {
 
 let messagingPromise;
 let subscribed = false;
+let dynamicTileKpiReadPromise;
 const ACTION_BRIEF_PROMPT_VERSION = 'freshchain-brief-v2';
 const DEFAULT_GENAI_MODEL = 'gpt-4.1-mini';
-let dynamicTileKpiCache;
-const fallbackDemoState = {
-  reading: null,
-  prediction: null,
-  scenario: null,
-  task: null,
-  brief: null,
-  notification: null
-};
 
 function parseJson(value, defaultValue = null) {
   try {
@@ -84,10 +76,6 @@ function serviceBindingLabel(service) {
 function counted(rows) {
   if (Array.isArray(rows)) rows.$count = rows.length;
   return rows;
-}
-
-function forceDemoFallback() {
-  return /^true$/i.test(String(process.env.FRESHCHAIN_FORCE_DEMO_FALLBACK || ''));
 }
 
 function hasMessagingBinding() {
@@ -1182,6 +1170,14 @@ async function readDynamicTileKpis(tx) {
   return buildDynamicTileKpis(summary, latestImpact);
 }
 
+async function readSharedDynamicTileKpis(tx) {
+  dynamicTileKpiReadPromise ??= readDynamicTileKpis(tx).finally(() => {
+    dynamicTileKpiReadPromise = null;
+  });
+  const rows = await dynamicTileKpiReadPromise;
+  return rows.map(row => ({ ...row }));
+}
+
 function buildDynamicTileKpis(summary, latestImpact) {
   const zone = latestImpact && latestImpact.zoneCode || 'all zones';
   const store = latestImpact && latestImpact.storeCode || 'all stores';
@@ -1249,38 +1245,6 @@ function buildDynamicTileKpis(summary, latestImpact) {
   ];
 }
 
-function fallbackDynamicTileKpis() {
-  const rows = dynamicTileKpiCache || buildDynamicTileKpis({
-    ...emptyBusinessImpactSummary(),
-    generatedAt: isoNow(),
-    incidentStatus: 'ACTIONED',
-    protectedRevenueZar: 4532,
-    potentialProtectedRevenueZar: 4532,
-    actualProtectedRevenueZar: 4532,
-    stockValueAtRiskZar: 5899,
-    affectedLotCount: 3,
-    affectedUnits: 90,
-    expectedLossZar: 4532,
-    salvageRate: 0.82,
-    wasteAvoidedUnits: 90,
-    lostSalesAvoidedUnits: 39,
-    responseSlaMinutes: 15,
-    processCompletionPct: 100,
-    confidencePct: 78,
-    executiveHeadline: '4,532 ZAR protected with movement evidence',
-    criticality: 3
-  }, {
-    zoneCode: 'ZN_DAIRY_01',
-    storeCode: 'ST001',
-    productName: 'Chilled dairy rescue pack',
-    movementReferences: 'DEMO-PROOF'
-  });
-  return rows.map(row => ({
-    ...row,
-    updatedAt: row.updatedAt || isoNow()
-  }));
-}
-
 function integrationStatus(ID, serviceName, isReady, message, proofSource) {
   return {
     ID,
@@ -1297,22 +1261,37 @@ function hasAiCoreBinding() {
   return Boolean(aiCoreTokenConfig());
 }
 
-function readIntegrationStatuses() {
+async function readHanaPersistenceStatus(req) {
+  const { SensorReadings } = cds.entities('freshchain');
+  try {
+    const row = await cds.tx(req).run(SELECT.one`count(*) as count`.from(SensorReadings));
+    return integrationStatus(
+      'hanaPersistence',
+      'SAP HANA persistence',
+      true,
+      `Live HANA read succeeded (${Number(row && row.count || 0)} sensor readings)`,
+      'SensorReadings count query'
+    );
+  } catch (error) {
+    return integrationStatus(
+      'hanaPersistence',
+      'SAP HANA persistence',
+      false,
+      `Live HANA read failed: ${redact(error.message)}`,
+      'SensorReadings count query'
+    );
+  }
+}
+
+async function readIntegrationStatuses(req) {
   const aiCoreConfigured = hasAiCoreBinding();
   const genAiConfigured = hasGenAiConfiguration();
   const eventMeshConfigured = hasMessagingBinding();
   const managedBaseUrlConfigured = Boolean(managedBaseUrl());
-  const fallbackActive = forceDemoFallback();
+  const hanaStatus = await readHanaPersistenceStatus(req);
+  const hanaReady = hanaStatus.status === 'READY';
   return [
-    integrationStatus(
-      'hanaPersistence',
-      'SAP HANA persistence',
-      !fallbackActive,
-      fallbackActive
-        ? 'HANA-backed reads are unavailable; Rescue Cockpit is using CAP demo-continuity fallback'
-        : 'CAP services are using the bound HDI container',
-      fallbackActive ? 'FRESHCHAIN_FORCE_DEMO_FALLBACK' : 'VCAP_SERVICES'
-    ),
+    hanaStatus,
     integrationStatus(
       'aiCore',
       'SAP AI Core scoring',
@@ -1330,11 +1309,11 @@ function readIntegrationStatuses() {
     integrationStatus(
       'workflow',
       'FreshChain in-app workflow',
-      true,
-      fallbackActive
-        ? 'Store rescue workflow is handled by live CAP actions in demo-continuity fallback mode'
-        : 'Store rescue workflow is handled by CAP actions and persisted task proof',
-      'LiveDemoService'
+      hanaReady,
+      hanaReady
+        ? 'Store rescue workflow is handled by CAP actions and persisted task proof'
+        : 'Persisted task proof is unavailable until live HANA reads recover',
+      hanaReady ? 'LiveDemoService' : 'HANA health check'
     ),
     integrationStatus(
       'eventMesh',
@@ -1354,16 +1333,6 @@ function readIntegrationStatuses() {
 }
 
 function registerLiveDemoReadHandlers(service, entities) {
-  for (const entityName of [
-    'LiveSensorEvents',
-    'RiskDecisions',
-    'RescueScenarios',
-    'ProcessTasks',
-    'ActionBriefs',
-    'NotificationEvents'
-  ]) {
-    service.on('READ', entityName, (req, next) => forceDemoFallback() ? fallbackRead(entityName) : next());
-  }
   service.on('READ', 'RiskByZone', readRiskByZoneForRequest);
   service.on('READ', 'ScenarioMix', readScenarioMixForRequest);
   service.on('READ', 'InterventionStatusMix', readInterventionStatusMixForRequest);
@@ -1400,7 +1369,6 @@ function readZoneOccupancyForRequest(req) {
 }
 
 function readBusinessImpactSummaryForRequest(req) {
-  if (forceDemoFallback()) return counted([fallbackBusinessImpactSummary()]);
   return readCountedRows(req, readBusinessImpactSummary);
 }
 
@@ -1412,26 +1380,12 @@ function readCurrentProcessTasksForRequest(req) {
   return readCountedRows(req, readCurrentProcessTasks);
 }
 
-function readIntegrationStatusesForRequest() {
-  return counted(readIntegrationStatuses());
+async function readIntegrationStatusesForRequest(req) {
+  return counted(await readIntegrationStatuses(req));
 }
 
 async function readDynamicTileKpisForRequest(req) {
-  let rows;
-  try {
-    rows = forceDemoFallback()
-      ? buildDynamicTileKpis(fallbackBusinessImpactSummary(), {
-        zoneCode: 'ZN_DAIRY_01',
-        storeCode: 'ST001',
-        productName: 'Chilled dairy rescue pack',
-        movementReferences: 'DEMO-FALLBACK'
-      })
-      : await readDynamicTileKpis(cds.tx(req));
-    dynamicTileKpiCache = rows;
-  } catch (error) {
-    cds.log('live-demo').warn(`Using cached dynamic tile KPIs: ${error.message}`);
-    rows = fallbackDynamicTileKpis();
-  }
+  const rows = await readSharedDynamicTileKpis(cds.tx(req));
   const ID = requestKey(req);
   return ID ? rows.find(row => row.ID === ID) : counted(rows);
 }
@@ -1451,32 +1405,6 @@ function readDemoRunStatus() {
 }
 
 async function readDemoImpactMetrics(req, entities) {
-  if (forceDemoFallback()) {
-    const reading = ensureFallbackReading();
-    const prediction = fallbackDemoState.prediction;
-    const scenario = fallbackDemoState.scenario;
-    const task = fallbackDemoState.task;
-    return [{
-      ID: 'current',
-      generatedAt: isoNow(),
-      runStatus: runState.status,
-      latestScenario: reading.scenarioCode,
-      latestRisk: prediction && prediction.riskLevel || 'No AI Core score yet',
-      activeAlerts: scenario && task && task.status !== 'COMPLETED' ? 1 : 0,
-      activeAlertsCriticality: scenario && task && task.status !== 'COMPLETED' ? 1 : 3,
-      criticalAlerts: scenario ? 1 : 0,
-      criticalAlertsCriticality: scenario ? 1 : 3,
-      inferenceCount: prediction ? 1 : 0,
-      successfulInferences: prediction ? 1 : 0,
-      averageLatencyMs: prediction ? 420 : 0,
-      latencyCriticality: 3,
-      expectedWasteAvoidedUnits: task && task.status === 'COMPLETED' ? 90 : 0,
-      expectedLostSalesAvoidedUnits: task && task.status === 'COMPLETED' ? 39 : 0,
-      acceptedInterventions: task && task.status === 'COMPLETED' ? 1 : 0,
-      latestRiskCriticality: prediction ? riskCriticality(prediction.riskLevel) : 0,
-      platformProof: 'SAP AI Core scoring: FALLBACK PROOF | FreshChain in-app workflow: READY | SAP Build Work Zone dynamic tiles: READY'
-    }];
-  }
   const {
     Alerts,
     SensorReadings,
@@ -1485,18 +1413,16 @@ async function readDemoImpactMetrics(req, entities) {
     ReplenishmentRecommendations
   } = entities;
   const tx = cds.tx(req);
-  const [latestReading, latestPrediction, activeAlerts, criticalAlerts, inferenceCount, successfulInferences, acceptedInterventions] = await Promise.all([
-    tx.run(SELECT.one.from(SensorReadings).orderBy('measuredAt desc')),
-    tx.run(SELECT.one.from(Predictions).orderBy('createdAt desc')),
-    tx.run(SELECT.one`count(*) as count`.from(Alerts).where({ status: { in: ['OPEN', 'ACKNOWLEDGED', 'ASSIGNED', 'REOPENED'] } })),
-    tx.run(SELECT.one`count(*) as count`.from(Alerts).where({ severity: 'CRITICAL', status: { in: ['OPEN', 'ACKNOWLEDGED', 'ASSIGNED', 'REOPENED'] } })),
-    tx.run(SELECT.one`count(*) as count`.from(InferenceRequests)),
-    tx.run(SELECT.one`count(*) as count`.from(InferenceRequests).where({ status: 'SUCCEEDED' })),
-    tx.run(SELECT.one`count(*) as count`.from(ReplenishmentRecommendations).where({ status: { in: ['ACCEPTED', 'APPLIED'] } }))
-  ]);
+  const latestReading = await tx.run(SELECT.one.from(SensorReadings).orderBy('measuredAt desc'));
+  const latestPrediction = await tx.run(SELECT.one.from(Predictions).orderBy('createdAt desc'));
+  const activeAlerts = await tx.run(SELECT.one`count(*) as count`.from(Alerts).where({ status: { in: ['OPEN', 'ACKNOWLEDGED', 'ASSIGNED', 'REOPENED'] } }));
+  const criticalAlerts = await tx.run(SELECT.one`count(*) as count`.from(Alerts).where({ severity: 'CRITICAL', status: { in: ['OPEN', 'ACKNOWLEDGED', 'ASSIGNED', 'REOPENED'] } }));
+  const inferenceCount = await tx.run(SELECT.one`count(*) as count`.from(InferenceRequests));
+  const successfulInferences = await tx.run(SELECT.one`count(*) as count`.from(InferenceRequests).where({ status: 'SUCCEEDED' }));
+  const acceptedInterventions = await tx.run(SELECT.one`count(*) as count`.from(ReplenishmentRecommendations).where({ status: { in: ['ACCEPTED', 'APPLIED'] } }));
   const latency = await tx.run(SELECT.one`avg(latencyMs) as value`.from(InferenceRequests).where({ status: 'SUCCEEDED' }));
   const impact = await tx.run(SELECT.one`sum(expectedWasteAvoidedUnits) as waste, sum(expectedLostSalesAvoidedUnits) as lostSales`.from(ReplenishmentRecommendations));
-  const integrations = readIntegrationStatuses();
+  const integrations = await readIntegrationStatuses(req);
   const platformProof = integrations
     .map(row => `${row.serviceName}: ${row.status}`)
     .join(' | ');
@@ -1567,236 +1493,10 @@ function resetDemoRun() {
     lastScenario: null,
     message: 'Live demo run state was reset.'
   });
-  Object.assign(fallbackDemoState, {
-    reading: null,
-    prediction: null,
-    scenario: null,
-    task: null,
-    brief: null,
-    notification: null
-  });
   return stateRow();
 }
 
-function ensureFallbackReading() {
-  if (!fallbackDemoState.reading) {
-    const timestamp = isoNow();
-    const messageId = `DEMO-ZN_DAIRY_01-${Date.now()}`;
-    fallbackDemoState.reading = {
-      ID: messageId,
-      measuredAt: timestamp,
-      publishedAt: timestamp,
-      storeCode: 'ST001',
-      zoneCode: 'ZN_DAIRY_01',
-      sensorId: 'RESCUE_SENSOR_ZN_DAIRY_01',
-      temperatureC: 12.4,
-      humidityPct: 76,
-      doorOpen: false,
-      sensorHealth: 'WARN',
-      scenarioCode: 'COMPRESSOR_FAILURE',
-      sourceMessageId: messageId
-    };
-  }
-  return fallbackDemoState.reading;
-}
-
-function ensureFallbackPrediction() {
-  const reading = ensureFallbackReading();
-  if (!fallbackDemoState.prediction) {
-    fallbackDemoState.prediction = {
-      ID: `PRED-${reading.ID}`,
-      createdAt: isoNow(),
-      modelName: 'SAP AI Core FreshChain Risk',
-      modelVersion: 'demo-2026.06',
-      deploymentId: 'freshchain-risk-live',
-      storeCode: reading.storeCode,
-      zoneCode: reading.zoneCode,
-      predictionType: 'SPOILAGE_RISK',
-      riskLevel: 'CRITICAL',
-      score: 1,
-      confidence: 0.776,
-      anomalyType: 'COMPRESSOR_FAILURE',
-      remainingShelfLifeDays: 0.25,
-      demandUnitsForecast: 90,
-      replenishmentUnits: 0,
-      routePriority: 1,
-      recommendedAction: 'Urgent removal of 3 chilled product groups',
-      aiCoreUnavailable: false,
-      modelUnavailableReason: null,
-      criticality: 1
-    };
-  }
-  return fallbackDemoState.prediction;
-}
-
-function ensureFallbackScenario() {
-  const reading = ensureFallbackReading();
-  const prediction = ensureFallbackPrediction();
-  if (!fallbackDemoState.scenario) {
-    fallbackDemoState.scenario = {
-      ID: `SCN-${reading.ID}`,
-      generatedAt: isoNow(),
-      status: 'ACTION_REQUIRED',
-      headline: 'CRITICAL spoilage risk: rescue chilled dairy before the next trading window',
-      storeCode: reading.storeCode,
-      zoneCode: reading.zoneCode,
-      productName: 'Chilled dairy rescue pack',
-      affectedLotCount: 3,
-      affectedUnits: 90,
-      riskLevel: prediction.riskLevel,
-      riskScore: 1,
-      confidence: 0.776,
-      spoilageProbability: 1,
-      shelfLifeHoursRemaining: 6,
-      businessValueAtRiskZar: 5899,
-      potentialProtectedRevenueZar: 4532,
-      protectedRevenueZar: 0,
-      expectedLossZar: 4532,
-      salvageRate: 0.82,
-      wasteAvoidedUnits: 90,
-      lostSalesAvoidedUnits: 39,
-      responseSlaMinutes: 15,
-      processStatus: 'READY',
-      actionBriefStatus: 'GENERATED',
-      nextBestAction: 'Move affected stock to backup refrigeration, verify compressor recovery, and mark at-risk dairy for same-day sale.',
-      managerMessage: 'FreshChain detected CRITICAL spoilage risk in ZN_DAIRY_01. Protect up to R 4,532 by moving stock now.',
-      aiCoreProof: 'SAP AI Core scoring contract exercised for the latest compressor-failure event; fallback proof mode is active because HANA is unavailable.',
-      workflowProof: 'FreshChain in-app workflow task is ready for store.manager.',
-      calculationSummary: 'Stock at risk R 5,899 x 100% AI risk x 77.6% confidence = R 4,532 expected loss. Salvage cap is R 4,837, so protected value is R 4,532.',
-      criticality: 1
-    };
-  }
-  return fallbackDemoState.scenario;
-}
-
-function ensureFallbackTask() {
-  const scenario = ensureFallbackScenario();
-  if (!fallbackDemoState.task) {
-    fallbackDemoState.task = {
-      ID: `TASK-${scenario.ID}`,
-      createdAt: isoNow(),
-      scenarioID: scenario.ID,
-      processName: 'FreshChain Rescue Proof',
-      assignee: 'store.manager',
-      status: 'READY',
-      priority: 'VERY_HIGH',
-      dueInMinutes: 15,
-      taskTitle: 'Move exposed dairy stock to backup chiller',
-      taskInstruction: scenario.nextBestAction,
-      outcome: null,
-      completedAt: null,
-      workflowMode: 'IN_APP',
-      workflowInstanceId: `WF-${scenario.ID}`,
-      workflowProcessId: 'freshchain-rescue-proof',
-      workflowStatus: 'READY',
-      workflowStartedAt: isoNow(),
-      workflowUrl: null,
-      unavailableReason: null,
-      criticality: 1
-    };
-  }
-  return fallbackDemoState.task;
-}
-
-function ensureFallbackBrief() {
-  const scenario = ensureFallbackScenario();
-  if (!fallbackDemoState.brief) {
-    fallbackDemoState.brief = {
-      ID: `BRIEF-${scenario.ID}`,
-      generatedAt: isoNow(),
-      scenarioID: scenario.ID,
-      generationMode: 'SAP_AI_CORE_GENAI_HUB',
-      modelProvider: 'SAP AI Core',
-      modelName: DEFAULT_GENAI_MODEL,
-      generationLatencyMs: 420,
-      promptVersion: ACTION_BRIEF_PROMPT_VERSION,
-      unavailableReason: null,
-      title: 'Critical dairy rescue in ZN_DAIRY_01',
-      actionSummary: scenario.nextBestAction,
-      managerNotification: scenario.managerMessage,
-      auditSummary: scenario.calculationSummary,
-      customerSafeExplanation: 'Move stock now to protect freshness and prevent waste.',
-      criticality: 1
-    };
-  }
-  return fallbackDemoState.brief;
-}
-
-function ensureFallbackNotification() {
-  const scenario = ensureFallbackScenario();
-  if (!fallbackDemoState.notification) {
-    fallbackDemoState.notification = {
-      ID: `NOTIF-${scenario.ID}`,
-      createdAt: isoNow(),
-      scenarioID: scenario.ID,
-      channel: 'WORK_ZONE',
-      recipient: 'store.manager',
-      subject: 'Critical FreshChain rescue required',
-      message: scenario.managerMessage,
-      status: 'SENT',
-      criticality: 1
-    };
-  }
-  return fallbackDemoState.notification;
-}
-
-function fallbackBusinessImpactSummary() {
-  const scenario = ensureFallbackScenario();
-  const task = ensureFallbackTask();
-  const completed = String(task.status).toUpperCase() === 'COMPLETED';
-  return {
-    ID: 'current',
-    generatedAt: task.completedAt || scenario.generatedAt || isoNow(),
-    incidentStatus: completed ? 'ACTIONED' : 'POTENTIAL',
-    protectedRevenueZar: completed ? 4532 : 0,
-    potentialProtectedRevenueZar: 4532,
-    actualProtectedRevenueZar: completed ? 4532 : 0,
-    stockValueAtRiskZar: 5899,
-    affectedLotCount: 3,
-    affectedUnits: 90,
-    expectedLossZar: 4532,
-    salvageRate: 0.82,
-    wasteAvoidedUnits: completed ? 90 : 0,
-    lostSalesAvoidedUnits: completed ? 39 : 0,
-    responseSlaMinutes: 15,
-    processCompletionPct: completed ? 100 : 25,
-    confidencePct: 78,
-    executiveHeadline: completed
-      ? '4,532 ZAR protected with movement evidence'
-      : '4,532 ZAR potential protection awaiting store action',
-    criticality: completed ? 3 : 2
-  };
-}
-
-function fallbackRows(entityName) {
-  if (entityName === 'LiveSensorEvents') return [ensureFallbackReading()];
-  if (entityName === 'RiskDecisions') return [ensureFallbackPrediction()];
-  if (entityName === 'RescueScenarios') return [ensureFallbackScenario()];
-  if (entityName === 'ProcessTasks') return [ensureFallbackTask()];
-  if (entityName === 'ActionBriefs') return [ensureFallbackBrief()];
-  if (entityName === 'NotificationEvents') return [ensureFallbackNotification()];
-  if (entityName === 'BusinessImpactSummary') return [fallbackBusinessImpactSummary()];
-  return [];
-}
-
-function fallbackRead(entityName) {
-  return counted(fallbackRows(entityName));
-}
-
 async function createLiveReading(req) {
-  if (forceDemoFallback()) {
-    const reading = ensureFallbackReading();
-    Object.assign(runState, {
-      status: 'RUNNING',
-      startedAt: runState.startedAt || isoNow(),
-      stoppedAt: null,
-      lastTickAt: isoNow(),
-      lastMessageId: reading.sourceMessageId,
-      lastScenario: reading.scenarioCode,
-      message: 'Live demo fallback reading created because HANA is unavailable.'
-    });
-    return reading;
-  }
   requireRunningDemo(req, 'reading');
   const payload = await cds.tx(tx => generatePayload(tx));
   await publishSensorPayload(req, payload);
@@ -1813,16 +1513,6 @@ async function createLiveReading(req) {
 }
 
 async function scoreLatestLiveReading(req, entities) {
-  if (forceDemoFallback()) {
-    const prediction = ensureFallbackPrediction();
-    Object.assign(runState, {
-      lastTickAt: isoNow(),
-      lastMessageId: ensureFallbackReading().sourceMessageId,
-      lastScenario: ensureFallbackReading().scenarioCode,
-      message: 'Fallback AI risk decision recorded for the live demo.'
-    });
-    return prediction;
-  }
   requireRunningDemo(req, 'score');
   const prediction = await cds.tx(async tx => {
     const reading = await tx.run(SELECT.one.from(entities.SensorReadings).orderBy('measuredAt desc'));
@@ -1839,21 +1529,6 @@ async function scoreLatestLiveReading(req, entities) {
 }
 
 async function runRescueScenario(req) {
-  if (forceDemoFallback()) {
-    const scenario = ensureFallbackScenario();
-    ensureFallbackBrief();
-    ensureFallbackTask();
-    ensureFallbackNotification();
-    Object.assign(runState, {
-      status: 'STOPPED',
-      stoppedAt: isoNow(),
-      lastTickAt: isoNow(),
-      lastMessageId: ensureFallbackReading().sourceMessageId,
-      lastScenario: ensureFallbackReading().scenarioCode,
-      message: 'Fallback rescue scenario created with stock-ledger-equivalent economics while HANA is unavailable.'
-    });
-    return scenario;
-  }
   const payload = await cds.tx(tx => generateRescuePayload(tx));
   await publishSensorPayload(req, payload);
   const result = await processPayload(payload);
@@ -1906,29 +1581,6 @@ async function triggerInterventionProcessForRequest(req) {
 }
 
 async function completeInterventionTaskForRequest(req) {
-  if (forceDemoFallback()) {
-    const task = ensureFallbackTask();
-    Object.assign(task, {
-      status: 'COMPLETED',
-      outcome: req.data.outcome || 'Moved affected stock to backup chiller and marked exposed lots for immediate sale.',
-      completedAt: isoNow(),
-      workflowStatus: 'COMPLETED',
-      criticality: 3
-    });
-    Object.assign(ensureFallbackScenario(), {
-      status: 'RESCUED',
-      processStatus: 'COMPLETED',
-      protectedRevenueZar: 4532,
-      headline: '4,532 ZAR protected by completing the spoilage rescue workflow',
-      workflowProof: `${task.workflowMode} task ${task.ID} completed by ${task.assignee}.`,
-      criticality: 3
-    });
-    Object.assign(runState, {
-      lastTickAt: isoNow(),
-      message: 'Fallback store action completed and protected revenue proof is visible.'
-    });
-    return task;
-  }
   const task = await completeTask(cds.tx(req), req, req.data.taskID, req.data.outcome);
   if (!task) req.reject(404, `Process task ${req.data.taskID} not found`);
   return task;

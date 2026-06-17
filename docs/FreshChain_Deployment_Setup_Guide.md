@@ -352,14 +352,7 @@ For the hackathon tenant, the value is the FreshChain Work Zone site URL. Do not
 
 FreshChain's primary Work Zone launchers can expose live KPI values through dynamic tile metadata in the app `manifest.json`. The primary inbound should define `subTitle`, `info`, `icon`, and an `indicatorDataSource` that points at the managed CAP route, for example `DynamicTileKpis('protectedRevenue')`. After uploading the HTML5 app content, sync the HTML5 Apps channel in SAP Build Work Zone Channel Manager and confirm the app's Visualization tab in Content Manager reads `Dynamic Tile`.
 
-If the HANA-backed service is temporarily unavailable during a demo, the Rescue Cockpit can be protected with the CAP fallback path:
-
-```sh
-cf set-env freshchain-srv FRESHCHAIN_FORCE_DEMO_FALLBACK true
-cf restart freshchain-srv
-```
-
-This keeps the Work Zone dynamic tile and Rescue Cockpit button flow responsive with the documented ST001 / ZN_DAIRY_01 incident economics. Treat it as a demo-continuity switch only. After HANA connectivity is recovered, unset the variable, restart `freshchain-srv`, and rerun the Work Zone action path against persisted HANA data.
+Do not enable fallback business data for demos. The only mocked input should be the live-demo sensor reading payload; persistence, scoring, stock-ledger financials, workflow task proof, cards, tiles, and screenshots must come from the live deployed system. If HANA, AI Core, Work Zone, or another platform dependency fails, fix the live dependency and record the defect instead of masking it.
 
 For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push -n freshchain-html5-repo-host ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, push the complete FreshChain app set or use the MTA HTML5 content module while excluding database deployment.
 
@@ -445,6 +438,20 @@ If AI Core inference is unavailable:
 | Image pull fails | Registry credentials missing | Configure registry access for SAP AI Core |
 | HTML5 apps not visible | Work Zone content not assigned | Add apps to Work Zone site/catalog/group |
 | OData route fails | Destination or auth misconfiguration | Validate Destination service and XSUAA bindings |
+| HANA-backed reads time out in Work Zone apps | HANA Cloud may be stopped, or HDI/HANA connectivity, pool, binding, or query/runtime may be unhealthy | Treat this as demo-blocking. Do not enable fallback business data. Verify the HANA Cloud instance is running, test app-to-HANA connectivity, recover the live persistence path, and rerun the full Work Zone flow against persisted data. |
+| Work Zone cards or dynamic tiles show placeholders, stale values, or fail batch requests | CAP route, Destination, auth, HANA, or Work Zone content sync issue | Fix the live route and recapture screenshots only after cards and tiles resolve from persisted CAP/HANA data. |
+
+### 15.1 Known Live-Demo Defects to Track
+
+The following defects must be recorded when observed and must not be masked with fallback business data:
+
+- HANA/HDI-backed OData reads timing out through `freshchain-srv`. On 2026-06-17 the confirmed root cause was a stopped HANA Cloud instance; after starting `freshchain-hana-free`, app-to-HANA query succeeded and Work Zone managed OData reads returned HTTP 200.
+- Work Zone OVP cards or dynamic tiles failing to resolve from live CAP/HANA data.
+- AI Core scoring unavailable or returning failed telemetry.
+- Workflow/task proof unavailable after a live-demo sensor reading.
+- Screenshots or fixed business values captured before the full live persisted path is healthy.
+
+For each item, fix the live dependency, rerun the action path from Work Zone, and only then update demo screenshots or numeric claims.
 
 ## 16. Production Handover Checklist
 
