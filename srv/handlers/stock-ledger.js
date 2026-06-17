@@ -360,7 +360,8 @@ async function stockAtRiskForZone(tx, zoneId, prediction = {}) {
   const expectedLossZar = money(stockValueAtRiskZar * score * confidence);
   const salvageRate = salvageRateForRisk(score, settings);
   const responseSlaMinutes = responseSlaMinutesForRisk(prediction.riskLevel, settings);
-  const potentialProtectedRevenueZar = money(Math.min(expectedLossZar, stockValueAtRiskZar * salvageRate));
+  const salvageCapZar = money(stockValueAtRiskZar * salvageRate);
+  const potentialProtectedRevenueZar = money(Math.min(expectedLossZar, salvageCapZar));
   const productNames = [...new Set(activeLots.map(lot => products.get(lot.product_ID)?.name).filter(Boolean))];
   const currency = settings.currencyCode || 'ZAR';
   return {
@@ -378,7 +379,7 @@ async function stockAtRiskForZone(tx, zoneId, prediction = {}) {
     potentialProtectedRevenueZar,
     wasteAvoidedUnits: affectedUnits,
     lostSalesAvoidedUnits: money(Math.max(0, Number(prediction.demandUnitsForecast || 0))),
-    calculationSummary: `Stock at risk is active stock in the affected zone. Expected loss = stock value ${currency} ${stockValueAtRiskZar.toLocaleString('en-ZA')} x risk ${score} x confidence ${confidence}. Potential protected revenue uses maintained salvage rate ${salvageRate} from ${settings.settingCode}.`
+    calculationSummary: `Stock at risk = active stock in affected zone (${affectedUnits.toLocaleString('en-ZA')} units) priced from stock ledger at ${currency} ${stockValueAtRiskZar.toLocaleString('en-ZA')}. Expected loss = ${currency} ${stockValueAtRiskZar.toLocaleString('en-ZA')} x AI risk ${score} x AI confidence ${confidence} = ${currency} ${expectedLossZar.toLocaleString('en-ZA')}. Salvage cap = ${currency} ${stockValueAtRiskZar.toLocaleString('en-ZA')} x maintained salvage rate ${salvageRate} from ${settings.settingCode} = ${currency} ${salvageCapZar.toLocaleString('en-ZA')}. Potential protected revenue = lower of expected loss and salvage cap = ${currency} ${potentialProtectedRevenueZar.toLocaleString('en-ZA')}.`
   };
 }
 

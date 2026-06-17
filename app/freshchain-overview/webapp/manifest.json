@@ -3,8 +3,8 @@
   "sap.app": {
     "id": "freshchain.overview",
     "type": "application",
-    "title": "FreshChain Live Demo",
-    "description": "Panel-ready demo cockpit for live readings, AI Core scoring, rescue workflow, and proof",
+    "title": "FreshChain Rescue Cockpit",
+    "description": "Operational demo cockpit for cold-chain incident detection, AI Core risk scoring, protected revenue calculation, store rescue workflow, and proof",
     "applicationVersion": {
       "version": "0.1.0"
     },
@@ -13,7 +13,7 @@
         "FreshChainSense-display": {
           "semanticObject": "FreshChainSense",
           "action": "display",
-          "title": "FreshChain Live Demo",
+          "title": "FreshChain Rescue Cockpit",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -48,6 +48,13 @@
         "sap.ui.core": {},
         "sap.ui.layout": {}
       }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
     },
     "models": {
       "": {

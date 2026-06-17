@@ -19,6 +19,27 @@ if (!fs.existsSync(path.join(distDir, "manifest.json"))) {
   process.exit(2);
 }
 
+const componentPath = path.join(distDir, "Component.js");
+const preloadPath = path.join(distDir, "Component-preload.js");
+if (fs.existsSync(componentPath) && !fs.existsSync(preloadPath)) {
+  const manifest = JSON.parse(fs.readFileSync(path.join(distDir, "manifest.json"), "utf8"));
+  const namespace = String(manifest?.["sap.app"]?.id || "").replace(/\./g, "/");
+  if (!namespace) {
+    console.error(`Cannot create Component-preload.js without sap.app/id in ${distDir}`);
+    process.exit(2);
+  }
+  const componentSource = fs.readFileSync(componentPath, "utf8");
+  const preloadSource = componentSource.replace(
+    "sap.ui.define(",
+    `sap.ui.predefine("${namespace}/Component", `
+  );
+  if (preloadSource === componentSource) {
+    console.error(`Cannot create Component-preload.js from ${componentPath}`);
+    process.exit(2);
+  }
+  fs.writeFileSync(preloadPath, preloadSource);
+}
+
 fs.rmSync(zipPath, { force: true });
 
 const entries = fs
