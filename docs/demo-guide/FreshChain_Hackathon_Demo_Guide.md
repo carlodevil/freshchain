@@ -18,7 +18,7 @@ In the captured live run:
 | Potential protected revenue | R 4 532 |
 | Actual protected revenue after task completion | R 4 532 |
 | Workflow proof | COMPLETED task for store.manager |
-| AI action brief mode | SAP AI Core Generative AI Hub |
+| AI action brief mode | CAP demo-continuity fallback; SAP AI Core scoring is configured |
 
 ## 6-7 Minute Button-By-Button Flow
 
@@ -58,7 +58,7 @@ In the captured live run:
 
 **Button/path:** Press Score, then open AI Decision.  
 **Say:** Press Score risk. Explain the result: CRITICAL risk, score 1.000, confidence 0.776, action "Urgent removal of 3 chilled product groups".  
-**Concrete outcome:** SAP AI Core scoring turns telemetry into an operational decision.
+**Concrete outcome:** In the normal path, SAP AI Core scoring turns telemetry into an operational decision. While fallback mode is active, the live CAP action returns the same scored decision contract so the panel can still see the end-to-end business action.
 
 ### 2:50-3:45 — Press Run Rescue, then open Rescue
 ![Press Run Rescue, then open Rescue](screenshots/06-live-demo-rescue.png)

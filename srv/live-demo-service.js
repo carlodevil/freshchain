@@ -1302,7 +1302,17 @@ function readIntegrationStatuses() {
   const genAiConfigured = hasGenAiConfiguration();
   const eventMeshConfigured = hasMessagingBinding();
   const managedBaseUrlConfigured = Boolean(managedBaseUrl());
+  const fallbackActive = forceDemoFallback();
   return [
+    integrationStatus(
+      'hanaPersistence',
+      'SAP HANA persistence',
+      !fallbackActive,
+      fallbackActive
+        ? 'HANA-backed reads are unavailable; Rescue Cockpit is using CAP demo-continuity fallback'
+        : 'CAP services are using the bound HDI container',
+      fallbackActive ? 'FRESHCHAIN_FORCE_DEMO_FALLBACK' : 'VCAP_SERVICES'
+    ),
     integrationStatus(
       'aiCore',
       'SAP AI Core scoring',
@@ -1321,7 +1331,9 @@ function readIntegrationStatuses() {
       'workflow',
       'FreshChain in-app workflow',
       true,
-      'Store rescue workflow is handled by CAP actions and persisted task proof',
+      fallbackActive
+        ? 'Store rescue workflow is handled by live CAP actions in demo-continuity fallback mode'
+        : 'Store rescue workflow is handled by CAP actions and persisted task proof',
       'LiveDemoService'
     ),
     integrationStatus(
