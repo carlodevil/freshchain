@@ -195,7 +195,9 @@ test.before(async () => {
             choices: [{
               message: {
                 content: JSON.stringify({
-                  actionSummary: 'GenAI: move stock, start markdown, and escalate compressor service within 12 minutes.',
+                  actionSummary: {
+                    primaryAction: 'GenAI: move stock, start markdown, and escalate compressor service within 12 minutes.'
+                  },
                   managerNotification: 'GenAI: FreshChain detected CRITICAL spoilage risk. Protect the stock now.',
                   auditSummary: 'GenAI: AI Core evidence, financial impact, and SLA were converted into an auditable action brief.',
                   customerSafeExplanation: 'GenAI: stock is being rotated early because refrigeration telemetry showed risk.'
@@ -971,6 +973,7 @@ test('rescue scenario can use live-style GenAI and in-app workflow integrations'
     assert.equal(briefRows.data.value[0].modelName, 'gpt-5');
     assert.ok(Number(briefRows.data.value[0].generationLatencyMs) >= 0);
     assert.equal(briefRows.data.value[0].unavailableReason, null);
+    assert.match(briefRows.data.value[0].actionSummary, /primaryAction/);
 
     const taskRows = await GET(`/odata/v4/live-demo/ProcessTasks?$filter=scenarioID eq '${scenario.data.ID}'`);
     assert.equal(taskRows.data.value[0].workflowMode, 'FreshChain in-app workflow');

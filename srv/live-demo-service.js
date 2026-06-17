@@ -847,6 +847,12 @@ function genAiBriefFromContent(scenario, content, metadata = {}) {
   const generated = typeof content === 'string'
     ? (parseGenAiText(content) || { actionSummary: content })
     : content || {};
+  const generatedText = (name, fallback) => {
+    const value = generated[name];
+    if (typeof value === 'string') return value;
+    if (value === undefined || value === null) return fallback;
+    return redact(JSON.stringify(value), 500) || fallback;
+  };
   return {
     ID: `BRIEF-${scenario.ID}`,
     scenario_ID: scenario.ID,
@@ -857,10 +863,10 @@ function genAiBriefFromContent(scenario, content, metadata = {}) {
     promptVersion: ACTION_BRIEF_PROMPT_VERSION,
     unavailableReason: null,
     title: `GenAI action brief: ${scenario.riskLevel} risk in ${scenario.zoneCode}`,
-    actionSummary: generated.actionSummary || generated.storeAction || scenario.nextBestAction,
-    managerNotification: generated.managerNotification || `FreshChain detected ${scenario.riskLevel} spoilage risk in ${scenario.zoneCode}. Protect up to R ${Math.round(scenario.potentialProtectedRevenueZar || scenario.protectedRevenueZar).toLocaleString('en-ZA')} by moving stock now.`,
-    auditSummary: generated.auditSummary || `AI Core risk ${scenario.riskScore} with confidence ${scenario.confidence}. Potential protected revenue R ${scenario.potentialProtectedRevenueZar}.`,
-    customerSafeExplanation: generated.customerSafeExplanation || 'FreshChain is rotating stock early because telemetry showed a refrigeration risk.',
+    actionSummary: generatedText('actionSummary', generatedText('storeAction', scenario.nextBestAction)),
+    managerNotification: generatedText('managerNotification', `FreshChain detected ${scenario.riskLevel} spoilage risk in ${scenario.zoneCode}. Protect up to R ${Math.round(scenario.potentialProtectedRevenueZar || scenario.protectedRevenueZar).toLocaleString('en-ZA')} by moving stock now.`),
+    auditSummary: generatedText('auditSummary', `AI Core risk ${scenario.riskScore} with confidence ${scenario.confidence}. Potential protected revenue R ${scenario.potentialProtectedRevenueZar}.`),
+    customerSafeExplanation: generatedText('customerSafeExplanation', 'FreshChain is rotating stock early because telemetry showed a refrigeration risk.'),
     criticality: scenario.criticality
   };
 }
