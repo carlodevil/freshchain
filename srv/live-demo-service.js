@@ -1349,6 +1349,7 @@ function registerLiveDemoReadHandlers(service, entities) {
   service.on('READ', 'IntegrationStatuses', readIntegrationStatusesForRequest);
   service.on('READ', 'DynamicTileKpis', readDynamicTileKpisForRequest);
   service.after('READ', 'RiskDecisions', addRiskDecisionCriticality);
+  service.after('READ', 'SpoilageInterventions', addSpoilageInterventionCriticality);
   service.after('READ', 'InterventionImpacts', addInterventionImpactCriticality);
   service.on('READ', 'DemoRunStatus', readDemoRunStatus);
   service.on('READ', 'DemoImpactMetrics', req => readDemoImpactMetrics(req, entities));
@@ -1399,6 +1400,13 @@ async function readDynamicTileKpisForRequest(req) {
 function addRiskDecisionCriticality(rows) {
   const list = Array.isArray(rows) ? rows : rows ? [rows] : [];
   for (const row of list) row.criticality = riskCriticality(row.riskLevel);
+}
+
+function addSpoilageInterventionCriticality(rows) {
+  const list = Array.isArray(rows) ? rows : rows ? [rows] : [];
+  for (const row of list) {
+    row.criticality = row.status === 'RESOLVED' ? criticalityForStatus(row.status) : riskCriticality(row.severity);
+  }
 }
 
 function addInterventionImpactCriticality(rows) {

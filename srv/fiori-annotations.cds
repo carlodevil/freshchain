@@ -989,14 +989,21 @@ annotate analytics.ActiveAlerts with @(
   UI.SelectionFields: [severity, status, alertType],
   UI.LineItem: [
     { Value: createdAt, Label: 'Created At' },
-    { Value: severity, Label: 'Severity' },
-    { Value: status, Label: 'Status' },
-    { Value: zoneCode, Label: 'Zone' },
-    { Value: alertType, Label: 'Type' },
-    { Value: title, Label: 'Title' },
+    { Value: severity, Label: 'Severity', Criticality: criticality },
+    { Value: status, Label: 'Status', Criticality: criticality },
     { Value: recommendation, Label: 'Recommendation' },
+    { Value: zoneCode, Label: 'Zone' },
+    { Value: title, Label: 'Title' },
+    { Value: alertType, Label: 'Type' },
     { Value: assignedTo, Label: 'Assigned To' }
-  ]
+  ],
+  UI.PresentationVariant: {
+    SortOrder: [{
+      Property: createdAt,
+      Descending: true
+    }],
+    Visualizations: ['@UI.LineItem']
+  }
 );
 
 annotate analytics.ReadingAggregates with @(
@@ -1016,7 +1023,14 @@ annotate analytics.ReadingAggregates with @(
     { Value: doorOpenSeconds, Label: 'Door Open Seconds' },
     { Value: excursionMinutes, Label: 'Excursion Minutes' },
     { Value: readingCount, Label: 'Readings' }
-  ]
+  ],
+  UI.PresentationVariant: {
+    SortOrder: [{
+      Property: windowEnd,
+      Descending: true
+    }],
+    Visualizations: ['@UI.LineItem']
+  }
 );
 
 annotate live.LiveSensorEvents with @(
@@ -1091,6 +1105,13 @@ annotate live.RiskDecisions with @(
     { Value: confidence, Label: 'Confidence' },
     { Value: recommendedAction, Label: 'Action' }
   ],
+  UI.PresentationVariant: {
+    SortOrder: [{
+      Property: createdAt,
+      Descending: true
+    }],
+    Visualizations: ['@UI.LineItem']
+  },
   UI.Facets: [
     { $Type: 'UI.ReferenceFacet', Label: 'Risk Decision', Target: '@UI.FieldGroup#Decision' },
     { $Type: 'UI.ReferenceFacet', Label: 'SAP AI Core Proof', Target: '@UI.FieldGroup#AiCore' }
@@ -1129,16 +1150,26 @@ annotate live.SpoilageInterventions with @(
   UI.SelectionFields: [severity, status, alertType, zoneCode],
   UI.LineItem: [
     { Value: createdAt, Label: 'Created At' },
-    { Value: severity, Label: 'Severity' },
-    { Value: status, Label: 'Status' },
+    { Value: severity, Label: 'Severity', Criticality: criticality },
+    { Value: status, Label: 'Status', Criticality: criticality },
+    { Value: recommendation, Label: 'Recommended Action' },
     { Value: storeCode, Label: 'Store' },
     { Value: zoneCode, Label: 'Zone' },
+    { Value: assignedTo, Label: 'Owner' },
+    { Value: outcome, Label: 'Outcome' },
     { Value: title, Label: 'Alert' },
-    { Value: recommendation, Label: 'Recommended Action' },
+    { $Type: 'UI.DataFieldForAction', Action: 'LiveDemoService.assign', Label: 'Assign' },
     { $Type: 'UI.DataFieldForAction', Action: 'LiveDemoService.acknowledge', Label: 'Acknowledge' },
     { $Type: 'UI.DataFieldForAction', Action: 'LiveDemoService.resolve', Label: 'Resolve' },
     { $Type: 'UI.DataFieldForAction', Action: 'LiveDemoService.reopen', Label: 'Reopen' }
   ],
+  UI.PresentationVariant: {
+    SortOrder: [{
+      Property: createdAt,
+      Descending: true
+    }],
+    Visualizations: ['@UI.LineItem']
+  },
   UI.Facets: [
     { $Type: 'UI.ReferenceFacet', Label: 'Intervention', Target: '@UI.FieldGroup#Intervention' }
   ],
@@ -1772,21 +1803,28 @@ annotate live.InterventionImpacts with @(
   },
   UI.SelectionFields: [status, storeCode, zoneCode, actionType],
   UI.LineItem: [
-    { Value: scenarioID, Label: 'Scenario' },
+    { Value: createdAt, Label: 'Created At' },
     { Value: status, Label: 'Status', Criticality: criticality },
+    { Value: actualProtectedRevenueZar, Label: 'Actual Protected ZAR' },
+    { Value: potentialProtectedRevenueZar, Label: 'Potential Protected ZAR' },
+    { Value: stockValueAtRiskZar, Label: 'Stock at Risk ZAR' },
+    { Value: expectedLossZar, Label: 'Expected Loss ZAR' },
+    { Value: scenarioID, Label: 'Scenario' },
     { Value: actionType, Label: 'Action' },
     { Value: storeCode, Label: 'Store' },
     { Value: zoneCode, Label: 'Zone' },
-    { Value: productName, Label: 'Product' },
-    { Value: lotCount, Label: 'Lots' },
     { Value: affectedUnits, Label: 'Affected Units' },
-    { Value: stockValueAtRiskZar, Label: 'Stock at Risk ZAR' },
-    { Value: expectedLossZar, Label: 'Expected Loss ZAR' },
-    { Value: responseSlaMinutes, Label: 'Response SLA min' },
-    { Value: potentialProtectedRevenueZar, Label: 'Potential Protected ZAR' },
-    { Value: actualProtectedRevenueZar, Label: 'Actual Protected ZAR' },
+    { Value: lotCount, Label: 'Lots' },
+    { Value: productName, Label: 'Product' },
     { Value: movementReferences, Label: 'Movement Evidence' }
   ],
+  UI.PresentationVariant: {
+    SortOrder: [{
+      Property: createdAt,
+      Descending: true
+    }],
+    Visualizations: ['@UI.LineItem']
+  },
   UI.DataPoint #ActualProtected: {
     Title: 'Actual Protected Revenue',
     Value: actualProtectedRevenueZar,

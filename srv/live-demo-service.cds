@@ -56,7 +56,8 @@ service LiveDemoService @(path: '/odata/v4/live-demo') {
     title,
     recommendation,
     assignedTo,
-    outcome
+    outcome,
+    virtual null as criticality : Integer
   } actions {
     action acknowledge(comment: String) returns SpoilageInterventions;
     action assign(userId: String, comment: String) returns SpoilageInterventions;

@@ -35,7 +35,8 @@ service AnalyticsService @(path: '/odata/v4/analytics') {
     createdAt,
     store.ID as store_ID,
     zone.ID as zone_ID,
-    zone.zoneCode as zoneCode
+    zone.zoneCode as zoneCode,
+    virtual null as criticality : Integer
   };
   entity ReadingAggregates as select from db.ReadingAggregates {
     key ID,

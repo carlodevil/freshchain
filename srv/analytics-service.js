@@ -6,7 +6,23 @@ const HIGH_ALERT_SEVERITIES = ['HIGH', 'CRITICAL'];
 
 module.exports = cds.service.impl(function AnalyticsService() {
   this.on('getDashboardSummary', getDashboardSummary);
+  this.after('READ', 'ActiveAlerts', addActiveAlertCriticality);
 });
+
+function addActiveAlertCriticality(rows) {
+  const list = Array.isArray(rows) ? rows : rows ? [rows] : [];
+  for (const row of list) {
+    row.criticality = row.status === 'RESOLVED' ? 3 : severityCriticality(row.severity);
+  }
+}
+
+function severityCriticality(severity) {
+  const value = String(severity || '').toUpperCase();
+  if (value === 'CRITICAL') return 1;
+  if (value === 'HIGH') return 2;
+  if (value === 'MEDIUM') return 2;
+  return 3;
+}
 
 async function getDashboardSummary(req) {
   const { Stores, Zones, Alerts, SensorReadings, IngestionErrors } = cds.entities('freshchain');
