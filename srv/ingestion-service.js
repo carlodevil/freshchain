@@ -1,15 +1,23 @@
 const cds = require('@sap/cds');
 const { ingestPayload, recordIngestionError } = require('./handlers/ingestion');
 
-module.exports = cds.service.impl(function () {
-  this.on('ingestSensorReading', async req => {
-    const payload = JSON.parse(req.data.payload);
-    try {
-      const result = await ingestPayload(this.tx(req), payload, { sourceQueue: 'cap.action.readings' });
-      return JSON.stringify(result);
-    } catch (error) {
-      await cds.tx(async tx => recordIngestionError(tx, payload, error, 'cap.action.readings'));
-      throw error;
-    }
-  });
+const SOURCE_QUEUE = 'cap.action.readings';
+
+module.exports = cds.service.impl(function IngestionService() {
+  this.on('ingestSensorReading', ingestSensorReading);
 });
+
+async function ingestSensorReading(req) {
+  const payload = parseSensorReadingPayload(req.data.payload);
+
+  try {
+    return await ingestPayload(cds.tx(req), payload, { sourceQueue: SOURCE_QUEUE });
+  } catch (error) {
+    await cds.tx(async tx => recordIngestionError(tx, payload, error, SOURCE_QUEUE));
+    throw error;
+  }
+}
+
+function parseSensorReadingPayload(rawPayload) {
+  return typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload;
+}

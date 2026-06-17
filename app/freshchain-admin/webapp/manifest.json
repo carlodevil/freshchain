@@ -3,17 +3,17 @@
   "sap.app": {
     "id": "freshchain.admin",
     "type": "application",
-    "title": "FreshChain Administration",
-    "description": "Threshold configuration and ingestion error review",
+    "title": "FreshChain Prove",
+    "description": "Audited intervention impact, protected revenue, and SAP BTP proof",
     "applicationVersion": {
       "version": "0.1.0"
     },
     "crossNavigation": {
       "inbounds": {
-        "FreshChainAdministration-display": {
-          "semanticObject": "FreshChainAdministration",
+        "FreshChainProve-display": {
+          "semanticObject": "FreshChainProve",
           "action": "display",
-          "title": "FreshChain Administration",
+          "title": "FreshChain Prove",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -23,7 +23,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "../../odata/v4/admin/",
+        "uri": "odata/v4/live-demo/",
         "type": "OData",
         "settings": {
           "odataVersion": "4.0"
@@ -43,10 +43,11 @@
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
+        "sap.fe.core": {},
+        "sap.fe.templates": {},
         "sap.f": {},
         "sap.m": {},
-        "sap.ui.core": {},
-        "sap.ui.layout": {}
+        "sap.ui.core": {}
       }
     },
     "models": {
@@ -65,12 +66,58 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "rootView": {
-      "viewName": "freshchain.admin.view.App",
-      "type": "XML",
-      "async": true,
-      "height": "100%",
-      "id": "app"
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "InterventionImpactsList",
+          "target": "InterventionImpactsList"
+        },
+        {
+          "pattern": "InterventionImpacts({key}):?query:",
+          "name": "InterventionImpactsObjectPage",
+          "target": "InterventionImpactsObjectPage"
+        }
+      ],
+      "targets": {
+        "InterventionImpactsList": {
+          "type": "Component",
+          "id": "InterventionImpactsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "InterventionImpacts",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "InterventionImpacts": {
+                  "detail": {
+                    "route": "InterventionImpactsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "InterventionImpactsObjectPage": {
+          "type": "Component",
+          "id": "InterventionImpactsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "entitySet": "InterventionImpacts"
+            }
+          }
+        }
+      }
     },
     "contentDensities": {
       "compact": true,
@@ -78,6 +125,7 @@
     }
   },
   "sap.cloud": {
+    "public": true,
     "service": "freshchain"
   }
 }

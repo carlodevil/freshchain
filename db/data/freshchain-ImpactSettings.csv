@@ -1,0 +1,2 @@
+ID;settingCode;description;currencyCode;criticalRiskSalvageRate;highRiskSalvageRate;mediumRiskSalvageRate;lowRiskSalvageRate;criticalResponseSlaMinutes;highResponseSlaMinutes;mediumResponseSlaMinutes;lowResponseSlaMinutes;active
+ffffffff-ffff-ffff-ffff-fffffffffff5;DEFAULT_RETAIL_RESCUE;Default fresh retail spoilage rescue economics;ZAR;0.82;0.72;0.58;0.35;12;20;45;90;true

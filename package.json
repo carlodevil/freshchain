@@ -6,33 +6,40 @@
   "type": "commonjs",
   "scripts": {
     "start": "cds-serve",
-    "start:local": "node scripts/start-local.js",
-    "test:local": "node scripts/test-local.js",
     "watch": "cds watch",
     "deploy:local": "cds deploy --to sqlite:db.sqlite",
     "deploy:sqlite": "npm run deploy:local",
     "test": "node --test test/*.test.js",
-    "check": "node --check srv/server.js && node --check srv/handlers/ingestion.js && node --check srv/handlers/rules.js && node --check srv/handlers/ai-core-client.js && node --check srv/handlers/ml-engine.js && node --check srv/handlers/mock-data.js && node --check srv/handlers/dataset-upload.js && node --check srv/ingestion-service.js && node --check srv/catalog-service.js && node --check srv/analytics-service.js && node --check srv/admin-service.js && node --check srv/intelligence-service.js && node --check simulator/src/index.js && node test/validate-ui-artifacts.js",
+    "check": "node --check srv/server.js && node --check srv/handlers/ingestion.js && node --check srv/handlers/rules.js && node --check srv/handlers/alert-workflow.js && node --check srv/handlers/ai-core-client.js && node --check srv/handlers/ml-engine.js && node --check srv/handlers/dataset-upload.js && node --check srv/ingestion-service.js && node --check srv/catalog-service.js && node --check srv/analytics-service.js && node --check srv/admin-service.js && node --check srv/intelligence-service.js && node --check srv/live-demo-service.js && node --check simulator/src/index.js && node test/validate-ui-artifacts.js",
     "simulator": "node simulator/src/index.js",
     "build": "cds build --production",
     "build:mta": "mbt build",
+    "demo:pdf": "node scripts/capture-demo-journey.mjs",
+    "workzone:kpis": "node scripts/update-workzone-dynamic-kpis.mjs",
+    "workzone:maintenance": "node scripts/update-workzone-maintenance-group.mjs",
+    "check:bpa": "node scripts/check-bpa-readiness.mjs",
     "deploy:mta": "cf deploy mta_archives/freshchain_0.1.0.mtar",
     "deploy:cf": "npm run deploy:mta"
   },
   "dependencies": {
-    "@sap/cds": "^8.9.0",
+    "@cap-js/hana": "^2.8.0",
+    "@sap-ai-sdk/orchestration": "^2.11.0",
+    "@sap/cds": "^9.9.1",
     "@sap/hana-client": "^2.24.24",
+    "@sap/xb-msg-amqp-v100": "^0.9.58",
     "@sap/xssec": "^4.8.0",
     "express": "^4.19.2",
     "uuid": "^10.0.0",
     "yaml": "^2.5.1"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^1.7.8",
-    "@sap/cds-dk": "^8.9.0",
+    "@cap-js/cds-test": "^1.0.1",
+    "@cap-js/sqlite": "^2.4.0",
+    "@sap/cds-dk": "^9.9.2",
     "axios": "^1.7.9",
     "bestzip": "^2.2.5",
-    "mbt": "^1.2.34"
+    "mbt": "^1.2.34",
+    "playwright": "^1.60.0"
   },
   "cds": {
     "requires": {
@@ -44,6 +51,17 @@
       },
       "auth": {
         "kind": "mocked"
+      },
+      "messaging": {
+        "[development]": {
+          "kind": "local-messaging"
+        },
+        "[test]": {
+          "kind": "local-messaging"
+        },
+        "[production]": {
+          "kind": "enterprise-messaging-shared"
+        }
       },
       "[production]": {
         "db": {

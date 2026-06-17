@@ -1,6 +1,6 @@
 const cds = require('@sap/cds');
 const crypto = require('crypto');
-const { AiCoreClient, AiCoreError, localModelUrl } = require('./ai-core-client');
+const { AiCoreClient, AiCoreError } = require('./ai-core-client');
 
 function isoNow() {
   return new Date().toISOString();
@@ -17,25 +17,23 @@ function modelVersion() {
 }
 
 async function latestDeployment(tx) {
-  const endpointUrl = localModelUrl();
-  if (endpointUrl) {
-    return {
-      deploymentId: 'freshchain-local',
-      modelName: 'freshchain-intelligence',
-      modelVersion: 'freshchain-pipeline-1.0.0',
-      endpointUrl,
-      status: 'SUCCEEDED',
-      healthStatus: 'ONLINE',
-      localMode: true
-    };
-  }
   const { MLDeployments } = cds.entities('freshchain');
   const deployments = await tx.run(SELECT.from(MLDeployments).where({ status: 'SUCCEEDED' }).orderBy('modifiedAt desc'));
   const aiCoreApiUrl = new AiCoreClient().config.apiUrl || '';
-  const remoteAiCore = !/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::|\/|$)/i.test(aiCoreApiUrl);
-  return remoteAiCore
-    ? deployments.find(deployment => !/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::|\/|$)/i.test(deployment.endpointUrl || ''))
-    : deployments[0];
+  const deployment = deployments.find(deployment => deployment.aiCoreDeploymentId || deployment.endpointUrl);
+  if (deployment) return deployment;
+  if (!aiCoreApiUrl) return null;
+  const activeAiCoreDeployment = await new AiCoreClient().findActiveDeployment();
+  if (!activeAiCoreDeployment) return null;
+  return {
+    deploymentId: activeAiCoreDeployment.deploymentId,
+    aiCoreDeploymentId: activeAiCoreDeployment.deploymentId,
+    modelName: 'freshchain-intelligence',
+    modelVersion: modelVersion(),
+    endpointUrl: activeAiCoreDeployment.endpointUrl,
+    status: activeAiCoreDeployment.status,
+    healthStatus: activeAiCoreDeployment.healthStatus
+  };
 }
 
 async function featureSnapshot(tx, zoneId, batchId) {
@@ -120,8 +118,14 @@ async function scoreLatest(tx, input, client = new AiCoreClient()) {
   const features = await featureSnapshot(tx, input.zoneId, input.batchId);
   if (!features) return null;
 
-  const deployment = await latestDeployment(tx);
   const requestId = crypto.randomUUID();
+  let deployment;
+  try {
+    deployment = await latestDeployment(tx);
+  } catch (error) {
+    await recordFailedInference(tx, requestId, null, features, error);
+    return { failed: true, error };
+  }
   if (!deployment) {
     const error = new AiCoreError('No successful SAP AI Core deployment is active for FreshChain scoring', { statusCode: 409 });
     await recordFailedInference(tx, requestId, deployment, features, error);
@@ -202,8 +206,8 @@ async function scoreLatest(tx, input, client = new AiCoreClient()) {
       recommendedUnits: output.replenishmentUnits,
       priority: output.routePriority,
       reasonCode: output.anomalyType,
-      expectedWasteAvoidedUnits: output.businessImpact.expectedWasteAvoidedUnits || (output.score > 0.65 ? 4 : 1),
-      expectedLostSalesAvoidedUnits: output.businessImpact.expectedLostSalesAvoidedUnits || (output.replenishmentUnits > 0 ? 3 : 0),
+      expectedWasteAvoidedUnits: Number(output.businessImpact.expectedWasteAvoidedUnits || 0),
+      expectedLostSalesAvoidedUnits: Number(output.businessImpact.expectedLostSalesAvoidedUnits || 0),
       status: 'NEW'
     }));
     const alternateStore = await tx.run(SELECT.one.from(Stores).where({ ID: { '!=': features.store.ID }, active: true }));

@@ -392,13 +392,13 @@ A FreshChain ML release is acceptable when:
 - Demand forecasts are created.
 - Replenishment recommendations are created.
 - Route recommendations are created when applicable.
-- Failed AI Core calls are recorded without local fallback.
+- Failed AI Core calls are recorded without synthetic inference.
 
 ## 13. Troubleshooting for Data Science Users
 
 | Symptom | Meaning | What to do |
 | --- | --- | --- |
-| No datasets | No source data has been seeded or ingested | Ask platform/admin team to seed demo data or start ingestion |
+| No datasets | No source data has been uploaded or ingested | Upload a dataset package or start live ingestion |
 | Training action fails | FreshChain could not create AI Core execution | Check AI Core binding, resource group, scenario, executable |
 | Execution failed | Training container failed | Inspect AI Launchpad logs |
 | No model quality rows | Metrics were not returned or not refreshed | Refresh training run; inspect execution output |
@@ -418,7 +418,7 @@ A FreshChain ML release is acceptable when:
 | CAP action for training | `startTraining` |
 | CAP action for deployment | `activateDeployment` |
 | CAP action for scoring | `scoreLatest` |
-| CAP action for seeded demo data | `seedDemoData` |
+| CAP action for dataset upload | `uploadDatasetPackage` |
 
 ## 15. What Not to Do
 

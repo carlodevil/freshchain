@@ -3,17 +3,17 @@
   "sap.app": {
     "id": "freshchain.overview",
     "type": "application",
-    "title": "FreshChain Overview",
-    "description": "Executive cold-chain and ML intelligence overview",
+    "title": "FreshChain Sense",
+    "description": "Live sensor events entering the FreshChain spoilage-prevention flow",
     "applicationVersion": {
       "version": "0.1.0"
     },
     "crossNavigation": {
       "inbounds": {
-        "FreshChainOverview-display": {
-          "semanticObject": "FreshChainOverview",
+        "FreshChainSense-display": {
+          "semanticObject": "FreshChainSense",
           "action": "display",
-          "title": "FreshChain Overview",
+          "title": "FreshChain Sense",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -22,8 +22,8 @@
       }
     },
     "dataSources": {
-      "intelligenceService": {
-        "uri": "../../odata/v4/intelligence/",
+      "liveDemoService": {
+        "uri": "odata/v4/live-demo/",
         "type": "OData",
         "settings": {
           "odataVersion": "4.0"
@@ -43,15 +43,16 @@
     "dependencies": {
       "minUI5Version": "1.120.0",
       "libs": {
+        "sap.fe.core": {},
+        "sap.fe.templates": {},
         "sap.f": {},
         "sap.m": {},
-        "sap.ui.core": {},
-        "sap.ui.layout": {}
+        "sap.ui.core": {}
       }
     },
     "models": {
       "": {
-        "dataSource": "intelligenceService",
+        "dataSource": "liveDemoService",
         "preload": true,
         "settings": {
           "operationMode": "Server",
@@ -65,12 +66,58 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "rootView": {
-      "viewName": "freshchain.overview.view.App",
-      "type": "XML",
-      "async": true,
-      "height": "100%",
-      "id": "app"
+    "routing": {
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "LiveSensorEventsList",
+          "target": "LiveSensorEventsList"
+        },
+        {
+          "pattern": "LiveSensorEvents({key}):?query:",
+          "name": "LiveSensorEventsObjectPage",
+          "target": "LiveSensorEventsObjectPage"
+        }
+      ],
+      "targets": {
+        "LiveSensorEventsList": {
+          "type": "Component",
+          "id": "LiveSensorEventsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "LiveSensorEvents",
+              "variantManagement": "None",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "LiveSensorEvents": {
+                  "detail": {
+                    "route": "LiveSensorEventsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "LiveSensorEventsObjectPage": {
+          "type": "Component",
+          "id": "LiveSensorEventsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "entitySet": "LiveSensorEvents"
+            }
+          }
+        }
+      }
     },
     "contentDensities": {
       "compact": true,
@@ -78,6 +125,7 @@
     }
   },
   "sap.cloud": {
+    "public": true,
     "service": "freshchain"
   }
 }

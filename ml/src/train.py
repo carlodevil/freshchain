@@ -25,8 +25,8 @@ from freshchain_ml_pipeline.models.spoilage_classifier import SpoilageClassifier
 from freshchain_ml_pipeline.utils import set_global_seed
 
 
-MODEL_DIR = Path(os.environ.get("MODEL_DIR", "/app/model"))
-TRAINING_DIR = Path(os.environ.get("TRAINING_DIR", "/app/training-data"))
+MODEL_DIR = Path(os.environ.get("MODEL_DIR", "/tmp/freshchain-model"))
+TRAINING_DIR = Path(os.environ.get("TRAINING_DIR", "/tmp/freshchain-training-data"))
 
 
 def prepared(features, target, time_column):

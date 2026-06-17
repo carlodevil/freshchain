@@ -1,0 +1,237 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "freshchain.controltower",
+    "type": "application",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "0.1.0"
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "FreshChainControlTower-display": {
+          "semanticObject": "FreshChainControlTower",
+          "action": "display",
+          "title": "{{appTitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        },
+        "FreshChainProtectedRevenue-display": {
+          "semanticObject": "FreshChainProtectedRevenue",
+          "action": "display",
+          "title": "Protected Revenue",
+          "subTitle": "Live rescued value",
+          "info": "FreshChain KPI",
+          "icon": "sap-icon://money-bills",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "liveDemoService",
+            "path": "DynamicTileKpis('protectedRevenue')",
+            "refresh": 60
+          }
+        },
+        "FreshChainStockAtRisk-display": {
+          "semanticObject": "FreshChainStockAtRisk",
+          "action": "display",
+          "title": "Stock at Risk",
+          "subTitle": "Live cold-zone exposure",
+          "info": "FreshChain KPI",
+          "icon": "sap-icon://inventory",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "liveDemoService",
+            "path": "DynamicTileKpis('stockAtRisk')",
+            "refresh": 60
+          }
+        },
+        "FreshChainRescueProof-display": {
+          "semanticObject": "FreshChainRescueProof",
+          "action": "display",
+          "title": "Rescue Proof",
+          "subTitle": "Workflow completion",
+          "info": "FreshChain KPI",
+          "icon": "sap-icon://verified",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "liveDemoService",
+            "path": "DynamicTileKpis('rescueProof')",
+            "refresh": 60
+          }
+        },
+        "FreshChainWasteAvoided-display": {
+          "semanticObject": "FreshChainWasteAvoided",
+          "action": "display",
+          "title": "Waste Avoided",
+          "subTitle": "Live intervention result",
+          "info": "FreshChain KPI",
+          "icon": "sap-icon://sys-enter-2",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "liveDemoService",
+            "path": "DynamicTileKpis('wasteAvoided')",
+            "refresh": 60
+          }
+        }
+      }
+    },
+    "dataSources": {
+      "liveDemoService": {
+        "uri": "odata/v4/live-demo/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.ovp": {},
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.comp": {},
+        "sap.ui.table": {},
+        "sap.viz": {}
+      }
+    },
+    "models": {
+      "": {
+        "dataSource": "liveDemoService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true,
+          "synchronizationMode": "None"
+        }
+      },
+      "mainService": {
+        "dataSource": "liveDemoService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true,
+          "synchronizationMode": "None"
+        }
+      },
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    }
+  },
+  "sap.ovp": {
+    "containerLayout": "resizable",
+    "cards": {
+      "businessImpact": {
+        "model": "mainService",
+        "template": "sap.ovp.cards.v4.table",
+        "settings": {
+          "title": "{{cardBusinessImpactTitle}}",
+          "subTitle": "{{cardBusinessImpactSubTitle}}",
+          "entitySet": "BusinessImpactSummary",
+          "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#ControlTowerImpact",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ControlTowerImpact",
+          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenProve"
+        }
+      },
+      "riskByZone": {
+        "model": "mainService",
+        "template": "sap.ovp.cards.v4.charts.analytical",
+        "settings": {
+          "title": "{{cardRiskTitle}}",
+          "subTitle": "{{cardRiskSubTitle}}",
+          "entitySet": "RiskByZone",
+          "selectionAnnotationPath": "com.sap.vocabularies.UI.v1.SelectionVariant#RiskScore",
+          "chartAnnotationPath": "com.sap.vocabularies.UI.v1.Chart#RiskScore",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#RiskScore",
+          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenPredict"
+        }
+      },
+      "scenarioMix": {
+        "model": "mainService",
+        "template": "sap.ovp.cards.v4.charts.analytical",
+        "settings": {
+          "title": "{{cardScenarioTitle}}",
+          "subTitle": "{{cardScenarioSubTitle}}",
+          "entitySet": "ScenarioMix",
+          "selectionAnnotationPath": "com.sap.vocabularies.UI.v1.SelectionVariant#ScenarioShare",
+          "chartAnnotationPath": "com.sap.vocabularies.UI.v1.Chart#ScenarioShare",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ScenarioShare",
+          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenSense"
+        }
+      },
+      "interventionStatus": {
+        "model": "mainService",
+        "template": "sap.ovp.cards.v4.charts.analytical",
+        "settings": {
+          "title": "{{cardInterventionTitle}}",
+          "subTitle": "{{cardInterventionSubTitle}}",
+          "entitySet": "InterventionStatusMix",
+          "selectionAnnotationPath": "com.sap.vocabularies.UI.v1.SelectionVariant#StatusMix",
+          "chartAnnotationPath": "com.sap.vocabularies.UI.v1.Chart#StatusMix",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#StatusMix",
+          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenAct"
+        }
+      },
+      "rescueScenario": {
+        "model": "mainService",
+        "template": "sap.ovp.cards.v4.table",
+        "settings": {
+          "title": "{{cardRescueTitle}}",
+          "subTitle": "{{cardRescueSubTitle}}",
+          "entitySet": "CurrentRescueScenarios",
+          "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#ControlTowerRescue",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ControlTowerRescue",
+          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenAct"
+        }
+      },
+      "processTasks": {
+        "model": "mainService",
+        "template": "sap.ovp.cards.v4.table",
+        "settings": {
+          "title": "{{cardProcessTitle}}",
+          "subTitle": "{{cardProcessSubTitle}}",
+          "entitySet": "CurrentProcessTasks",
+          "annotationPath": "com.sap.vocabularies.UI.v1.LineItem#ControlTowerTasks",
+          "presentationAnnotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant#ControlTowerTasks",
+          "identificationAnnotationPath": "com.sap.vocabularies.UI.v1.Identification#OpenAct"
+        }
+      }
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "freshchain"
+  }
+}

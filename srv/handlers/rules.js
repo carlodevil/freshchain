@@ -1,8 +1,8 @@
 const cds = require('@sap/cds');
 
-function toNumber(value, fallback = 0) {
+function toNumber(value, defaultValue = 0) {
   const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
+  return Number.isFinite(n) ? n : defaultValue;
 }
 
 function severityRank(value) {

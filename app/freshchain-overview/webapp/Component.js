@@ -1,30 +1,9 @@
-sap.ui.define(["sap/ui/core/UIComponent", "sap/ui/model/json/JSONModel"], function (UIComponent, JSONModel) {
+sap.ui.define(["sap/fe/core/AppComponent"], function (AppComponent) {
   "use strict";
 
-  return UIComponent.extend("freshchain.overview.Component", {
+  return AppComponent.extend("freshchain.overview.Component", {
     metadata: {
       manifest: "json"
-    },
-
-    init: function () {
-      UIComponent.prototype.init.apply(this, arguments);
-      this.setModel(new JSONModel({
-        loading: true,
-        health: {},
-        ml: {},
-        alerts: [],
-        riskTrend: [],
-        forecasts: [],
-        replenishments: [],
-        routes: [],
-        telemetry: [],
-        modelQuality: [],
-        scenarioMix: [],
-        dataFreshness: {},
-        datasets: [],
-        trainingRuns: [],
-        deployments: []
-      }), "overview");
     }
   });
 });
