@@ -14,9 +14,17 @@
           "semanticObject": "FreshChainSense",
           "action": "display",
           "title": "FreshChain Rescue Cockpit",
+          "subTitle": "Live stock at risk",
+          "info": "FreshChain KPI",
+          "icon": "sap-icon://shipping-status",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "liveDemoService",
+            "path": "DynamicTileKpis('stockAtRisk')",
+            "refresh": 60
           }
         }
       }

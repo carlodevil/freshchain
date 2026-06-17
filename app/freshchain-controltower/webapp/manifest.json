@@ -14,9 +14,17 @@
           "semanticObject": "FreshChainControlTower",
           "action": "display",
           "title": "{{appTitle}}",
+          "subTitle": "Live rescue value",
+          "info": "FreshChain KPI",
+          "icon": "sap-icon://business-objects-experience",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "liveDemoService",
+            "path": "DynamicTileKpis('protectedRevenue')",
+            "refresh": 60
           }
         },
         "FreshChainProtectedRevenue-display": {

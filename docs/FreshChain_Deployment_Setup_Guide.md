@@ -350,6 +350,8 @@ cf restart freshchain-srv
 
 For the hackathon tenant, the value is the FreshChain Work Zone site URL. Do not store this as a secret; it is a public runtime URL, but keep tenant-specific values out of reusable templates.
 
+FreshChain's primary Work Zone launchers can expose live KPI values through dynamic tile metadata in the app `manifest.json`. The primary inbound should define `subTitle`, `info`, `icon`, and an `indicatorDataSource` that points at the managed CAP route, for example `DynamicTileKpis('protectedRevenue')`. After uploading the HTML5 app content, sync the HTML5 Apps channel in SAP Build Work Zone Channel Manager and confirm the app's Visualization tab in Content Manager reads `Dynamic Tile`.
+
 For UI-only repairs, do not push a single HTML5 app folder to `freshchain-html5-repo-host` unless the intention is to replace the app-host content with only that app. The `cf html5-push -n freshchain-html5-repo-host ...` flow redeploys the supplied HTML5 application set. To preserve Work Zone launchability, push the complete FreshChain app set or use the MTA HTML5 content module while excluding database deployment.
 
 Post-upload check:

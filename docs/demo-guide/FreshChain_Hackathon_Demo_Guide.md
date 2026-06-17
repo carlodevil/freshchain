@@ -1,6 +1,6 @@
 # FreshChain Hackathon Judge Demo Guide
 
-_Last updated: 2026-06-17. Screenshots were refreshed after restoring all HTML5 apps, setting the managed Work Zone base URL, and validating the Work Zone launch paths._
+_Last updated: 2026-06-17. Screenshots were refreshed after restoring all HTML5 apps, setting the managed Work Zone base URL, syncing the HTML5 Apps channel, and validating the Work Zone launch paths._
 
 ## Prize-Winning Narrative
 FreshChain is not a dashboard of ambiguous cold-chain data. The demo shows a concrete store incident progressing from telemetry to AI decision, financial impact, assigned workflow, completed store action, and audit proof.
@@ -26,8 +26,8 @@ In the captured live run:
 ![Open SAP Build Work Zone](screenshots/00-workzone-home.png)
 
 **Button/path:** Open SAP Build Work Zone.  
-**Say:** Start from the real BTP launchpad. Point out that judges are seeing the deployed tenant, not a local mock.  
-**Concrete outcome:** FreshChain has role-based entry points for command, monitoring, proof, prediction, and store action.
+**Say:** Start from the real BTP launchpad. Point out that judges are seeing the deployed tenant, not a local mock. The first tile is already a business result: Revenue Protected by Intervention, live proof from ZN_DAIRY_01, about R4.5k protected, and 78% confidence.
+**Concrete outcome:** FreshChain has role-based entry points for command, monitoring, proof, prediction, and store action, with the lead tile showing a live KPI instead of a static app shortcut.
 
 ### 0:45-1:20 — Open FreshChain Rescue Command Center
 ![Open FreshChain Rescue Command Center](screenshots/01-controltower-kpis.png)
@@ -128,7 +128,7 @@ In the captured live run:
 
 | Area | Observed issue | Impact on prize demo | Workaround for panel | Recommended fix |
 |---|---|---|---|---|
-| Work Zone first impression | Work Zone launches and shows FreshChain apps, but the home page tiles are still mostly static/blank and do not show dynamic KPI numbers. Control Tower now confirms the `SAP Build Work Zone dynamic tiles` runtime configuration is `READY`. | The first screen proves BTP deployment, but does not itself communicate business value. | Spend less than a minute on Work Zone, then open Control Tower and Rescue Cockpit for value proof. | Republish/rebuild the Work Zone home page with the dynamic KPI tile inbounds for protected revenue, stock at risk, rescue proof, and waste avoided. |
+| Work Zone secondary KPIs | The first Work Zone tile now shows the dynamic protected-revenue KPI, but secondary KPI tiles for stock at risk, rescue proof, and waste avoided are not yet published as first-row dynamic tiles. | The first impression is now business-led, but the page does not yet tell the whole operational story before opening apps. | Start with the dynamic protected-revenue tile, then open Control Tower for the full KPI set. | Rebuild the Work Zone page with additional dynamic KPI tiles or cards for stock at risk, live rescue proof, and waste avoided. |
 | Work Zone app naming | Content Manager now has a local `FreshChain Rescue Cockpit` app assigned to the `FreshChain Command` group and `Everyone` role, but the runtime home page still paints the old `FreshChain Sense` label until the site page/cache is refreshed. The tile launches the correct local app ID. | Judges may not immediately know this is the main live-action demo app. | Verbally introduce the stale-labelled tile as the Rescue Cockpit; the opened app title and runtime content are correct. | Republish/refresh the Work Zone site page so the home tile metadata catches up with the local content item. |
 | Business value scale | The cockpit now shows a single-incident proof plus a clearly-labelled 20-store extrapolation. The extrapolation is directional, not persisted chain-wide evidence. | Judges can understand upside, but may ask what is real versus assumed. | Say: “The R4,532 is persisted proof; the annualized panel is the business-case scenario using the same calculation.” | Later, populate estate-level KPIs from multi-store historical incidents instead of a demo assumption. |
 | HTML5 app-host content | On 2026-06-17, the app-host was restored by pushing the full FreshChain HTML5 app set. `cf html5-list` showed all deployable apps under `freshchain-html5-repo-host` after the repair. | A partial app-host upload can make apps 404 even though tiles still appear. | Use the current live tenant, where Control Tower, Rescue Cockpit, Act, Predict, Prove, and Monitor were validated from Work Zone. | When doing UI-only deployments, push the complete HTML5 app set or use the MTA content module without redeploying the DB module. |
@@ -136,9 +136,10 @@ In the captured live run:
 | Headless Work Zone screenshots | Work Zone loads the Rescue Cockpit iframe and app resources, but headless screenshots intermittently paint only the iframe header while the DOM and app text are present. | Presentation screenshots of detailed cockpit steps are captured from a temporary shell instead of Work Zone chrome. | For the panel, open the cockpit manually from Work Zone; the app itself loads and actions are live. | Validate final manual browser run and, if needed, use native browser screenshots instead of headless capture. |
 
 ## Capture Notes
-- Work Zone screenshot was captured from: https://afsug-hackathon.launchpad.cfapps.eu20.hana.ondemand.com/site?siteId=97d11aec-866b-4a20-8f25-695b8927576e#Shell-home
+- Work Zone screenshot was captured from: https://afsug-hackathon.launchpad.cfapps.eu20.hana.ondemand.com/site?siteId=97d11aec-866b-4a20-8f25-695b8927576e#Shell-home after syncing the HTML5 Apps channel. The lead tile showed the dynamic protected-revenue KPI from `DynamicTileKpis('protectedRevenue')`.
 - Control Tower screenshot was captured from Work Zone after restoring the full HTML5 app-host content.
 - Work Zone launch paths validated on 2026-06-17: FreshChain Rescue Command Center, FreshChain Rescue Cockpit, FreshChain Act, FreshChain Predict, FreshChain Prove, and FreshChain Monitor.
 - Control Tower BTP Readiness showed `SAP Build Work Zone dynamic tiles` as `READY` after setting `FRESHCHAIN_MANAGED_BASE_URL` on `freshchain-srv` and restarting the app.
+- Content Manager showed the Control Tower visualization as `Dynamic Tile` after the HTML5 Apps provider sync. The tile preview may show a placeholder while the runtime Work Zone page resolves the live KPI value.
 - Detailed Rescue Cockpit action screenshots were captured through a temporary local UI shell that proxied OData/actions to the live BTP `freshchain-srv`. This avoided a headless Work Zone iframe screenshot-painting issue; the backend actions and data are live BTP outcomes.
 - Do not commit or present auth files, service keys, or the temporary local proxy. Only the screenshots and this guide are intended presentation artifacts.
