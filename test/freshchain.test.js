@@ -81,11 +81,11 @@ function validDatasetPackage(messageId = `UPLOAD-${Date.now()}`) {
   return zipPackage({
     'sensor_readings.csv': [
       'messageId,storeCode,zoneCode,sensorId,measuredAt,temperatureC,humidityPct,co2Ppm,oxygenPct,lightLux,doorOpen,scenarioCode',
-      `${messageId},ST001,ZN_DAIRY_01,UPLOAD_SENSOR_001,${measuredAt},4.4,62,820,20.8,120,false,NORMAL`
+      `${messageId},SR001,SR001_DAIRY,UPLOAD_SENSOR_001,${measuredAt},4.4,62,820,20.8,120,false,NORMAL`
     ].join('\n'),
     'sales_observations.csv': [
       'storeCode,sku,businessDate,unitsSold,unitsWasted,averagePrice,promotionActive,weatherCode',
-      'ST001,MILK-1L,2026-05-28,21,1,3.79,false,CLEAR'
+      'SR001,MILK-1L,2026-05-28,21,1,29.99,false,CLEAR'
     ].join('\n'),
     'metadata.csv': [
       'key,value',
@@ -318,11 +318,11 @@ function reading(overrides = {}) {
   return {
     schemaVersion: '1.0',
     messageId: overrides.messageId || `MSG-${Date.now()}-${Math.random()}`,
-    correlationId: overrides.correlationId || `ST001-ZN_DAIRY_01-${now}`,
+    correlationId: overrides.correlationId || `SR001-SR001_DAIRY-${now}`,
     eventType: 'SensorReadingCreated',
-    storeId: overrides.storeId || 'ST001',
-    zoneId: overrides.zoneId || 'ZN_DAIRY_01',
-    sensorId: overrides.sensorId || 'SIM_TEMP_HUM_GAS_001',
+    storeId: overrides.storeId || 'SR001',
+    zoneId: overrides.zoneId || 'SR001_DAIRY',
+    sensorId: overrides.sensorId || 'FC-SR001_DAIRY-T01',
     measuredAt: overrides.measuredAt || now,
     publishedAt: overrides.publishedAt || now,
     readings: {
@@ -402,9 +402,9 @@ test('internal ingestion action returns a typed result object', async () => {
 
 test('catalog sensor readings are append-only through the service contract', async () => {
   const [stores, zones, sensors] = await Promise.all([
-    GET('/odata/v4/catalog/Stores?$filter=storeCode eq \'ST001\'&$top=1'),
-    GET('/odata/v4/catalog/Zones?$filter=zoneCode eq \'ZN_DAIRY_01\'&$top=1'),
-    GET('/odata/v4/catalog/Sensors?$filter=sensorId eq \'SIM_TEMP_HUM_GAS_001\'&$top=1')
+    GET('/odata/v4/catalog/Stores?$filter=storeCode eq \'SR001\'&$top=1'),
+    GET('/odata/v4/catalog/Zones?$filter=zoneCode eq \'SR001_DAIRY\'&$top=1'),
+    GET('/odata/v4/catalog/Sensors?$filter=sensorId eq \'FC-SR001_DAIRY-T01\'&$top=1')
   ]);
   const now = new Date().toISOString();
   const created = await POST('/odata/v4/catalog/SensorReadings', {
@@ -596,7 +596,7 @@ test('dataset package validation rejects missing required CSVs', async () => {
     contentBase64: zipPackage({
       'sensor_readings.csv': [
         'messageId,storeCode,zoneCode,sensorId,measuredAt,temperatureC,humidityPct,co2Ppm,oxygenPct,lightLux,doorOpen',
-        `BROKEN-${Date.now()},ST001,ZN_DAIRY_01,BROKEN_SENSOR,${new Date().toISOString()},4,60,700,20.8,80,false`
+        `BROKEN-${Date.now()},SR001,SR001_DAIRY,BROKEN_SENSOR,${new Date().toISOString()},4,60,700,20.8,80,false`
       ].join('\n')
     })
   });

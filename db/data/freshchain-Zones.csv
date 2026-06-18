@@ -1,5 +1,43 @@
 ID;zoneCode;name;type;store_ID;safeTempMinC;safeTempMaxC;safeHumidityMin;safeHumidityMax;active
-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1;ZN_DAIRY_01;Dairy Display 01;DAIRY_FRIDGE;11111111-1111-1111-1111-111111111111;0;5;40;75;true
-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2;ZN_MEAT_01;Meat Display 01;MEAT_FRIDGE;11111111-1111-1111-1111-111111111111;-1;4;35;70;true
-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3;ZN_PRODUCE_01;Produce Case 01;PRODUCE_FRIDGE;11111111-1111-1111-1111-111111111111;2;8;55;95;true
-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4;ZN_FREEZER_01;Frozen Case 01;FREEZER;22222222-2222-2222-2222-222222222222;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1;SR001_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;11111111-1111-1111-1111-111111111111;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2;SR001_MEAT;Butchery Service Case;MEAT_FRIDGE;11111111-1111-1111-1111-111111111111;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3;SR001_PROD;Produce Chiller;PRODUCE_FRIDGE;11111111-1111-1111-1111-111111111111;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4;SR001_FROZ;Frozen Foods Bay;FREEZER;11111111-1111-1111-1111-111111111111;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5;SR002_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;22222222-2222-2222-2222-222222222222;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6;SR002_MEAT;Butchery Service Case;MEAT_FRIDGE;22222222-2222-2222-2222-222222222222;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7;SR002_PROD;Produce Chiller;PRODUCE_FRIDGE;22222222-2222-2222-2222-222222222222;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8;SR002_FROZ;Frozen Foods Bay;FREEZER;22222222-2222-2222-2222-222222222222;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9;SR003_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;33333333-3333-3333-3333-333333333333;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa10;SR003_MEAT;Butchery Service Case;MEAT_FRIDGE;33333333-3333-3333-3333-333333333333;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa11;SR003_PROD;Produce Chiller;PRODUCE_FRIDGE;33333333-3333-3333-3333-333333333333;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa12;SR003_FROZ;Frozen Foods Bay;FREEZER;33333333-3333-3333-3333-333333333333;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa13;SR004_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;44444444-4444-4444-4444-444444444444;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa14;SR004_MEAT;Butchery Service Case;MEAT_FRIDGE;44444444-4444-4444-4444-444444444444;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa15;SR004_PROD;Produce Chiller;PRODUCE_FRIDGE;44444444-4444-4444-4444-444444444444;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa16;SR004_FROZ;Frozen Foods Bay;FREEZER;44444444-4444-4444-4444-444444444444;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa17;SR005_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;55555555-5555-5555-5555-555555555555;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa18;SR005_MEAT;Butchery Service Case;MEAT_FRIDGE;55555555-5555-5555-5555-555555555555;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa19;SR005_PROD;Produce Chiller;PRODUCE_FRIDGE;55555555-5555-5555-5555-555555555555;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa20;SR005_FROZ;Frozen Foods Bay;FREEZER;55555555-5555-5555-5555-555555555555;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa21;SR006_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;66666666-6666-6666-6666-666666666666;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa22;SR006_MEAT;Butchery Service Case;MEAT_FRIDGE;66666666-6666-6666-6666-666666666666;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa23;SR006_PROD;Produce Chiller;PRODUCE_FRIDGE;66666666-6666-6666-6666-666666666666;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa24;SR006_FROZ;Frozen Foods Bay;FREEZER;66666666-6666-6666-6666-666666666666;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa25;SR007_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;77777777-7777-7777-7777-777777777777;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa26;SR007_MEAT;Butchery Service Case;MEAT_FRIDGE;77777777-7777-7777-7777-777777777777;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa27;SR007_PROD;Produce Chiller;PRODUCE_FRIDGE;77777777-7777-7777-7777-777777777777;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa28;SR007_FROZ;Frozen Foods Bay;FREEZER;77777777-7777-7777-7777-777777777777;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa29;SR008_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;88888888-8888-8888-8888-888888888888;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa30;SR008_MEAT;Butchery Service Case;MEAT_FRIDGE;88888888-8888-8888-8888-888888888888;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa31;SR008_PROD;Produce Chiller;PRODUCE_FRIDGE;88888888-8888-8888-8888-888888888888;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa32;SR008_FROZ;Frozen Foods Bay;FREEZER;88888888-8888-8888-8888-888888888888;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa33;SR009_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;99999999-9999-9999-9999-999999999999;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa34;SR009_MEAT;Butchery Service Case;MEAT_FRIDGE;99999999-9999-9999-9999-999999999999;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa35;SR009_PROD;Produce Chiller;PRODUCE_FRIDGE;99999999-9999-9999-9999-999999999999;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa36;SR009_FROZ;Frozen Foods Bay;FREEZER;99999999-9999-9999-9999-999999999999;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa37;SR010_DAIRY;Dairy Cold Aisle;DAIRY_FRIDGE;12121212-1212-1212-1212-121212121212;0;5;40;75;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa38;SR010_MEAT;Butchery Service Case;MEAT_FRIDGE;12121212-1212-1212-1212-121212121212;-1;4;35;70;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa39;SR010_PROD;Produce Chiller;PRODUCE_FRIDGE;12121212-1212-1212-1212-121212121212;2;8;55;95;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa40;SR010_FROZ;Frozen Foods Bay;FREEZER;12121212-1212-1212-1212-121212121212;-24;-18;20;65;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa41;SR001_RECV;Receiving Cold Room;RECEIVING_COLD_ROOM;11111111-1111-1111-1111-111111111111;0;6;35;80;true
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa42;SR004_DISP;Dispatch Cold Room;DISPATCH_COLD_ROOM;44444444-4444-4444-4444-444444444444;0;6;35;80;true

@@ -1,5 +1,21 @@
 ID;sku;name;category;subcategory;packagingType;uom;recommendedTempMinC;recommendedTempMaxC;standardShelfLifeDays;unitCostZar;sellingPriceZar
-cccccccc-cccc-cccc-cccc-ccccccccccc1;MILK-1L;Whole Milk 1L;DAIRY;MILK;CARTON;EA;0;5;10;17.40;29.99
-cccccccc-cccc-cccc-cccc-ccccccccccc2;YOG-500;Greek Yogurt 500g;DAIRY;YOGURT;CUP;EA;0;5;14;18.20;32.99
-cccccccc-cccc-cccc-cccc-ccccccccccc3;BEEF-STEAK;Beef Steak Pack;MEAT;BEEF;TRAY;EA;-1;4;5;118.50;189.99
-cccccccc-cccc-cccc-cccc-ccccccccccc4;BERRIES;Mixed Berries;PRODUCE;BERRIES;PUNNET;EA;2;8;6;25.10;44.99
+cccccccc-cccc-cccc-cccc-ccccccccccc1;MILK-1L;Whole Milk 1L;DAIRY;MILK;CARTON;EA;0;5;10;17.4;29.99
+cccccccc-cccc-cccc-cccc-ccccccccccc2;YOG-500;Greek Yogurt 500g;DAIRY;YOGURT;CUP;EA;0;5;14;18.2;32.99
+cccccccc-cccc-cccc-cccc-ccccccccccc3;BEEF-STEAK;Beef Steak Pack;MEAT;BEEF;TRAY;EA;-1;4;5;118.5;189.99
+cccccccc-cccc-cccc-cccc-ccccccccccc4;BERRIES;Mixed Berries;PRODUCE;BERRIES;PUNNET;EA;2;8;6;25.1;44.99
+cccccccc-cccc-cccc-cccc-ccccccccccc5;CHED-250;Cheddar Cheese 250g;DAIRY;CHEESE;VACUUM_PACK;EA;0;5;45;38.8;64.99
+cccccccc-cccc-cccc-cccc-ccccccccccc6;CREAM-250;Fresh Cream 250ml;DAIRY;CREAM;BOTTLE;EA;0;5;12;16.1;27.99
+cccccccc-cccc-cccc-cccc-ccccccccccc7;CHICK-FIL;Chicken Fillets 1kg;MEAT;POULTRY;TRAY;EA;-1;4;6;62.4;109.99
+cccccccc-cccc-cccc-cccc-ccccccccccc8;MINCE-500;Lean Beef Mince 500g;MEAT;BEEF;TRAY;EA;-1;4;5;43.7;74.99
+cccccccc-cccc-cccc-cccc-ccccccccccc9;FISH-HAKE;Hake Fillets 600g;FROZEN;SEAFOOD;BAG;EA;-24;-18;120;54.6;89.99
+cccccccc-cccc-cccc-cccc-cccccccccc10;VEG-MIX;Frozen Mixed Vegetables 1kg;FROZEN;VEGETABLES;BAG;EA;-24;-18;180;21.9;39.99
+cccccccc-cccc-cccc-cccc-cccccccccc11;ICECRM-2L;Vanilla Ice Cream 2L;FROZEN;ICE_CREAM;TUB;EA;-24;-18;240;38;69.99
+cccccccc-cccc-cccc-cccc-cccccccccc12;LETTUCE;Crisp Lettuce Head;PRODUCE;SALAD;LOOSE;EA;2;8;5;8.4;16.99
+cccccccc-cccc-cccc-cccc-cccccccccc13;TOMATO-1KG;Tomatoes 1kg;PRODUCE;VEGETABLES;BAG;EA;8;14;7;14.3;26.99
+cccccccc-cccc-cccc-cccc-cccccccccc14;GRAPES-500;Seedless Grapes 500g;PRODUCE;FRUIT;PUNNET;EA;2;8;7;23.6;42.99
+cccccccc-cccc-cccc-cccc-cccccccccc15;READY-SALAD;Ready Salad Bowl;DELI;SALAD;BOWL;EA;0;5;4;18.7;34.99
+cccccccc-cccc-cccc-cccc-cccccccccc16;DELI-HAM;Sliced Ham 200g;DELI;COLD_MEAT;PACK;EA;0;5;10;24.3;44.99
+cccccccc-cccc-cccc-cccc-cccccccccc17;BUTTER-500;Salted Butter 500g;DAIRY;BUTTER;WRAP;EA;0;5;60;42.2;74.99
+cccccccc-cccc-cccc-cccc-cccccccccc18;PRAWNS-400;Frozen Prawns 400g;FROZEN;SEAFOOD;BAG;EA;-24;-18;120;72;119.99
+cccccccc-cccc-cccc-cccc-cccccccccc19;PORK-CHOP;Pork Chops 700g;MEAT;PORK;TRAY;EA;-1;4;5;59.5;99.99
+cccccccc-cccc-cccc-cccc-cccccccccc20;SMOOTHIE;Fresh Smoothie 330ml;DAIRY;DRINK;BOTTLE;EA;0;5;7;13.5;24.99

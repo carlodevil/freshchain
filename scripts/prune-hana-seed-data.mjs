@@ -1,20 +1,23 @@
 #!/usr/bin/env node
 
-import { rm } from 'node:fs/promises';
+import { readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const generatedDataDir = path.join(rootDir, 'gen', 'db', 'src', 'gen', 'data');
 
-const operationalSeeds = [
-  'freshchain-StockLots'
-];
+let entries = [];
+try {
+  entries = await readdir(generatedDataDir);
+} catch {
+  process.exit(0);
+}
 
-for (const seedName of operationalSeeds) {
-  for (const extension of ['.csv', '.hdbtabledata']) {
-    const filePath = path.join(generatedDataDir, `${seedName}${extension}`);
-    await rm(filePath, { force: true });
-    console.log(`Pruned HANA seed artifact ${path.relative(rootDir, filePath)}`);
-  }
+for (const entry of entries) {
+  if (!entry.startsWith('freshchain-')) continue;
+  if (!entry.endsWith('.csv') && !entry.endsWith('.hdbtabledata')) continue;
+  const filePath = path.join(generatedDataDir, entry);
+  await rm(filePath, { force: true });
+  console.log(`Pruned HANA seed artifact ${path.relative(rootDir, filePath)}`);
 }

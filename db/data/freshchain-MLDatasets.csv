@@ -1,0 +1,2 @@
+ID;datasetCode;description;source;storeCount;zoneCount;readingCount;salesCount;incidentCount;historyDays;anomalyRate;generatedAt;parameters;createdAt
+eeee2222-2222-4222-8222-eeeeeeee0002;freshchain-demo-baseline-202606;Persisted demo baseline generated from store, stock, sensor, and intervention history;CAP seed data;12;42;72;60;12;14;0.167;2026-06-17T08:00:00Z;{"purpose":"hackathon demo baseline"};2026-06-17T08:00:00Z

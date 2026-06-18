@@ -1,0 +1,2 @@
+ID;deploymentId;trainingRun_ID;modelName;modelVersion;status;aiCoreDeploymentId;endpointUrl;healthStatus;lastScoredAt;createdAt;modifiedAt
+eeee2222-2222-4222-8222-eeeeeeee0001;aicore-freshchain-risk-prod;eeee2222-2222-4222-8222-eeeeeeee0003;freshchain-spoilage-risk;2026.06-demo;SUCCEEDED;aicore-deploy-freshchain-risk-prod;https://api.ai.prod.eu20.example/freshchain-risk;READY;2026-06-17T08:45:00Z;2026-06-17T07:35:00Z;2026-06-17T08:45:00Z

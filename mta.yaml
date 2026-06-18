@@ -37,6 +37,8 @@ modules:
     build-parameters:
       builder: custom
       commands:
+        - mkdir -p srv/demo-data
+        - cp -R ../../db/data/. srv/demo-data/
         - npm install --production
 
   - name: freshchain-db-deployer

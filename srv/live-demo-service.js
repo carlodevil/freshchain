@@ -1534,7 +1534,7 @@ async function scoreLatestLiveReading(req, entities) {
     if (!reading) req.reject(409, 'No sensor readings are available to score');
     const scored = await scoreLatest(tx, { zoneId: reading.zone_ID });
     if (scored && scored.failed) req.reject(502, scored.error.message);
-    return latestRiskDecision(tx);
+    return readRiskDecisions(tx, { ID: scored.ID, one: true });
   });
   Object.assign(runState, {
     lastTickAt: isoNow(),
@@ -1554,10 +1554,13 @@ async function runRescueScenario(req) {
     );
   }
   const scenario = await cds.tx(async tx => {
-    const [reading, prediction] = await Promise.all([
-      liveReadingByMessageId(tx, payload.messageId),
-      latestRiskDecision(tx)
-    ]);
+    const reading = await liveReadingByMessageId(tx, payload.messageId);
+    const prediction = result.prediction && result.prediction.ID
+      ? await readRiskDecisions(tx, { ID: result.prediction.ID, one: true })
+      : null;
+    if (!prediction) {
+      throw Object.assign(new Error('A successful SAP AI Core prediction is required before creating rescue proof'), { statusCode: 409 });
+    }
     const productName = await productNameForScenario(tx, reading && reading.zoneCode);
     return buildScenario(tx, { reading, prediction }, productName);
   });

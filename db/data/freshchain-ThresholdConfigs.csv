@@ -3,3 +3,9 @@ ffffffff-ffff-ffff-ffff-fffffffffff1;DAIRY_FRIDGE;DAIRY;0;5;40;75;5;180;HIGH;tru
 ffffffff-ffff-ffff-ffff-fffffffffff2;MEAT_FRIDGE;MEAT;-1;4;35;70;5;180;HIGH;true
 ffffffff-ffff-ffff-ffff-fffffffffff3;PRODUCE_FRIDGE;PRODUCE;2;8;55;95;5;240;MEDIUM;true
 ffffffff-ffff-ffff-ffff-fffffffffff4;FREEZER;FROZEN;-24;-18;20;65;5;120;CRITICAL;true
+ffffffff-ffff-ffff-ffff-fffffffffff6;DAIRY_FRIDGE;DELI;0;5;40;75;5;150;HIGH;true
+ffffffff-ffff-ffff-ffff-fffffffffff7;RECEIVING_COLD_ROOM;DAIRY;0;6;35;80;10;240;MEDIUM;true
+ffffffff-ffff-ffff-ffff-fffffffffff8;DISPATCH_COLD_ROOM;MEAT;-1;6;35;80;10;180;HIGH;true
+ffffffff-ffff-ffff-ffff-fffffffffff9;PRODUCE_FRIDGE;DELI;0;5;50;85;5;120;HIGH;true
+ffffffff-ffff-ffff-ffff-ffffffffff10;MEAT_FRIDGE;DELI;0;5;35;70;5;150;HIGH;true
+ffffffff-ffff-ffff-ffff-ffffffffff11;FREEZER;MEAT;-24;-18;20;65;5;120;CRITICAL;true

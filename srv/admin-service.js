@@ -1,11 +1,21 @@
 const cds = require('@sap/cds');
 const { SELECT, UPDATE } = cds.ql;
 const { ingestPayload } = require('./handlers/ingestion');
+const { applyDemoBaseline } = require('./handlers/demo-baseline');
 
 module.exports = cds.service.impl(function AdminService() {
   const { IngestionErrors } = this.entities;
 
   this.on('replayIngestionError', replayIngestionError);
+  this.on('prepareDemoBaseline', prepareDemoBaseline);
+
+  async function prepareDemoBaseline(req) {
+    const result = await applyDemoBaseline(req);
+    return {
+      status: 'APPLIED',
+      summary: JSON.stringify(result)
+    };
+  }
 
   async function replayIngestionError(req) {
     const tx = cds.tx(req);

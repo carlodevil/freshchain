@@ -13,7 +13,7 @@
     "deploy:local": "cds deploy --to sqlite:db.sqlite",
     "deploy:sqlite": "npm run deploy:local",
     "test": "node --test test/*.test.js",
-    "check": "node --check srv/server.js && node --check srv/handlers/ingestion.js && node --check srv/handlers/rules.js && node --check srv/handlers/alert-workflow.js && node --check srv/handlers/ai-core-client.js && node --check srv/handlers/ml-engine.js && node --check srv/handlers/dataset-upload.js && node --check srv/ingestion-service.js && node --check srv/catalog-service.js && node --check srv/analytics-service.js && node --check srv/admin-service.js && node --check srv/intelligence-service.js && node --check srv/live-demo-service.js && node --check simulator/src/index.js && node test/validate-ui-artifacts.js",
+    "check": "node --check srv/server.js && node --check srv/handlers/ingestion.js && node --check srv/handlers/rules.js && node --check srv/handlers/alert-workflow.js && node --check srv/handlers/ai-core-client.js && node --check srv/handlers/ml-engine.js && node --check srv/handlers/dataset-upload.js && node --check srv/handlers/demo-baseline.js && node --check srv/ingestion-service.js && node --check srv/catalog-service.js && node --check srv/analytics-service.js && node --check srv/admin-service.js && node --check srv/intelligence-service.js && node --check srv/live-demo-service.js && node --check simulator/src/index.js && node test/validate-ui-artifacts.js",
     "simulator": "node simulator/src/index.js",
     "build": "cds build --production",
     "build:mta": "mbt build",

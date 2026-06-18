@@ -1,3 +1,13 @@
 ID;storeCode;name;region;timezone;operatingHours;active
-11111111-1111-1111-1111-111111111111;ST001;Downtown FreshChain;West;America/Los_Angeles;06:00-22:00;true
-22222222-2222-2222-2222-222222222222;ST002;Harbor FreshChain;West;America/Los_Angeles;06:00-22:00;true
+11111111-1111-1111-1111-111111111111;SR001;Shoprite Brackenfell Hyper;Western Cape;Africa/Johannesburg;06:00-22:00;true
+22222222-2222-2222-2222-222222222222;SR002;Shoprite Bellville Mall;Western Cape;Africa/Johannesburg;07:00-21:00;true
+33333333-3333-3333-3333-333333333333;SR003;Shoprite Canal Walk;Western Cape;Africa/Johannesburg;08:00-22:00;true
+44444444-4444-4444-4444-444444444444;SR004;Shoprite Sandton City;Gauteng;Africa/Johannesburg;07:00-22:00;true
+55555555-5555-5555-5555-555555555555;SR005;Shoprite Soweto Bara;Gauteng;Africa/Johannesburg;06:00-21:00;true
+66666666-6666-6666-6666-666666666666;SR006;Shoprite Menlyn;Gauteng;Africa/Johannesburg;07:00-22:00;true
+77777777-7777-7777-7777-777777777777;SR007;Shoprite Gateway Durban;KwaZulu-Natal;Africa/Johannesburg;07:00-22:00;true
+88888888-8888-8888-8888-888888888888;SR008;Shoprite Pietermaritzburg;KwaZulu-Natal;Africa/Johannesburg;07:00-21:00;true
+99999999-9999-9999-9999-999999999999;SR009;Shoprite Boardwalk Gqeberha;Eastern Cape;Africa/Johannesburg;07:00-21:00;true
+12121212-1212-1212-1212-121212121212;SR010;Shoprite Bloemfontein CBD;Free State;Africa/Johannesburg;07:00-20:00;true
+13131313-1313-1313-1313-131313131313;SR011;Shoprite Nelspruit Riverside;Mpumalanga;Africa/Johannesburg;07:00-21:00;true
+14141414-1414-1414-1414-141414141414;SR012;Shoprite Polokwane Savannah;Limpopo;Africa/Johannesburg;07:00-21:00;true

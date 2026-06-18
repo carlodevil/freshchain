@@ -570,13 +570,13 @@ function datasetPackageTemplate() {
   return createZip({
     'sensor_readings.csv': [
       'messageId,storeCode,zoneCode,sensorId,measuredAt,publishedAt,temperatureC,humidityPct,co2Ppm,oxygenPct,lightLux,doorOpen,batteryPct,signalStrength,sensorHealth,scenarioCode',
-      `TEMPLATE-READING-001,ST001,ZN_DAIRY_01,DS_TEAM_SENSOR_001,${measuredAt},${measuredAt},4.2,63.5,780,20.7,95,false,98,-48,OK,NORMAL`,
-      `TEMPLATE-READING-002,ST001,ZN_DAIRY_01,DS_TEAM_SENSOR_001,${measuredAt},${measuredAt},8.1,68.0,940,20.5,130,true,96,-50,OK,DOOR_LEFT_OPEN`
+      `TEMPLATE-READING-001,SR001,SR001_DAIRY,DS_TEAM_SENSOR_001,${measuredAt},${measuredAt},4.2,63.5,780,20.7,95,false,98,-48,OK,NORMAL`,
+      `TEMPLATE-READING-002,SR001,SR001_DAIRY,DS_TEAM_SENSOR_001,${measuredAt},${measuredAt},8.1,68.0,940,20.5,130,true,96,-50,OK,DOOR_LEFT_OPEN`
     ].join('\n'),
     'sales_observations.csv': [
       'storeCode,sku,businessDate,unitsSold,unitsWasted,averagePrice,promotionActive,weatherCode',
-      `ST001,MILK-1L,${businessDate},24,1,3.79,false,CLEAR`,
-      `ST001,YOG-500,${businessDate},18,2,4.49,true,CLEAR`
+      `SR001,MILK-1L,${businessDate},24,1,29.99,false,CLEAR`,
+      `SR001,YOG-500,${businessDate},18,2,32.99,true,CLEAR`
     ].join('\n'),
     'metadata.csv': [
       'key,value',

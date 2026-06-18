@@ -1,2 +1,4 @@
 ID;settingCode;description;currencyCode;criticalRiskSalvageRate;highRiskSalvageRate;mediumRiskSalvageRate;lowRiskSalvageRate;criticalResponseSlaMinutes;highResponseSlaMinutes;mediumResponseSlaMinutes;lowResponseSlaMinutes;active
 ffffffff-ffff-ffff-ffff-fffffffffff5;DEFAULT_RETAIL_RESCUE;Default fresh retail spoilage rescue economics;ZAR;0.82;0.72;0.58;0.35;12;20;45;90;true
+ffffffff-ffff-ffff-ffff-ffffffffff12;FROZEN_CHAIN_RECOVERY;Frozen category rescue economics with high salvage sensitivity;ZAR;0.76;0.68;0.52;0.3;8;15;35;75;true
+ffffffff-ffff-ffff-ffff-ffffffffff13;READY_TO_EAT_FAST_ACTION;Ready-to-eat short shelf life intervention economics;ZAR;0.7;0.62;0.48;0.25;6;12;25;60;true

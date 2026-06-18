@@ -1,0 +1,4 @@
+ID;sourceQueue;messageId;correlationId;errorClass;errorMessage;payloadHash;payload;retryCount;status;createdAt
+dddd3333-3333-4333-8333-dddddddd0001;freshchain.sensor.readings;bad-reading-0001;seed-error-001;VALIDATION_ERROR;Unknown zoneCode in incoming sensor payload;hash-seed-0001;{"zoneCode":"UNKNOWN","temperatureC":9.2};2;OPEN;2026-06-17T07:50:00Z
+dddd3333-3333-4333-8333-dddddddd0002;freshchain.sensor.readings;bad-reading-0002;seed-error-002;VALIDATION_ERROR;Missing measuredAt timestamp;hash-seed-0002;{"zoneCode":"SR004_MEAT","temperatureC":8.4};1;OPEN;2026-06-17T08:05:00Z
+dddd3333-3333-4333-8333-dddddddd0003;freshchain.sales.observations;sales-load-0003;seed-error-003;REFERENCE_ERROR;Unknown sku in sales observation package;hash-seed-0003;{"sku":"UNKNOWN","unitsSold":12};3;REVIEWED;2026-06-17T08:15:00Z

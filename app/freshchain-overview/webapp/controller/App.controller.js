@@ -225,7 +225,7 @@ sap.ui.define([
       const weeklyUnits = units * storeCount * weeklyIncidentsPerStore;
 
       return {
-        assumption: "Scale scenario: one comparable cold-chain incident per store per week across a 20-store estate. The live proof remains the single ST001 movement; these figures show why the same control loop matters at chain scale.",
+        assumption: "Scale scenario: one comparable cold-chain incident per store per week across a 20-store estate. The live proof remains the single SR001 movement; these figures show why the same control loop matters at chain scale.",
         metrics: [
           {
             title: "This incident",

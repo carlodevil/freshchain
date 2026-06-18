@@ -1,0 +1,2 @@
+ID;runId;dataset_ID;modelName;modelVersion;status;aiCoreExecutionId;startedAt;completedAt;metrics;errorMessage;createdAt
+eeee2222-2222-4222-8222-eeeeeeee0003;freshchain-risk-train-20260618;eeee2222-2222-4222-8222-eeeeeeee0002;freshchain-spoilage-risk;2026.06-demo;SUCCEEDED;aicore-exec-freshchain-20260618;2026-06-17T07:10:00Z;2026-06-17T07:32:00Z;{"auc":0.91,"precision":0.86,"recall":0.82};;2026-06-17T07:10:00Z
