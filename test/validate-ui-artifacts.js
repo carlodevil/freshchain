@@ -104,15 +104,42 @@ for (const file of manifests) {
 
   if (file.includes('freshchain-controltower')) {
     const inbounds = manifest['sap.app']?.crossNavigation?.inbounds || {};
-    for (const inboundId of [
+    const inbound = inbounds['FreshChainControlTower-display'];
+    if (!inbound?.indicatorDataSource?.dataSource || inbound.indicatorDataSource.path !== "DynamicTileKpis('protectedRevenue')" || !inbound.indicatorDataSource.refresh) {
+      throw new Error(`${file} must expose exactly one command-center dynamic KPI tile`);
+    }
+    for (const staleInboundId of [
       'FreshChainProtectedRevenue-display',
       'FreshChainStockAtRisk-display',
       'FreshChainRescueProof-display',
       'FreshChainWasteAvoided-display'
     ]) {
-      const inbound = inbounds[inboundId];
-      if (!inbound?.indicatorDataSource?.dataSource || !inbound.indicatorDataSource.path || !inbound.indicatorDataSource.refresh) {
-        throw new Error(`${file} inbound ${inboundId} must be a real dynamic KPI tile with indicatorDataSource`);
+      if (inbounds[staleInboundId]) {
+        throw new Error(`${file} must not expose stale duplicate KPI inbound ${staleInboundId}`);
+      }
+    }
+  }
+
+  const dynamicTileExpectations = {
+    'freshchain-intelligence': {
+      inboundId: 'FreshChainPredict-display',
+      path: "DynamicTileKpis('stockAtRisk')"
+    },
+    'freshchain-operations': {
+      inboundId: 'FreshChainAct-display',
+      path: "DynamicTileKpis('rescueProof')"
+    },
+    'freshchain-admin': {
+      inboundId: 'FreshChainProve-display',
+      path: "DynamicTileKpis('wasteAvoided')"
+    }
+  };
+  for (const [appName, expectation] of Object.entries(dynamicTileExpectations)) {
+    if (file.includes(appName)) {
+      const inbounds = manifest['sap.app']?.crossNavigation?.inbounds || {};
+      const inbound = inbounds[expectation.inboundId];
+      if (!inbound?.indicatorDataSource?.dataSource || inbound.indicatorDataSource.path !== expectation.path || !inbound.indicatorDataSource.refresh) {
+        throw new Error(`${file} inbound ${expectation.inboundId} must be a real distinct-app dynamic KPI tile`);
       }
     }
   }

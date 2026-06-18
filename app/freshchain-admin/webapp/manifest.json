@@ -3,7 +3,7 @@
   "sap.app": {
     "id": "freshchain.admin",
     "type": "application",
-    "title": "FreshChain Prove",
+    "title": "View Financials",
     "description": "Audited intervention impact, protected revenue, and SAP BTP proof",
     "applicationVersion": {
       "version": "0.1.0"
@@ -13,11 +13,16 @@
         "FreshChainProve-display": {
           "semanticObject": "FreshChainProve",
           "action": "display",
-          "title": "FreshChain Prove",
-          "subTitle": "Audit financial proof",
+          "title": "View Financials",
+          "subTitle": "Audit protected value",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "mainService",
+            "path": "DynamicTileKpis('wasteAvoided')",
+            "refresh": 60
           }
         }
       }

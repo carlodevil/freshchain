@@ -1191,8 +1191,9 @@ function buildDynamicTileKpis(summary, latestImpact) {
   const updatedAt = summary.generatedAt || isoNow();
   const confidence = Math.round(numeric(summary.confidencePct));
   const state = tileStateFromCriticality(summary.criticality);
-  const commandCenterTitle = 'FreshChain Rescue Command Center';
   const controlTowerUrl = '#FreshChainControlTower-display';
+  const predictUrl = '#FreshChainPredict-display';
+  const actUrl = '#FreshChainAct-display';
   const proveUrl = '#FreshChainProve-display';
 
   return [
@@ -1204,8 +1205,8 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberState: state,
       info: `${confidence}% confidence`,
       infoState: state,
-      title: commandCenterTitle,
-      subtitle: 'Protected revenue proof',
+      title: 'View Command Center',
+      subtitle: 'Live rescue overview',
       targetUrl: `${controlTowerUrl}?kpi=protected-revenue`,
       updatedAt
     },
@@ -1217,9 +1218,9 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberState: summary.stockValueAtRiskZar > 0 ? 'Warning' : 'Good',
       info: `${store} / ${zone}`.slice(0, 80),
       infoState: summary.stockValueAtRiskZar > 0 ? 'Warning' : 'Good',
-      title: commandCenterTitle,
-      subtitle: 'Cold-zone exposure',
-      targetUrl: `${controlTowerUrl}?kpi=stock-at-risk`,
+      title: 'View Risk',
+      subtitle: 'AI spoilage exposure',
+      targetUrl: `${predictUrl}?kpi=stock-at-risk`,
       updatedAt
     },
     {
@@ -1230,9 +1231,9 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberState: state,
       info: status,
       infoState: state,
-      title: commandCenterTitle,
-      subtitle: 'Workflow completion',
-      targetUrl: proveUrl,
+      title: 'Manage Workflow',
+      subtitle: 'Resolve rescue actions',
+      targetUrl: `${actUrl}?kpi=workflow-completion`,
       updatedAt
     },
     {
@@ -1243,9 +1244,9 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberState: numeric(summary.wasteAvoidedUnits) > 0 ? 'Good' : 'Neutral',
       info: `${Math.round(numeric(summary.lostSalesAvoidedUnits))} lost-sales units`,
       infoState: numeric(summary.wasteAvoidedUnits) > 0 ? 'Good' : 'Neutral',
-      title: commandCenterTitle,
-      subtitle: 'Waste avoided',
-      targetUrl: `${controlTowerUrl}?kpi=waste-avoided`,
+      title: 'View Financials',
+      subtitle: 'Audit protected value',
+      targetUrl: `${proveUrl}?kpi=waste-avoided`,
       updatedAt
     }
   ];

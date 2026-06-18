@@ -3,7 +3,7 @@
   "sap.app": {
     "id": "freshchain.masterdata",
     "type": "application",
-    "title": "FreshChain Stock Ledger",
+    "title": "View Stock Ledger",
     "description": "Maintain cold-chain stock lots, batches, products, and zone positions",
     "applicationVersion": {
       "version": "0.1.0"
@@ -13,7 +13,7 @@
         "FreshChainMasterData-display": {
           "semanticObject": "FreshChainMasterData",
           "action": "display",
-          "title": "FreshChain Stock Ledger",
+          "title": "View Stock Ledger",
           "subTitle": "Track stock movements",
           "signature": {
             "parameters": {},

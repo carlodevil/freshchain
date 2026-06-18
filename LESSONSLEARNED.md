@@ -29,3 +29,4 @@ This file captures durable project lessons that future agents must check before 
 
 - Work Zone dynamic tile runtime payload can override manifest tile copy. If KPI tile titles or subtitles remain stale after an HTML5 dist redeploy and HTML5 Apps provider sync, inspect the live OData entity behind `indicatorDataSource` such as `DynamicTileKpis(...)` and fix the CAP payload as well as the manifest.
 - Work Zone local copies can retain stale text dictionary values even when provider metadata is correct. For local business apps, inspect the local CDM `texts` entries and update/publish the local item; provider sync alone will not replace local text such as tile subtitle or info.
+- Do not place multiple visible Work Zone tiles that open the same Fiori app in the same role group. Dynamic KPI tiles should use functional Fiori-style titles and route to distinct apps; keep KPI meaning in the subtitle/value, not as a duplicate app launcher title.

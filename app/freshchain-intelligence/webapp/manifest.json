@@ -3,7 +3,7 @@
   "sap.app": {
     "id": "freshchain.intelligence",
     "type": "application",
-    "title": "FreshChain Predict",
+    "title": "View Risk",
     "description": "SAP AI Core risk decisions for live spoilage prevention",
     "applicationVersion": {
       "version": "0.1.0"
@@ -13,11 +13,16 @@
         "FreshChainPredict-display": {
           "semanticObject": "FreshChainPredict",
           "action": "display",
-          "title": "FreshChain Predict",
-          "subTitle": "Review AI risk decisions",
+          "title": "View Risk",
+          "subTitle": "AI spoilage exposure",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "mainService",
+            "path": "DynamicTileKpis('stockAtRisk')",
+            "refresh": 60
           }
         }
       }

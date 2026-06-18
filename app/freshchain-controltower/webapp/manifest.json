@@ -13,9 +13,9 @@
         "FreshChainControlTower-display": {
           "semanticObject": "FreshChainControlTower",
           "action": "display",
-          "title": "{{appTitle}}",
-          "subTitle": "Command center overview",
-          "info": "Live KPIs",
+          "title": "View Command Center",
+          "subTitle": "Live rescue overview",
+          "info": "Protected revenue",
           "icon": "sap-icon://business-objects-experience",
           "signature": {
             "parameters": {},
@@ -24,74 +24,6 @@
           "indicatorDataSource": {
             "dataSource": "liveDemoService",
             "path": "DynamicTileKpis('protectedRevenue')",
-            "refresh": 60
-          }
-        },
-        "FreshChainProtectedRevenue-display": {
-          "semanticObject": "FreshChainProtectedRevenue",
-          "action": "display",
-          "title": "{{appTitle}}",
-          "subTitle": "Protected revenue proof",
-          "info": "Revenue protected",
-          "icon": "sap-icon://money-bills",
-          "signature": {
-            "parameters": {},
-            "additionalParameters": "allowed"
-          },
-          "indicatorDataSource": {
-            "dataSource": "liveDemoService",
-            "path": "DynamicTileKpis('protectedRevenue')",
-            "refresh": 60
-          }
-        },
-        "FreshChainStockAtRisk-display": {
-          "semanticObject": "FreshChainStockAtRisk",
-          "action": "display",
-          "title": "{{appTitle}}",
-          "subTitle": "Cold-zone exposure",
-          "info": "Stock at risk",
-          "icon": "sap-icon://inventory",
-          "signature": {
-            "parameters": {},
-            "additionalParameters": "allowed"
-          },
-          "indicatorDataSource": {
-            "dataSource": "liveDemoService",
-            "path": "DynamicTileKpis('stockAtRisk')",
-            "refresh": 60
-          }
-        },
-        "FreshChainRescueProof-display": {
-          "semanticObject": "FreshChainRescueProof",
-          "action": "display",
-          "title": "{{appTitle}}",
-          "subTitle": "Workflow completion",
-          "info": "Completion proof",
-          "icon": "sap-icon://verified",
-          "signature": {
-            "parameters": {},
-            "additionalParameters": "allowed"
-          },
-          "indicatorDataSource": {
-            "dataSource": "liveDemoService",
-            "path": "DynamicTileKpis('rescueProof')",
-            "refresh": 60
-          }
-        },
-        "FreshChainWasteAvoided-display": {
-          "semanticObject": "FreshChainWasteAvoided",
-          "action": "display",
-          "title": "{{appTitle}}",
-          "subTitle": "Waste avoided",
-          "info": "Units saved",
-          "icon": "sap-icon://sys-enter-2",
-          "signature": {
-            "parameters": {},
-            "additionalParameters": "allowed"
-          },
-          "indicatorDataSource": {
-            "dataSource": "liveDemoService",
-            "path": "DynamicTileKpis('wasteAvoided')",
             "refresh": 60
           }
         }

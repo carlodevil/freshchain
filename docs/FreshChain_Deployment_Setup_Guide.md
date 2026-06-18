@@ -325,20 +325,20 @@ The apps are:
 
 | App | Purpose |
 | --- | --- |
-| FreshChain Rescue Command Center | Executive rescue value, risk, active incident, store task, and BTP readiness cockpit |
+| View Command Center | Executive rescue value, risk, active incident, store task, and BTP readiness cockpit |
 | FreshChain Rescue Cockpit | Demo-first app for live reading trigger, AI Core scoring, rescue calculation, task proof, and protected revenue |
-| FreshChain Act | Frontline spoilage intervention work queue |
-| FreshChain Predict | SAP AI Core risk decisions, confidence, deployment, and scoring evidence |
-| FreshChain Prove | Audited intervention impact, protected revenue, movement proof, and calculation summary |
+| Manage Workflow | Frontline spoilage intervention work queue |
+| View Risk | SAP AI Core risk decisions, confidence, deployment, and scoring evidence |
+| View Financials | Audited intervention impact, protected revenue, movement proof, and calculation summary |
 | FreshChain Monitor | Cold-zone health, active alerts, and rolling temperature aggregates |
-| FreshChain Stock Ledger | Stores, zones, products, batches, sensors, and stock positions |
-| FreshChain Stores | Draft-enabled store maintenance |
-| FreshChain Areas | Draft-enabled cold-chain area and threshold-band maintenance |
-| FreshChain Sensors | Draft-enabled sensor and area assignment maintenance |
-| FreshChain Products | Draft-enabled product shelf-life and cold-chain policy maintenance |
-| FreshChain Thresholds | Draft-enabled alert threshold maintenance |
-| FreshChain Impact Settings | Draft-enabled rescue economics and SLA maintenance |
-| FreshChain Ingestion Errors | Draft-enabled ingestion error status and payload maintenance |
+| View Stock Ledger | Stores, zones, products, batches, sensors, and stock positions |
+| Manage Stores | Draft-enabled store maintenance |
+| Manage Areas | Draft-enabled cold-chain area and threshold-band maintenance |
+| Manage Sensors | Draft-enabled sensor and area assignment maintenance |
+| Manage Products | Draft-enabled product shelf-life and cold-chain policy maintenance |
+| Manage Thresholds | Draft-enabled alert threshold maintenance |
+| Manage Impact Settings | Draft-enabled rescue economics and SLA maintenance |
+| Review Ingestion Errors | Draft-enabled ingestion error status and payload maintenance |
 
 In Work Zone, add the HTML5 applications to the desired site/catalog/group according to your tenant's content management process. Use the app titles and semantic objects defined in each app manifest.
 
@@ -355,12 +355,12 @@ FreshChain's primary Work Zone launchers can expose live KPI values through dyna
 
 For the hackathon site, verify this specific Work Zone composition before a judged demo:
 
-1. Open Content Manager and confirm `FreshChain Command` is a local group with `FreshChain Rescue Cockpit`, `FreshChain Rescue Command Center`, `FreshChain Act`, `FreshChain Predict`, `FreshChain Prove`, and `FreshChain Monitor` assigned.
-2. Open the HTML5 Apps item `FreshChain Rescue Command Center` and confirm its Visualization tab reads `Dynamic Tile` with service URL `DynamicTileKpis('protectedRevenue')`.
+1. Open Content Manager and confirm `FreshChain Command` is a local group with one visible tile per app: `FreshChain Rescue Cockpit`, `View Command Center`, `View Risk`, `Manage Workflow`, `View Financials`, and `FreshChain Monitor`.
+2. Open the HTML5 Apps items for `View Command Center`, `View Risk`, `Manage Workflow`, and `View Financials` and confirm each Visualization tab reads `Dynamic Tile` with service URLs `DynamicTileKpis('protectedRevenue')`, `DynamicTileKpis('stockAtRisk')`, `DynamicTileKpis('rescueProof')`, and `DynamicTileKpis('wasteAvoided')` respectively.
 3. Open the HTML5 Apps item `FreshChain Rescue Cockpit` after the latest HTML5 content upload and provider sync. Confirm the clean `FreshChainRescueCockpit-display` intent is available while the legacy `FreshChainSense-display` intent remains as a compatibility alias for old site tiles.
-4. Open the runtime site home page and confirm the first row starts with live protected revenue, stock at risk, intervention completion proof, and waste avoided tiles from CAP/HANA. Do not treat a placeholder or stale value as proof.
+4. Open the runtime site home page and confirm the first row starts with live `View Command Center`, `View Risk`, `Manage Workflow`, and `View Financials` tiles from CAP/HANA. Do not treat a placeholder or stale value as proof.
 5. Confirm the command group shows `FreshChain Rescue Cockpit`, not `FreshChain Sense`. If a local copy is used for compatibility, inspect its CDM payload and make sure the visualization title and target inbound title both say `FreshChain Rescue Cockpit`.
-6. Keep action apps after the live KPI tiles: `FreshChain Rescue Cockpit`, `FreshChain Act`, `FreshChain Predict`, `FreshChain Prove`, and `FreshChain Monitor`. Do not add static tiles that imply live proof.
+6. Do not keep duplicate static tiles for apps already represented by dynamic KPI launchers. Keep only separate apps such as `FreshChain Rescue Cockpit` and `FreshChain Monitor` after the dynamic launchers.
 
 Do not enable fallback business data for demos. The only mocked input should be the live-demo sensor reading payload; persistence, scoring, stock-ledger financials, workflow task proof, cards, tiles, and screenshots must come from the live deployed system. If HANA, AI Core, Work Zone, or another platform dependency fails, fix the live dependency and record the defect instead of masking it.
 

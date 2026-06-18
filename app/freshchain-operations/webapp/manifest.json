@@ -3,7 +3,7 @@
   "sap.app": {
     "id": "freshchain.operations",
     "type": "application",
-    "title": "FreshChain Act",
+    "title": "Manage Workflow",
     "description": "Spoilage interventions and operational decisions",
     "applicationVersion": {
       "version": "0.1.0"
@@ -13,11 +13,16 @@
         "FreshChainAct-display": {
           "semanticObject": "FreshChainAct",
           "action": "display",
-          "title": "FreshChain Act",
-          "subTitle": "Resolve spoilage interventions",
+          "title": "Manage Workflow",
+          "subTitle": "Resolve rescue actions",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
+          },
+          "indicatorDataSource": {
+            "dataSource": "mainService",
+            "path": "DynamicTileKpis('rescueProof')",
+            "refresh": 60
           }
         }
       }
