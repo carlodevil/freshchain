@@ -1,0 +1,36 @@
+FreshChain PDF revision notes
+
+Objective
+Rewrite the PDF as a FreshChain product/process overview rather than a document that talks about a demo. The visual structure remains, but the language now describes the product, the operating model, and the evidence produced by the system.
+
+Language direction
+Remove meta wording such as global demo brief, prepared for a global audience, talk track, judges, panel flow, and phrases that explain the document itself. Use product language instead:
+
+- FreshChain cold-chain rescue process
+- Cold-chain rescue and protected-value control on SAP BTP
+- Operating model
+- Incident control
+- Risk scoring
+- Store execution
+- Financial traceability
+- FreshChain operating sequence
+
+Visual direction
+Keep the existing clean card layout and screenshot-led pages. Shift the dominant palette from blue/green to red, white, charcoal, and light grey so the document aligns better with retailsolutions SA and Shoprite branding. Keep green only for actual positive status and protected-value signals.
+
+Content direction
+The PDF should explain the product in terms of the process FreshChain runs:
+
+1. Detect the cold-chain exception.
+2. Persist the reading with store, zone, product, sensor, and stock context.
+3. Score spoilage risk through SAP AI Core.
+4. Build a rescue plan from affected stock, recommendation, SLA, and rescue economics.
+5. Execute the store action and record workflow completion proof.
+6. Calculate protected value from stock ledger, risk, confidence, and salvage cap.
+7. Monitor recurring risk, ingestion quality, and intervention outcomes.
+
+Financial explanation
+The protected-value page remains central. It explains that stock at risk comes from active stock in the affected zone, expected loss is stock value x AI risk x AI confidence, the salvage cap comes from configured rescue economics, and protected value is the lower of expected loss and salvage cap.
+
+Validation required
+Regenerate the PDF from the HTML source, visually inspect representative pages, confirm all screenshots and logos load, and confirm no visible placeholder or meta-demo wording remains.

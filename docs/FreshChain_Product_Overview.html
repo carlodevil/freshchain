@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FreshChain Global Demo Brief</title>
+  <title>FreshChain Product Overview</title>
   <style>
     @page {
       size: 13.333in 7.5in;
@@ -15,18 +15,20 @@
     }
 
     :root {
-      --ink: #14212f;
-      --muted: #50647a;
-      --line: #d6dee7;
-      --soft: #f4f7fa;
-      --sap: #0a6ed1;
+      --ink: #17212b;
+      --muted: #52616f;
+      --line: #dadfe6;
+      --soft: #f7f8fa;
+      --sap: #d71920;
       --green: #137333;
-      --amber: #b95f00;
-      --red: #b3261e;
+      --amber: #9f111b;
+      --red: #d71920;
+      --red-deep: #8f111a;
+      --red-soft: #fff0f1;
       --panel: #ffffff;
-      --blue-soft: #eaf4ff;
+      --blue-soft: #fff0f1;
       --green-soft: #eaf7ee;
-      --amber-soft: #fff4df;
+      --amber-soft: #fff5f5;
     }
 
     html,
@@ -48,7 +50,7 @@
       width: 13.333in;
       height: 7.5in;
       overflow: hidden;
-      background: linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%);
+      background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
       page-break-after: always;
       padding: 0.48in 0.58in;
     }
@@ -60,7 +62,7 @@
     .cover {
       color: #ffffff;
       background:
-        linear-gradient(135deg, rgba(10, 110, 209, 0.95) 0%, rgba(20, 33, 47, 0.96) 54%, rgba(19, 115, 51, 0.9) 100%),
+        linear-gradient(135deg, rgba(159, 17, 27, 0.97) 0%, rgba(23, 33, 43, 0.96) 58%, rgba(215, 25, 32, 0.88) 100%),
         url("demo-guide/screenshots/00-workzone-home.png") center / cover no-repeat;
     }
 
@@ -133,7 +135,7 @@
     }
 
     .cover .eyebrow {
-      color: #cce4ff;
+      color: #ffd9dc;
     }
 
     h1,
@@ -265,12 +267,12 @@
       margin-bottom: 0.14in;
       border-radius: 50%;
       color: #ffffff;
-      background: var(--sap);
+      background: var(--red);
       font-weight: 800;
     }
 
     .flow-card:nth-child(2) .step {
-      background: var(--amber);
+      background: var(--red-deep);
     }
 
     .flow-card:nth-child(3) .step {
@@ -291,7 +293,7 @@
       padding: 0.17in;
       border-left: 4px solid var(--sap);
       border-radius: 8px;
-      background: var(--blue-soft);
+      background: var(--red-soft);
     }
 
     .metric.green {
@@ -363,7 +365,7 @@
       padding: 0.16in 0.18in;
       border-left: 4px solid var(--sap);
       border-radius: 8px;
-      background: var(--blue-soft);
+      background: var(--red-soft);
     }
 
     .callout p {
@@ -558,12 +560,12 @@
         <span class="divider"></span>
         <img src="../logos/shoprite-logo.png" alt="Shoprite logo">
       </div>
-      <div class="title-small" style="color: rgba(255,255,255,0.82); text-align: right;">Global demo brief<br>SAP BTP Hackathon</div>
+      <div class="title-small" style="color: rgba(255,255,255,0.82); text-align: right;">Cold-chain rescue<br>SAP BTP product overview</div>
     </div>
 
     <p class="eyebrow">FreshChain</p>
-    <h1>Fresh-food rescue process on SAP Business Technology Platform</h1>
-    <p style="margin-top:0.28in;">FreshChain shows how cold-chain readings, stock context, SAP AI Core scoring, store action, and financial proof can be handled as one traceable process.</p>
+    <h1>Cold-chain rescue and protected-value control on SAP BTP</h1>
+    <p style="margin-top:0.28in;">FreshChain connects store telemetry, stock ledger context, AI risk scoring, guided rescue actions, and financial proof in one governed operating process.</p>
 
     <div class="cover-meta">
       <div class="team">
@@ -571,8 +573,8 @@
         <strong>Team:</strong> Carlo de Villiers, Bill Ajaegbu, Alcino Faria, Emma Rautenbach, Biance Finsterbusch, Soleh Davids, Glenn Samuel
       </div>
       <div class="team" style="text-align:right;">
-        Prepared for a global audience<br>
-        Process evidence from the FreshChain Fiori suite
+        Product process overview<br>
+        FreshChain Fiori suite and SAP BTP services
       </div>
     </div>
   </section>
@@ -580,9 +582,9 @@
   <section class="page">
     <div class="header-row">
       <div>
-        <p class="eyebrow">Process View</p>
-        <h2>What the solution demonstrates</h2>
-        <p class="lead">The demo is organized around a practical operating loop. A store receives a cold-chain signal, FreshChain calculates the business risk from live system data, a user executes a rescue action, and the outcome is recorded as protected value.</p>
+        <p class="eyebrow">Operating Model</p>
+        <h2>FreshChain cold-chain rescue process</h2>
+        <p class="lead">A store receives a cold-chain signal, FreshChain calculates risk from live operational data, the store team executes a rescue action, and the outcome is recorded as protected value.</p>
       </div>
       <div class="page-number">01</div>
     </div>
@@ -591,7 +593,7 @@
       <div class="flow-card">
         <div class="step">1</div>
         <h3>Sense</h3>
-        <p>Sensor readings enter CAP services with store, zone, and stock context. The demo reading is the only mocked input.</p>
+        <p>Sensor readings enter CAP services with store, zone, and stock context.</p>
       </div>
       <div class="flow-card">
         <div class="step">2</div>
@@ -617,45 +619,45 @@
       </div>
       <div class="metric amber">
         <div class="value">90 units</div>
-        <div class="label">Affected chilled stock in the demonstrated scenario</div>
+        <div class="label">Affected chilled stock in the rescue incident</div>
       </div>
       <div class="metric green">
         <div class="value">100%</div>
-        <div class="label">Actioned workflow state shown on the Work Zone KPI tile</div>
+        <div class="label">Actioned workflow state from the Work Zone KPI tile</div>
       </div>
     </div>
 
     <div class="callout">
-      <p>The document is intentionally process-driven. It does not describe FreshChain as a concept only; each section ties the claim to an app screen, a data object, or a visible business result.</p>
+      <p>FreshChain is structured around the operating evidence a store and head-office team need: incident context, risk decision, action ownership, completion proof, and financial impact.</p>
     </div>
   </section>
 
   <section class="page">
     <div class="header-row">
       <div>
-        <p class="eyebrow">Entry Point</p>
+        <p class="eyebrow">Command Entry</p>
         <h2>Work Zone home: operational tiles and KPI context</h2>
-        <p class="lead">The Work Zone page gives users a role-based starting point. KPI tiles summarize protected value, risk exposure, workflow action rate, and financial audit value, while task tiles open the main FreshChain apps.</p>
+        <p class="lead">The Work Zone page separates command, risk, workflow, financial proof, rescue execution, monitoring, and master-data control into role-based entry points.</p>
       </div>
       <div class="page-number">02</div>
     </div>
     <img class="screen workzone" src="demo-guide/screenshots/00-workzone-home.png" alt="FreshChain SAP Build Work Zone home screen with KPI tiles and app tiles">
-    <p class="caption">The first row supports the primary demo: command center, risk view, workflow action, financial proof, live rescue cockpit, and monitoring. The master-data row is available for inspection but is not the center of the judge demonstration.</p>
+    <p class="caption">The command row covers protected value, exposure, rescue workflow, financial audit, incident execution, and cold-chain monitoring. The master-data row maintains the governed inputs behind the process.</p>
   </section>
 
   <section class="page">
     <div class="header-row">
       <div>
-        <p class="eyebrow">Main Application</p>
-        <h2>FreshChain Rescue Cockpit: trigger the scenario</h2>
-        <p class="lead">The live demo begins in the Rescue Cockpit. The user starts an incident, captures the latest reading, requests AI scoring, builds a rescue plan, and completes proof from one action-oriented screen.</p>
+        <p class="eyebrow">Incident Control</p>
+        <h2>FreshChain Rescue Cockpit</h2>
+        <p class="lead">The Rescue Cockpit controls incident creation, reading capture, AI scoring, rescue planning, and proof completion from one action-oriented screen.</p>
       </div>
       <div class="page-number">03</div>
     </div>
     <div class="screen-row">
       <div>
         <img class="screen" src="demo-guide/screenshots/02-live-demo-start.png" alt="Rescue cockpit before starting the incident">
-        <p class="caption">Start incident establishes the run and the business context for the sensor event.</p>
+        <p class="caption">Start incident establishes the business context for the cold-chain exception.</p>
       </div>
       <div>
         <img class="screen" src="demo-guide/screenshots/04-live-demo-reading.png" alt="Rescue cockpit after live reading">
@@ -663,25 +665,25 @@
       </div>
     </div>
     <div class="callout">
-      <p>For the demo, the reading payload can be simulated. The business outputs after that point should come from the deployed CAP services, HANA persistence, AI scoring response, and FreshChain action records.</p>
+      <p>The reading is the trigger. Persistence, scoring, intervention planning, financial calculation, and proof are produced by FreshChain services and stored business records.</p>
     </div>
   </section>
 
   <section class="page">
     <div class="header-row">
       <div>
-        <p class="eyebrow">Prediction Evidence</p>
+        <p class="eyebrow">Risk Scoring</p>
         <h2>AI risk decision: score, confidence, recommendation</h2>
-        <p class="lead">The prediction step converts the reading and stock context into a decision record. This makes the AI result visible to business users and traceable to the deployed model runtime.</p>
+        <p class="lead">The prediction step converts the reading and stock context into a persisted decision record with risk level, confidence, remaining shelf-life, and recommended action.</p>
       </div>
       <div class="page-number">04</div>
     </div>
     <img class="screen large" src="demo-guide/screenshots/05-live-demo-ai-decision.png" alt="Rescue cockpit showing AI decision evidence">
     <div class="calc">
-      <div class="box"><strong>Risk</strong><p>Critical spoilage exposure is shown with the affected store, zone, and stock lot.</p></div>
+      <div class="box"><strong>Risk</strong><p>Critical spoilage exposure is linked to the affected store, zone, and stock lot.</p></div>
       <div class="box"><strong>Confidence</strong><p>The score and confidence are persisted with the inference request for auditability.</p></div>
       <div class="box"><strong>Action</strong><p>The recommendation explains what the store team should do next.</p></div>
-      <div class="box"><strong>Proof</strong><p>The decision is linked to the rescue plan and later financial impact.</p></div>
+      <div class="box"><strong>Trace</strong><p>The decision remains linked to the rescue plan and later financial impact.</p></div>
     </div>
   </section>
 
@@ -690,14 +692,14 @@
       <div>
         <p class="eyebrow">Financial Traceability</p>
         <h2>How the protected value is calculated</h2>
-        <p class="lead">FreshChain explains the value calculation in the same screen where the action is completed. The figure is not a slide-only number; it is derived from stock ledger value, AI risk, AI confidence, and the configured salvage cap.</p>
+        <p class="lead">The protected-value figure is derived from stock ledger value, AI risk, AI confidence, and configured rescue economics.</p>
       </div>
       <div class="page-number">05</div>
     </div>
     <img class="screen financial" src="demo-guide/screenshots/06-live-demo-rescue.png" alt="Rescue cockpit showing financial calculation and completed rescue proof">
     <div class="calc compact">
       <div class="box"><strong>Stock at risk</strong><p>Active stock in the affected zone: 90 units priced from the stock ledger at R 5 899.1.</p></div>
-      <div class="box"><strong>Expected loss</strong><p>Stock value x AI risk x AI confidence = R 4 526.08 in the shown rescue scenario.</p></div>
+      <div class="box"><strong>Expected loss</strong><p>Stock value x AI risk x AI confidence = R 4 526.08.</p></div>
       <div class="box"><strong>Salvage cap</strong><p>Configured rescue economics cap the recoverable value at R 4 837.26.</p></div>
       <div class="box"><strong>Protected value</strong><p>The reported protected value is the lower of expected loss and salvage cap: R 4 526.08.</p></div>
     </div>
@@ -706,20 +708,20 @@
   <section class="page">
     <div class="header-row">
       <div>
-        <p class="eyebrow">Action Evidence</p>
+        <p class="eyebrow">Store Execution</p>
         <h2>Store task completion and operational proof</h2>
-        <p class="lead">The completed state records the intervention outcome, workflow task reference, protected value, and operational instruction. This lets the team discuss business impact without leaving the Fiori process.</p>
+        <p class="lead">The completed state records intervention outcome, workflow task reference, protected value, and operational instruction.</p>
       </div>
       <div class="page-number">06</div>
     </div>
     <div class="screen-row compact">
       <div>
         <img class="screen" src="demo-guide/screenshots/07-live-demo-task.png" alt="Rescue cockpit showing task details">
-        <p class="caption">The task view identifies ownership and gives the store team a specific rescue action.</p>
+        <p class="caption">The task view identifies ownership and the required rescue action.</p>
       </div>
       <div>
         <img class="screen" src="demo-guide/screenshots/08-live-demo-completed.png" alt="Rescue cockpit showing completed proof">
-        <p class="caption">The completion view provides the evidence needed to discuss value protected and operational status.</p>
+        <p class="caption">The completion view records outcome, protected value, and operational status.</p>
       </div>
     </div>
     <div class="metric-row">
@@ -741,22 +743,22 @@
   <section class="page">
     <div class="header-row">
       <div>
-        <p class="eyebrow">Fiori Suite</p>
-        <h2>Main apps used in the demonstration</h2>
-        <p class="lead">The judges should see the suite as a coherent process, not as independent lists. These applications cover command, prediction, action, proof, and monitoring.</p>
+        <p class="eyebrow">Application Areas</p>
+        <h2>FreshChain Fiori suite</h2>
+        <p class="lead">The application areas separate command, prediction, action, proof, monitoring, and integration evidence while keeping them on the same operating process.</p>
       </div>
       <div class="page-number">07</div>
     </div>
     <div class="app-grid">
-      <div class="app-card"><span class="tag">Command</span><h3>FreshChain Command Center</h3><p>Shows the current KPI position and gives the panel a quick view of protected value, exposure, actions, and cold-chain status.</p></div>
+      <div class="app-card"><span class="tag">Command</span><h3>FreshChain Command Center</h3><p>Current KPI position for protected value, exposure, workflow action, and cold-chain status.</p></div>
       <div class="app-card"><span class="tag">Predict</span><h3>FreshChain Predict</h3><p>Lists SAP AI Core risk decisions with score, confidence, store, zone, and prediction type.</p></div>
       <div class="app-card"><span class="tag">Act</span><h3>FreshChain Act</h3><p>Supports operational decisioning for stock rescue, movement, markdown, and store-level response.</p></div>
       <div class="app-card"><span class="tag">Prove</span><h3>FreshChain Prove</h3><p>Audits completed interventions and explains where protected revenue and outcome values come from.</p></div>
       <div class="app-card"><span class="tag">Monitor</span><h3>FreshChain Monitor</h3><p>Tracks cold-chain events, ingestion health, and the operational telemetry needed to maintain confidence.</p></div>
-      <div class="app-card"><span class="tag">Integrations</span><h3>Live Demo Integrations</h3><p>Shows platform hand-offs, AI Core proof, message processing, and runtime status for the live scenario.</p></div>
+      <div class="app-card"><span class="tag">Integrations</span><h3>FreshChain Integrations</h3><p>Platform hand-offs, AI Core proof, message processing, and runtime status.</p></div>
     </div>
     <div class="callout">
-      <p>Recommended panel flow: Work Zone home, Rescue Cockpit, AI decision, rescue plan, completion proof, Command Center KPI refresh, then a short inspection of Predict and Prove.</p>
+      <p>FreshChain keeps the core operating chain visible: command context, incident control, AI decision, rescue plan, completion proof, and financial outcome.</p>
     </div>
   </section>
 
@@ -765,7 +767,7 @@
       <div>
         <p class="eyebrow">Operational Screens</p>
         <h2>Prediction, action, proof, and monitoring views</h2>
-        <p class="lead">These screenshots show the main applications beyond the cockpit. They support questions from business judges and technical judges without moving the demo into master-data maintenance.</p>
+        <p class="lead">These applications persist the evidence created by the cockpit: interventions, AI decisions, protected-value proof, and cold-chain monitoring.</p>
       </div>
       <div class="page-number">08</div>
     </div>
@@ -782,7 +784,7 @@
       <div>
         <p class="eyebrow">Master Data And Control</p>
         <h2>Supporting apps that make the process governed</h2>
-        <p class="lead">The master-data apps are not the focus of the panel demo, but they show that the rescue process is grounded in maintainable business entities rather than isolated mock screens.</p>
+        <p class="lead">The master-data apps govern the inputs used by rescue decisions, financial calculations, and operational monitoring.</p>
       </div>
       <div class="page-number">09</div>
     </div>
@@ -803,12 +805,12 @@
       <div>
         <p class="eyebrow">Platform Architecture</p>
         <h2>How SAP BTP services fit together</h2>
-        <p class="lead">FreshChain is implemented as a CAP-backed Fiori suite deployed to SAP BTP. The architecture keeps data, scoring, action, and proof in governed services so the demo can be explained to both business and technical audiences.</p>
+        <p class="lead">FreshChain is implemented as a CAP-backed Fiori suite on SAP BTP. Data, scoring, action, and proof remain in governed services rather than isolated screens.</p>
       </div>
       <div class="page-number">10</div>
     </div>
     <div class="architecture">
-      <div class="arch-node"><h3>CAP Node.js</h3><p>OData V4 services for catalog, analytics, intelligence, admin, ingestion, and live demo actions.</p></div>
+      <div class="arch-node"><h3>CAP Node.js</h3><p>OData V4 services for catalog, analytics, intelligence, admin, ingestion, and rescue actions.</p></div>
       <div class="arch-node"><h3>SAP HANA</h3><p>Stores business entities, readings, predictions, alerts, interventions, and impact proof.</p></div>
       <div class="arch-node"><h3>SAP AI Core</h3><p>Scores spoilage risk and returns confidence, shelf-life, demand, and recommendation outputs.</p></div>
       <div class="arch-node"><h3>Event Flow</h3><p>Sensor event handling and operational telemetry connect the reading to the rescue process.</p></div>
@@ -816,7 +818,7 @@
     </div>
     <div class="two-col">
       <div class="panel pad wide">
-        <h3>Data lineage used in the demo</h3>
+        <h3>Data lineage</h3>
         <ul class="bullets">
           <li>Store, zone, product, sensor, stock lot, and movement records provide operational context.</li>
           <li>Sensor readings and AI inference requests create the decision trail.</li>
@@ -825,7 +827,7 @@
       </div>
       <div class="panel pad narrow">
         <h3>Design principle</h3>
-        <p>No fallback business data is used to hide platform gaps. If live data or service proof is unavailable, it should be treated as a defect to fix rather than replaced in the presentation.</p>
+        <p>No fallback business data is used to hide platform gaps. If live data or service proof is unavailable, the missing evidence is treated as a product defect.</p>
       </div>
     </div>
   </section>
@@ -833,35 +835,35 @@
   <section class="page">
     <div class="header-row">
       <div>
-        <p class="eyebrow">Panel Narrative</p>
-        <h2>Six to seven minute demonstration flow</h2>
-        <p class="lead">This is the recommended talk track for a concise panel demonstration. It keeps attention on the main applications and the concrete outcome.</p>
+        <p class="eyebrow">Operating Sequence</p>
+        <h2>FreshChain operating sequence</h2>
+        <p class="lead">FreshChain handles the cold-chain rescue lifecycle from exception detection through protected-value proof.</p>
       </div>
       <div class="page-number">11</div>
     </div>
     <div class="two-col">
       <div class="panel pad wide">
-        <h3>Button-by-button sequence</h3>
+        <h3>Process sequence</h3>
         <ul class="bullets">
-          <li>Open Work Zone and point out the KPI row: command, risk, workflow, financial value, live rescue, monitoring.</li>
-          <li>Open FreshChain Rescue Cockpit and press Start incident.</li>
-          <li>Press Live reading to persist the scenario reading and show the store, zone, and stock context.</li>
-          <li>Press Score risk to show the SAP AI Core decision, score, confidence, and recommendation.</li>
-          <li>Press Build rescue to show the planned action and the protected-value calculation.</li>
-          <li>Press Complete proof to record the outcome and show the protected-value evidence.</li>
-          <li>Open Predict and Prove briefly to show that the decision and impact are persisted outside the cockpit.</li>
+          <li>Detect a cold-chain exception from the store telemetry stream.</li>
+          <li>Persist the reading with store, zone, product, sensor, and stock context.</li>
+          <li>Score spoilage risk through SAP AI Core and store the decision record.</li>
+          <li>Build a rescue plan from affected stock, recommendation, SLA, and rescue economics.</li>
+          <li>Execute the store action and record workflow completion proof.</li>
+          <li>Calculate protected value from stock ledger, risk, confidence, and salvage cap.</li>
+          <li>Monitor recurring risk, ingestion quality, and intervention outcomes.</li>
         </ul>
       </div>
       <div class="panel pad narrow">
-        <h3>What to explain</h3>
-        <p>The important message is the closed loop: reading, AI decision, rescue action, and financial proof. The panel should leave with a clear view of what happened, why the action was recommended, and how FreshChain calculated the value protected.</p>
+        <h3>Product outcome</h3>
+        <p>The closed loop gives store and head-office teams a clear record of what happened, why the action was recommended, who completed it, and how protected value was calculated.</p>
         <div class="callout">
-          <p>Keep master data to a short supporting section unless a judge asks how the calculation or thresholds are configured.</p>
+          <p>Master data, thresholds, sensors, impact settings, and stock movements remain visible because they control the quality of the rescue decision.</p>
         </div>
       </div>
     </div>
     <div class="footer-note">
-      <span>FreshChain global demo brief</span>
+      <span>FreshChain product overview</span>
       <span>retailsolutions SA and Shoprite collaboration</span>
     </div>
   </section>
