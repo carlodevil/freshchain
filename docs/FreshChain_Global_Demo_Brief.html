@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FreshChain Global Demo Brief</title>
+  <style>
+    @page {
+      size: 13.333in 7.5in;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --ink: #14212f;
+      --muted: #50647a;
+      --line: #d6dee7;
+      --soft: #f4f7fa;
+      --sap: #0a6ed1;
+      --green: #137333;
+      --amber: #b95f00;
+      --red: #b3261e;
+      --panel: #ffffff;
+      --blue-soft: #eaf4ff;
+      --green-soft: #eaf7ee;
+      --amber-soft: #fff4df;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      color: var(--ink);
+      background: #dbe3ea;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    body {
+      width: 13.333in;
+    }
+
+    .page {
+      position: relative;
+      width: 13.333in;
+      height: 7.5in;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%);
+      page-break-after: always;
+      padding: 0.48in 0.58in;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .cover {
+      color: #ffffff;
+      background:
+        linear-gradient(135deg, rgba(10, 110, 209, 0.95) 0%, rgba(20, 33, 47, 0.96) 54%, rgba(19, 115, 51, 0.9) 100%),
+        url("demo-guide/screenshots/00-workzone-home.png") center / cover no-repeat;
+    }
+
+    .cover::after {
+      position: absolute;
+      right: -0.65in;
+      bottom: -0.55in;
+      width: 4.6in;
+      height: 4.6in;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .brand-row,
+    .header-row,
+    .split,
+    .metric-row,
+    .app-grid,
+    .two-col,
+    .mini-grid {
+      display: flex;
+      gap: 0.22in;
+    }
+
+    .brand-row {
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5in;
+    }
+
+    .brand-row img {
+      display: block;
+      max-height: 0.52in;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 0.26in;
+      min-height: 0.64in;
+    }
+
+    .brand-lockup.cover-logos {
+      padding: 0.13in 0.18in;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .brand-lockup.cover-logos .divider {
+      background: rgba(20, 33, 47, 0.25);
+    }
+
+    .divider {
+      width: 1px;
+      height: 0.42in;
+      background: var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 0.1in;
+      color: var(--sap);
+      font-size: 0.12in;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .cover .eyebrow {
+      color: #cce4ff;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 8.4in;
+      font-size: 0.64in;
+      line-height: 0.72in;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 0.34in;
+      line-height: 0.42in;
+      font-weight: 780;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      font-size: 0.17in;
+      line-height: 0.23in;
+      font-weight: 760;
+    }
+
+    p,
+    li {
+      color: var(--muted);
+      font-size: 0.125in;
+      line-height: 0.19in;
+    }
+
+    .cover p {
+      max-width: 8.2in;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 0.17in;
+      line-height: 0.25in;
+    }
+
+    .cover-meta {
+      position: absolute;
+      left: 0.58in;
+      right: 0.58in;
+      bottom: 0.46in;
+      display: grid;
+      grid-template-columns: 2.2fr 1.2fr;
+      gap: 0.24in;
+      align-items: end;
+    }
+
+    .team {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.11in;
+      line-height: 0.16in;
+    }
+
+    .team strong {
+      color: #ffffff;
+    }
+
+    .header-row {
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: 0.18in;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-number {
+      min-width: 0.5in;
+      color: var(--muted);
+      font-size: 0.11in;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .lead {
+      margin-top: 0.14in;
+      max-width: 7.8in;
+      font-size: 0.15in;
+      line-height: 0.23in;
+    }
+
+    .split {
+      margin-top: 0.34in;
+      align-items: stretch;
+    }
+
+    .split > * {
+      flex: 1;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 8px 20px rgba(20, 33, 47, 0.08);
+    }
+
+    .panel.pad {
+      padding: 0.22in;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.16in;
+      margin-top: 0.32in;
+    }
+
+    .flow-card {
+      min-height: 1.6in;
+      padding: 0.2in;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .flow-card .step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 0.36in;
+      height: 0.36in;
+      margin-bottom: 0.14in;
+      border-radius: 50%;
+      color: #ffffff;
+      background: var(--sap);
+      font-weight: 800;
+    }
+
+    .flow-card:nth-child(2) .step {
+      background: var(--amber);
+    }
+
+    .flow-card:nth-child(3) .step {
+      background: var(--green);
+    }
+
+    .flow-card:nth-child(4) .step {
+      background: #5b738b;
+    }
+
+    .metric-row {
+      margin-top: 0.25in;
+    }
+
+    .metric {
+      flex: 1;
+      min-height: 1in;
+      padding: 0.17in;
+      border-left: 4px solid var(--sap);
+      border-radius: 8px;
+      background: var(--blue-soft);
+    }
+
+    .metric.green {
+      border-left-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .metric.amber {
+      border-left-color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .metric .value {
+      color: var(--ink);
+      font-size: 0.28in;
+      line-height: 0.36in;
+      font-weight: 800;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 0.11in;
+      line-height: 0.16in;
+    }
+
+    .screen {
+      display: block;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 10px 22px rgba(20, 33, 47, 0.12);
+      object-fit: cover;
+    }
+
+    .screen.full {
+      height: 5.55in;
+      object-fit: contain;
+      background: #f3f6f9;
+    }
+
+    .screen.workzone {
+      height: 4.72in;
+      object-fit: cover;
+      object-position: top left;
+    }
+
+    .screen.large {
+      height: 4.56in;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .screen.financial {
+      height: 3.72in;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .caption {
+      margin-top: 0.1in;
+      color: var(--muted);
+      font-size: 0.105in;
+      line-height: 0.15in;
+    }
+
+    .callout {
+      margin-top: 0.18in;
+      padding: 0.16in 0.18in;
+      border-left: 4px solid var(--sap);
+      border-radius: 8px;
+      background: var(--blue-soft);
+    }
+
+    .callout p {
+      color: #294764;
+      font-size: 0.115in;
+      line-height: 0.17in;
+    }
+
+    .calc {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.14in;
+      margin-top: 0.22in;
+    }
+
+    .calc .box {
+      min-height: 1.05in;
+      padding: 0.15in;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .calc.compact .box {
+      min-height: 0.82in;
+      padding: 0.12in;
+    }
+
+    .calc .box strong {
+      display: block;
+      margin-bottom: 0.06in;
+      color: var(--ink);
+      font-size: 0.16in;
+    }
+
+    .two-col {
+      margin-top: 0.26in;
+      align-items: flex-start;
+    }
+
+    .two-col .wide {
+      flex: 1.5;
+    }
+
+    .two-col .narrow {
+      flex: 0.92;
+    }
+
+    .bullets {
+      margin: 0.18in 0 0;
+      padding-left: 0.18in;
+    }
+
+    .bullets li {
+      margin-bottom: 0.09in;
+    }
+
+    .app-grid {
+      flex-wrap: wrap;
+      margin-top: 0.24in;
+      gap: 0.16in;
+    }
+
+    .app-card {
+      width: calc(33.333% - 0.11in);
+      min-height: 1.17in;
+      padding: 0.16in;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .app-card .tag {
+      display: inline-block;
+      margin-bottom: 0.08in;
+      padding: 0.035in 0.075in;
+      border-radius: 999px;
+      color: #075a26;
+      background: var(--green-soft);
+      font-size: 0.09in;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .mini-grid {
+      flex-wrap: wrap;
+      margin-top: 0.22in;
+      gap: 0.13in;
+    }
+
+    .mini-shot {
+      width: calc(25% - 0.1in);
+      padding: 0.1in;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .mini-shot img {
+      width: 100%;
+      height: 1.12in;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      margin-bottom: 0.08in;
+    }
+
+    .mini-shot h3 {
+      font-size: 0.12in;
+      line-height: 0.16in;
+      margin-bottom: 0.035in;
+    }
+
+    .mini-shot p {
+      font-size: 0.092in;
+      line-height: 0.13in;
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.12in;
+      margin-top: 0.28in;
+    }
+
+    .arch-node {
+      min-height: 1.25in;
+      padding: 0.16in;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .arch-node h3 {
+      margin-bottom: 0.08in;
+      color: var(--sap);
+    }
+
+    .footer-note {
+      position: absolute;
+      left: 0.58in;
+      right: 0.58in;
+      bottom: 0.28in;
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.095in;
+      line-height: 0.13in;
+    }
+
+    .title-small {
+      color: var(--muted);
+      font-size: 0.11in;
+      line-height: 0.15in;
+    }
+
+    .screen-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.2in;
+      margin-top: 0.24in;
+    }
+
+    .screen-row .screen {
+      height: 2.72in;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .screen-row.compact .screen {
+      height: 1.55in;
+    }
+
+    .screen-row.compact .caption {
+      margin-top: 0.06in;
+      font-size: 0.095in;
+      line-height: 0.13in;
+    }
+
+    .quiet {
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <section class="page cover">
+    <div class="brand-row">
+      <div class="brand-lockup cover-logos">
+        <img src="../logos/rs-logo%201.svg" alt="retailsolutions SA logo">
+        <span class="divider"></span>
+        <img src="../logos/shoprite-logo.png" alt="Shoprite logo">
+      </div>
+      <div class="title-small" style="color: rgba(255,255,255,0.82); text-align: right;">Global demo brief<br>SAP BTP Hackathon</div>
+    </div>
+
+    <p class="eyebrow">FreshChain</p>
+    <h1>Fresh-food rescue process on SAP Business Technology Platform</h1>
+    <p style="margin-top:0.28in;">FreshChain shows how cold-chain readings, stock context, SAP AI Core scoring, store action, and financial proof can be handled as one traceable process.</p>
+
+    <div class="cover-meta">
+      <div class="team">
+        <strong>Collaboration:</strong> retailsolutions SA and Shoprite<br>
+        <strong>Team:</strong> Carlo de Villiers, Bill Ajaegbu, Alcino Faria, Emma Rautenbach, Biance Finsterbusch, Soleh Davids, Glenn Samuel
+      </div>
+      <div class="team" style="text-align:right;">
+        Prepared for a global audience<br>
+        Process evidence from the FreshChain Fiori suite
+      </div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Process View</p>
+        <h2>What the solution demonstrates</h2>
+        <p class="lead">The demo is organized around a practical operating loop. A store receives a cold-chain signal, FreshChain calculates the business risk from live system data, a user executes a rescue action, and the outcome is recorded as protected value.</p>
+      </div>
+      <div class="page-number">01</div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-card">
+        <div class="step">1</div>
+        <h3>Sense</h3>
+        <p>Sensor readings enter CAP services with store, zone, and stock context. The demo reading is the only mocked input.</p>
+      </div>
+      <div class="flow-card">
+        <div class="step">2</div>
+        <h3>Predict</h3>
+        <p>SAP AI Core scoring creates risk, confidence, shelf-life, and recommendation records that are persisted for audit.</p>
+      </div>
+      <div class="flow-card">
+        <div class="step">3</div>
+        <h3>Act</h3>
+        <p>Fiori apps guide the rescue action: affected stock, assignment, SLA, workflow proof, and completion status.</p>
+      </div>
+      <div class="flow-card">
+        <div class="step">4</div>
+        <h3>Prove</h3>
+        <p>Financial and operational outcomes are calculated from stock ledger, prediction, and completed intervention records.</p>
+      </div>
+    </div>
+
+    <div class="metric-row">
+      <div class="metric">
+        <div class="value">R 4 526</div>
+        <div class="label">Protected value shown in the completed rescue proof</div>
+      </div>
+      <div class="metric amber">
+        <div class="value">90 units</div>
+        <div class="label">Affected chilled stock in the demonstrated scenario</div>
+      </div>
+      <div class="metric green">
+        <div class="value">100%</div>
+        <div class="label">Actioned workflow state shown on the Work Zone KPI tile</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p>The document is intentionally process-driven. It does not describe FreshChain as a concept only; each section ties the claim to an app screen, a data object, or a visible business result.</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Entry Point</p>
+        <h2>Work Zone home: operational tiles and KPI context</h2>
+        <p class="lead">The Work Zone page gives users a role-based starting point. KPI tiles summarize protected value, risk exposure, workflow action rate, and financial audit value, while task tiles open the main FreshChain apps.</p>
+      </div>
+      <div class="page-number">02</div>
+    </div>
+    <img class="screen workzone" src="demo-guide/screenshots/00-workzone-home.png" alt="FreshChain SAP Build Work Zone home screen with KPI tiles and app tiles">
+    <p class="caption">The first row supports the primary demo: command center, risk view, workflow action, financial proof, live rescue cockpit, and monitoring. The master-data row is available for inspection but is not the center of the judge demonstration.</p>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Main Application</p>
+        <h2>FreshChain Rescue Cockpit: trigger the scenario</h2>
+        <p class="lead">The live demo begins in the Rescue Cockpit. The user starts an incident, captures the latest reading, requests AI scoring, builds a rescue plan, and completes proof from one action-oriented screen.</p>
+      </div>
+      <div class="page-number">03</div>
+    </div>
+    <div class="screen-row">
+      <div>
+        <img class="screen" src="demo-guide/screenshots/02-live-demo-start.png" alt="Rescue cockpit before starting the incident">
+        <p class="caption">Start incident establishes the run and the business context for the sensor event.</p>
+      </div>
+      <div>
+        <img class="screen" src="demo-guide/screenshots/04-live-demo-reading.png" alt="Rescue cockpit after live reading">
+        <p class="caption">Live reading records the condition that drives the downstream prediction and rescue action.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <p>For the demo, the reading payload can be simulated. The business outputs after that point should come from the deployed CAP services, HANA persistence, AI scoring response, and FreshChain action records.</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Prediction Evidence</p>
+        <h2>AI risk decision: score, confidence, recommendation</h2>
+        <p class="lead">The prediction step converts the reading and stock context into a decision record. This makes the AI result visible to business users and traceable to the deployed model runtime.</p>
+      </div>
+      <div class="page-number">04</div>
+    </div>
+    <img class="screen large" src="demo-guide/screenshots/05-live-demo-ai-decision.png" alt="Rescue cockpit showing AI decision evidence">
+    <div class="calc">
+      <div class="box"><strong>Risk</strong><p>Critical spoilage exposure is shown with the affected store, zone, and stock lot.</p></div>
+      <div class="box"><strong>Confidence</strong><p>The score and confidence are persisted with the inference request for auditability.</p></div>
+      <div class="box"><strong>Action</strong><p>The recommendation explains what the store team should do next.</p></div>
+      <div class="box"><strong>Proof</strong><p>The decision is linked to the rescue plan and later financial impact.</p></div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Financial Traceability</p>
+        <h2>How the protected value is calculated</h2>
+        <p class="lead">FreshChain explains the value calculation in the same screen where the action is completed. The figure is not a slide-only number; it is derived from stock ledger value, AI risk, AI confidence, and the configured salvage cap.</p>
+      </div>
+      <div class="page-number">05</div>
+    </div>
+    <img class="screen financial" src="demo-guide/screenshots/06-live-demo-rescue.png" alt="Rescue cockpit showing financial calculation and completed rescue proof">
+    <div class="calc compact">
+      <div class="box"><strong>Stock at risk</strong><p>Active stock in the affected zone: 90 units priced from the stock ledger at R 5 899.1.</p></div>
+      <div class="box"><strong>Expected loss</strong><p>Stock value x AI risk x AI confidence = R 4 526.08 in the shown rescue scenario.</p></div>
+      <div class="box"><strong>Salvage cap</strong><p>Configured rescue economics cap the recoverable value at R 4 837.26.</p></div>
+      <div class="box"><strong>Protected value</strong><p>The reported protected value is the lower of expected loss and salvage cap: R 4 526.08.</p></div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Action Evidence</p>
+        <h2>Store task completion and operational proof</h2>
+        <p class="lead">The completed state records the intervention outcome, workflow task reference, protected value, and operational instruction. This lets the team discuss business impact without leaving the Fiori process.</p>
+      </div>
+      <div class="page-number">06</div>
+    </div>
+    <div class="screen-row compact">
+      <div>
+        <img class="screen" src="demo-guide/screenshots/07-live-demo-task.png" alt="Rescue cockpit showing task details">
+        <p class="caption">The task view identifies ownership and gives the store team a specific rescue action.</p>
+      </div>
+      <div>
+        <img class="screen" src="demo-guide/screenshots/08-live-demo-completed.png" alt="Rescue cockpit showing completed proof">
+        <p class="caption">The completion view provides the evidence needed to discuss value protected and operational status.</p>
+      </div>
+    </div>
+    <div class="metric-row">
+      <div class="metric green">
+        <div class="value">RESCUED</div>
+        <div class="label">Outcome status after completing the workflow proof</div>
+      </div>
+      <div class="metric">
+        <div class="value">Task ID</div>
+        <div class="label">The screen includes a workflow proof identifier for audit discussion</div>
+      </div>
+      <div class="metric amber">
+        <div class="value">SLA</div>
+        <div class="label">Action required within the operational time window</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Fiori Suite</p>
+        <h2>Main apps used in the demonstration</h2>
+        <p class="lead">The judges should see the suite as a coherent process, not as independent lists. These applications cover command, prediction, action, proof, and monitoring.</p>
+      </div>
+      <div class="page-number">07</div>
+    </div>
+    <div class="app-grid">
+      <div class="app-card"><span class="tag">Command</span><h3>FreshChain Command Center</h3><p>Shows the current KPI position and gives the panel a quick view of protected value, exposure, actions, and cold-chain status.</p></div>
+      <div class="app-card"><span class="tag">Predict</span><h3>FreshChain Predict</h3><p>Lists SAP AI Core risk decisions with score, confidence, store, zone, and prediction type.</p></div>
+      <div class="app-card"><span class="tag">Act</span><h3>FreshChain Act</h3><p>Supports operational decisioning for stock rescue, movement, markdown, and store-level response.</p></div>
+      <div class="app-card"><span class="tag">Prove</span><h3>FreshChain Prove</h3><p>Audits completed interventions and explains where protected revenue and outcome values come from.</p></div>
+      <div class="app-card"><span class="tag">Monitor</span><h3>FreshChain Monitor</h3><p>Tracks cold-chain events, ingestion health, and the operational telemetry needed to maintain confidence.</p></div>
+      <div class="app-card"><span class="tag">Integrations</span><h3>Live Demo Integrations</h3><p>Shows platform hand-offs, AI Core proof, message processing, and runtime status for the live scenario.</p></div>
+    </div>
+    <div class="callout">
+      <p>Recommended panel flow: Work Zone home, Rescue Cockpit, AI decision, rescue plan, completion proof, Command Center KPI refresh, then a short inspection of Predict and Prove.</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Operational Screens</p>
+        <h2>Prediction, action, proof, and monitoring views</h2>
+        <p class="lead">These screenshots show the main applications beyond the cockpit. They support questions from business judges and technical judges without moving the demo into master-data maintenance.</p>
+      </div>
+      <div class="page-number">08</div>
+    </div>
+    <div class="mini-grid">
+      <div class="mini-shot"><img src="demo-guide/screenshots/10-operations.png" alt="FreshChain Act operations app"><h3>FreshChain Act</h3><p>Operational intervention list, execution state, recommended action, and ownership.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/11-intelligence.png" alt="FreshChain Predict intelligence app"><h3>FreshChain Predict</h3><p>Persisted SAP AI Core decision records with score, confidence, store, and zone.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/12-admin-prove.png" alt="FreshChain Prove admin app"><h3>FreshChain Prove</h3><p>Outcome and protected-value inspection for completed interventions.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/13-monitoring.png" alt="FreshChain monitoring app"><h3>FreshChain Monitor</h3><p>Cold-chain alerts and ingestion status for operational assurance.</p></div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Master Data And Control</p>
+        <h2>Supporting apps that make the process governed</h2>
+        <p class="lead">The master-data apps are not the focus of the panel demo, but they show that the rescue process is grounded in maintainable business entities rather than isolated mock screens.</p>
+      </div>
+      <div class="page-number">09</div>
+    </div>
+    <div class="mini-grid">
+      <div class="mini-shot"><img src="demo-guide/screenshots/15-manage-products.png" alt="Manage Products"><h3>Manage Products</h3><p>Product policy, category, and perishable stock attributes.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/16-manage-thresholds.png" alt="Manage Thresholds"><h3>Manage Thresholds</h3><p>Alert thresholds and cold-chain risk parameters.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/17-manage-stores.png" alt="Manage Stores"><h3>Manage Stores</h3><p>Store master data and regional context.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/18-manage-impact-settings.png" alt="Manage Impact Settings"><h3>Manage Impact Settings</h3><p>Economics used for intervention value calculations.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/19-manage-areas.png" alt="Manage Areas"><h3>Manage Areas</h3><p>Cold-chain zones and store-area definitions.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/20-manage-sensors.png" alt="Manage Sensors"><h3>Manage Sensors</h3><p>Sensor assignment, status, and telemetry source control.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/21-view-stock-ledger.png" alt="View Stock Ledger"><h3>View Stock Ledger</h3><p>Stock movements used by risk and protected-value calculations.</p></div>
+      <div class="mini-shot"><img src="demo-guide/screenshots/14-ingestion-errors.png" alt="Review Ingestion Errors"><h3>Review Ingestion Errors</h3><p>Quarantined payloads and replay control for operations.</p></div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Platform Architecture</p>
+        <h2>How SAP BTP services fit together</h2>
+        <p class="lead">FreshChain is implemented as a CAP-backed Fiori suite deployed to SAP BTP. The architecture keeps data, scoring, action, and proof in governed services so the demo can be explained to both business and technical audiences.</p>
+      </div>
+      <div class="page-number">10</div>
+    </div>
+    <div class="architecture">
+      <div class="arch-node"><h3>CAP Node.js</h3><p>OData V4 services for catalog, analytics, intelligence, admin, ingestion, and live demo actions.</p></div>
+      <div class="arch-node"><h3>SAP HANA</h3><p>Stores business entities, readings, predictions, alerts, interventions, and impact proof.</p></div>
+      <div class="arch-node"><h3>SAP AI Core</h3><p>Scores spoilage risk and returns confidence, shelf-life, demand, and recommendation outputs.</p></div>
+      <div class="arch-node"><h3>Event Flow</h3><p>Sensor event handling and operational telemetry connect the reading to the rescue process.</p></div>
+      <div class="arch-node"><h3>Fiori / Work Zone</h3><p>HTML5 apps provide role-based access for command, prediction, action, proof, and support tasks.</p></div>
+    </div>
+    <div class="two-col">
+      <div class="panel pad wide">
+        <h3>Data lineage used in the demo</h3>
+        <ul class="bullets">
+          <li>Store, zone, product, sensor, stock lot, and movement records provide operational context.</li>
+          <li>Sensor readings and AI inference requests create the decision trail.</li>
+          <li>Alerts, rescue actions, and intervention impacts create operational and financial proof.</li>
+        </ul>
+      </div>
+      <div class="panel pad narrow">
+        <h3>Design principle</h3>
+        <p>No fallback business data is used to hide platform gaps. If live data or service proof is unavailable, it should be treated as a defect to fix rather than replaced in the presentation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Panel Narrative</p>
+        <h2>Six to seven minute demonstration flow</h2>
+        <p class="lead">This is the recommended talk track for a concise panel demonstration. It keeps attention on the main applications and the concrete outcome.</p>
+      </div>
+      <div class="page-number">11</div>
+    </div>
+    <div class="two-col">
+      <div class="panel pad wide">
+        <h3>Button-by-button sequence</h3>
+        <ul class="bullets">
+          <li>Open Work Zone and point out the KPI row: command, risk, workflow, financial value, live rescue, monitoring.</li>
+          <li>Open FreshChain Rescue Cockpit and press Start incident.</li>
+          <li>Press Live reading to persist the scenario reading and show the store, zone, and stock context.</li>
+          <li>Press Score risk to show the SAP AI Core decision, score, confidence, and recommendation.</li>
+          <li>Press Build rescue to show the planned action and the protected-value calculation.</li>
+          <li>Press Complete proof to record the outcome and show the protected-value evidence.</li>
+          <li>Open Predict and Prove briefly to show that the decision and impact are persisted outside the cockpit.</li>
+        </ul>
+      </div>
+      <div class="panel pad narrow">
+        <h3>What to explain</h3>
+        <p>The important message is the closed loop: reading, AI decision, rescue action, and financial proof. The panel should leave with a clear view of what happened, why the action was recommended, and how FreshChain calculated the value protected.</p>
+        <div class="callout">
+          <p>Keep master data to a short supporting section unless a judge asks how the calculation or thresholds are configured.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">
+      <span>FreshChain global demo brief</span>
+      <span>retailsolutions SA and Shoprite collaboration</span>
+    </div>
+  </section>
+</body>
+</html>
