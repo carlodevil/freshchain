@@ -14,6 +14,7 @@
           "semanticObject": "FreshChainPredict",
           "action": "display",
           "title": "FreshChain Predict",
+          "subTitle": "Review AI risk decisions",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"

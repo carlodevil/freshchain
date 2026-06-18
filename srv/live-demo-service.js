@@ -1187,11 +1187,11 @@ async function readSharedDynamicTileKpis(tx) {
 function buildDynamicTileKpis(summary, latestImpact) {
   const zone = latestImpact && latestImpact.zoneCode || 'all zones';
   const store = latestImpact && latestImpact.storeCode || 'all stores';
-  const product = latestImpact && latestImpact.productName || 'current stock';
   const status = summary.incidentStatus || 'READY';
   const updatedAt = summary.generatedAt || isoNow();
   const confidence = Math.round(numeric(summary.confidencePct));
   const state = tileStateFromCriticality(summary.criticality);
+  const commandCenterTitle = 'FreshChain Rescue Command Center';
   const controlTowerUrl = '#FreshChainControlTower-display';
   const proveUrl = '#FreshChainProve-display';
 
@@ -1204,8 +1204,8 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberState: state,
       info: `${confidence}% confidence`,
       infoState: state,
-      title: 'Revenue Protected by Intervention',
-      subtitle: `Live proof from ${zone}`,
+      title: commandCenterTitle,
+      subtitle: 'Protected revenue proof',
       targetUrl: `${controlTowerUrl}?kpi=protected-revenue`,
       updatedAt
     },
@@ -1215,10 +1215,10 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberUnit: currencyUnit(summary.stockValueAtRiskZar),
       state: summary.stockValueAtRiskZar > 0 ? 'Warning' : 'Good',
       numberState: summary.stockValueAtRiskZar > 0 ? 'Warning' : 'Good',
-      info: `${product}`.slice(0, 80),
+      info: `${store} / ${zone}`.slice(0, 80),
       infoState: summary.stockValueAtRiskZar > 0 ? 'Warning' : 'Good',
-      title: 'Cold-Chain Stock at Risk',
-      subtitle: `${store} / ${zone}`,
+      title: commandCenterTitle,
+      subtitle: 'Cold-zone exposure',
       targetUrl: `${controlTowerUrl}?kpi=stock-at-risk`,
       updatedAt
     },
@@ -1230,8 +1230,8 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberState: state,
       info: status,
       infoState: state,
-      title: 'Intervention Completion Proof',
-      subtitle: latestImpact && latestImpact.movementReferences ? 'Movement evidence linked' : 'Awaiting movement proof',
+      title: commandCenterTitle,
+      subtitle: 'Workflow completion',
       targetUrl: proveUrl,
       updatedAt
     },
@@ -1243,8 +1243,8 @@ function buildDynamicTileKpis(summary, latestImpact) {
       numberState: numeric(summary.wasteAvoidedUnits) > 0 ? 'Good' : 'Neutral',
       info: `${Math.round(numeric(summary.lostSalesAvoidedUnits))} lost-sales units`,
       infoState: numeric(summary.wasteAvoidedUnits) > 0 ? 'Good' : 'Neutral',
-      title: 'Waste Avoided by Rescue Action',
-      subtitle: 'Units saved and lost sales prevented',
+      title: commandCenterTitle,
+      subtitle: 'Waste avoided',
       targetUrl: `${controlTowerUrl}?kpi=waste-avoided`,
       updatedAt
     }

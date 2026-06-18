@@ -14,6 +14,7 @@
           "semanticObject": "FreshChainAct",
           "action": "display",
           "title": "FreshChain Act",
+          "subTitle": "Resolve spoilage interventions",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"

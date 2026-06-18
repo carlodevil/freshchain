@@ -14,8 +14,8 @@
           "semanticObject": "FreshChainControlTower",
           "action": "display",
           "title": "{{appTitle}}",
-          "subTitle": "Live rescue value",
-          "info": "FreshChain KPI",
+          "subTitle": "Command center overview",
+          "info": "Live KPIs",
           "icon": "sap-icon://business-objects-experience",
           "signature": {
             "parameters": {},
@@ -30,9 +30,9 @@
         "FreshChainProtectedRevenue-display": {
           "semanticObject": "FreshChainProtectedRevenue",
           "action": "display",
-          "title": "Protected Revenue",
-          "subTitle": "Live rescued value",
-          "info": "FreshChain KPI",
+          "title": "{{appTitle}}",
+          "subTitle": "Protected revenue proof",
+          "info": "Revenue protected",
           "icon": "sap-icon://money-bills",
           "signature": {
             "parameters": {},
@@ -47,9 +47,9 @@
         "FreshChainStockAtRisk-display": {
           "semanticObject": "FreshChainStockAtRisk",
           "action": "display",
-          "title": "Stock at Risk",
-          "subTitle": "Live cold-zone exposure",
-          "info": "FreshChain KPI",
+          "title": "{{appTitle}}",
+          "subTitle": "Cold-zone exposure",
+          "info": "Stock at risk",
           "icon": "sap-icon://inventory",
           "signature": {
             "parameters": {},
@@ -64,9 +64,9 @@
         "FreshChainRescueProof-display": {
           "semanticObject": "FreshChainRescueProof",
           "action": "display",
-          "title": "Rescue Proof",
+          "title": "{{appTitle}}",
           "subTitle": "Workflow completion",
-          "info": "FreshChain KPI",
+          "info": "Completion proof",
           "icon": "sap-icon://verified",
           "signature": {
             "parameters": {},
@@ -81,9 +81,9 @@
         "FreshChainWasteAvoided-display": {
           "semanticObject": "FreshChainWasteAvoided",
           "action": "display",
-          "title": "Waste Avoided",
-          "subTitle": "Live intervention result",
-          "info": "FreshChain KPI",
+          "title": "{{appTitle}}",
+          "subTitle": "Waste avoided",
+          "info": "Units saved",
           "icon": "sap-icon://sys-enter-2",
           "signature": {
             "parameters": {},

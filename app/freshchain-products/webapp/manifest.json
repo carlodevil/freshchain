@@ -14,6 +14,7 @@
           "semanticObject": "FreshChainProducts",
           "action": "display",
           "title": "{{appTitle}}",
+          "subTitle": "Maintain product policies",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"

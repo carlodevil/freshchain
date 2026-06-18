@@ -14,6 +14,7 @@
           "semanticObject": "FreshChainProve",
           "action": "display",
           "title": "FreshChain Prove",
+          "subTitle": "Audit financial proof",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"

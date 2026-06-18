@@ -24,3 +24,8 @@ This file captures durable project lessons that future agents must check before 
 - If Work Zone target resolution rejects a new semantic object, do not strand the home page by assigning an unresolved visualization. For the hackathon site, keep the resolving compatibility intent but correct the visible tile title and opened app title in the local CDM until the clean semantic object is accepted.
 - A Work Zone group can reference multiple visualizations from the same HTML5 app. Use that to place live dynamic KPI tiles first, but only after confirming each visualization has an `indicatorDataSource` and the runtime tile calls return HTTP 200.
 - Supporting Fiori apps should be treated as live evidence surfaces, not generic admin tables. When improving demo value, prefer metadata-only changes that sort live rows newest-first and derive visual criticality from persisted severity/status instead of introducing fallback rows or scripted values.
+
+## 2026-06-18
+
+- Work Zone dynamic tile runtime payload can override manifest tile copy. If KPI tile titles or subtitles remain stale after an HTML5 dist redeploy and HTML5 Apps provider sync, inspect the live OData entity behind `indicatorDataSource` such as `DynamicTileKpis(...)` and fix the CAP payload as well as the manifest.
+- Work Zone local copies can retain stale text dictionary values even when provider metadata is correct. For local business apps, inspect the local CDM `texts` entries and update/publish the local item; provider sync alone will not replace local text such as tile subtitle or info.

@@ -14,6 +14,7 @@
           "semanticObject": "FreshChainMonitoring",
           "action": "display",
           "title": "FreshChain Monitor",
+          "subTitle": "Monitor cold-chain exceptions",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"

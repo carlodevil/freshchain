@@ -14,8 +14,8 @@
           "semanticObject": "FreshChainRescueCockpit",
           "action": "display",
           "title": "FreshChain Rescue Cockpit",
-          "subTitle": "Live stock at risk",
-          "info": "FreshChain KPI",
+          "subTitle": "Run live rescue flow",
+          "info": "Live demo",
           "icon": "sap-icon://shipping-status",
           "signature": {
             "parameters": {},
@@ -31,8 +31,8 @@
           "semanticObject": "FreshChainSense",
           "action": "display",
           "title": "FreshChain Rescue Cockpit",
-          "subTitle": "Live stock at risk",
-          "info": "FreshChain KPI",
+          "subTitle": "Run live rescue flow",
+          "info": "Live demo",
           "icon": "sap-icon://shipping-status",
           "signature": {
             "parameters": {},
